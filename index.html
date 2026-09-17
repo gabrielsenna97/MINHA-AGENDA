@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -183,6 +184,7 @@ body:before{
     border:1px solid rgba(32,216,137,.2);
     border-radius:20px;
     background:rgba(32,216,137,.05);
+    transition:.2s;
 }
 
 .btn{
@@ -810,8 +812,6 @@ body:before{
 
 <body>
 
-<!-- ================= SIDEBAR ================= -->
-
 <aside class="sidebar" id="sidebar">
 
     <div class="logo">
@@ -869,8 +869,6 @@ body:before{
 
 </aside>
 
-<!-- ================= MAIN ================= -->
-
 <main class="main">
 
     <header class="topbar">
@@ -889,7 +887,7 @@ body:before{
         <div class="top-actions">
 
             <div class="sync-status" id="syncStatus">
-                ☁️ Sincronizando...
+                ⚡ Pronto
             </div>
 
             <button class="btn btn-primary" onclick="abrirModal('tarefa')">
@@ -901,8 +899,6 @@ body:before{
     </header>
 
     <div class="content">
-
-        <!-- ================= INÍCIO ================= -->
 
         <section class="page" id="page-inicio">
 
@@ -1004,9 +1000,11 @@ body:before{
 
                     <div class="panel-title">
                         <h3>Tarefas de hoje</h3>
+
                         <span onclick="abrirPagina('tarefas')" style="cursor:pointer">
                             Ver todas →
                         </span>
+
                     </div>
 
                     <div class="item-list" id="inicioTarefas"></div>
@@ -1017,9 +1015,11 @@ body:before{
 
                     <div class="panel-title">
                         <h3>Últimos serviços</h3>
+
                         <span onclick="abrirPagina('servicos')" style="cursor:pointer">
                             Histórico →
                         </span>
+
                     </div>
 
                     <div class="item-list" id="inicioServicos"></div>
@@ -1032,9 +1032,11 @@ body:before{
 
                 <div class="panel-title">
                     <h3>Últimas movimentações</h3>
+
                     <span onclick="abrirPagina('movimentacoes')" style="cursor:pointer">
                         Ver todas →
                     </span>
+
                 </div>
 
                 <div id="inicioMovimentacoes"></div>
@@ -1042,8 +1044,6 @@ body:before{
             </div>
 
         </section>
-
-        <!-- ================= AGENDA ================= -->
 
         <section class="page" id="page-agenda">
 
@@ -1078,8 +1078,6 @@ body:before{
             </div>
 
         </section>
-
-        <!-- ================= TAREFAS ================= -->
 
         <section class="page" id="page-tarefas">
 
@@ -1125,8 +1123,6 @@ body:before{
 
         </section>
 
-        <!-- ================= PROGRAMAÇÃO ================= -->
-
         <section class="page" id="page-programacao">
 
             <div class="page-header">
@@ -1145,8 +1141,6 @@ body:before{
             <div class="week-grid" id="weekGrid"></div>
 
         </section>
-
-        <!-- ================= LEMBRETES ================= -->
 
         <section class="page" id="page-lembretes">
 
@@ -1170,8 +1164,6 @@ body:before{
             </div>
 
         </section>
-
-        <!-- ================= SERVIÇOS ================= -->
 
         <section class="page" id="page-servicos">
 
@@ -1207,8 +1199,6 @@ body:before{
 
         </section>
 
-        <!-- ================= MOVIMENTAÇÕES ================= -->
-
         <section class="page" id="page-movimentacoes">
 
             <div class="page-header">
@@ -1243,8 +1233,6 @@ body:before{
 
         </section>
 
-        <!-- ================= BLOCO ================= -->
-
         <section class="page" id="page-bloco">
 
             <div class="page-header">
@@ -1271,8 +1259,6 @@ body:before{
             </div>
 
         </section>
-
-        <!-- ================= PESQUISA ================= -->
 
         <section class="page" id="page-pesquisa">
 
@@ -1312,8 +1298,6 @@ body:before{
 
 </main>
 
-<!-- ================= MODAL ================= -->
-
 <div class="modal" id="modal">
 
     <div class="modal-box">
@@ -1335,7 +1319,7 @@ body:before{
 <script>
 
 /* ============================================================
-   GOOGLE SHEETS
+   CONFIGURAÇÃO GOOGLE
 ============================================================ */
 
 const API_URL =
@@ -1360,11 +1344,19 @@ let dados = JSON.parse(
 
 
 /* ============================================================
-   CONTROLE
+   FILA DE SINCRONIZAÇÃO
 ============================================================ */
 
+let filaSync = JSON.parse(
+    localStorage.getItem("minha_agenda_fila_sync")
+) || [];
+
+let sincronizando = false;
+
 let paginaAtual = "inicio";
+
 let editandoId = null;
+
 let editandoTipo = null;
 
 
@@ -1383,90 +1375,401 @@ function salvar(){
 
 
 /* ============================================================
-   STATUS DE SINCRONIZAÇÃO
+   SALVAR FILA
 ============================================================ */
 
-function syncStatus(texto, tipo="ok"){
+function salvarFila(){
 
-    const el = document.getElementById("syncStatus");
+    localStorage.setItem(
+        "minha_agenda_fila_sync",
+        JSON.stringify(filaSync)
+    );
+
+}
+
+
+/* ============================================================
+   STATUS
+============================================================ */
+
+function syncStatus(texto,tipo="ok"){
+
+    const el =
+        document.getElementById("syncStatus");
 
     if(!el) return;
 
     el.textContent = texto;
 
     if(tipo==="erro"){
+
         el.style.color = "#ff4d5f";
-        el.style.borderColor = "rgba(255,77,95,.2)";
+
+        el.style.borderColor =
+            "rgba(255,77,95,.2)";
+
     }
 
     else if(tipo==="load"){
+
         el.style.color = "#ffc107";
-        el.style.borderColor = "rgba(255,193,7,.2)";
+
+        el.style.borderColor =
+            "rgba(255,193,7,.2)";
+
     }
 
     else{
+
         el.style.color = "#20d889";
-        el.style.borderColor = "rgba(32,216,137,.2)";
+
+        el.style.borderColor =
+            "rgba(32,216,137,.2)";
+
     }
 
 }
 
 
 /* ============================================================
-   CARREGAR GOOGLE SHEETS
+   ADICIONAR À FILA
+============================================================ */
+
+function adicionarFila(tipo,registro){
+
+    filaSync.push({
+
+        acao:"upsert",
+
+        tipo:tipo,
+
+        registro:registro,
+
+        tentativa:0,
+
+        criadoEm:Date.now()
+
+    });
+
+    salvarFila();
+
+    processarFila();
+
+}
+
+
+/* ============================================================
+   ADICIONAR EXCLUSÃO À FILA
+============================================================ */
+
+function adicionarExclusaoFila(tipo,registroId){
+
+    filaSync.push({
+
+        acao:"delete",
+
+        tipo:tipo,
+
+        id:registroId,
+
+        tentativa:0,
+
+        criadoEm:Date.now()
+
+    });
+
+    salvarFila();
+
+    processarFila();
+
+}
+
+
+/* ============================================================
+   PROCESSAR FILA
+============================================================ */
+
+async function processarFila(){
+
+    if(sincronizando) return;
+
+    if(!filaSync.length){
+
+        syncStatus("☁️ Sincronizado");
+
+        return;
+
+    }
+
+    if(!navigator.onLine){
+
+        syncStatus("📱 Offline","erro");
+
+        return;
+
+    }
+
+    sincronizando = true;
+
+    syncStatus(
+        `☁️ ${filaSync.length} pendente(s)...`,
+        "load"
+    );
+
+    const item = filaSync[0];
+
+    try{
+
+        let resposta;
+
+        if(item.acao === "upsert"){
+
+            resposta = await fetch(
+                API_URL,
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                        "text/plain;charset=utf-8"
+                    },
+
+                    body:JSON.stringify({
+
+                        action:"upsert",
+
+                        tipo:item.tipo,
+
+                        registro:item.registro
+
+                    })
+                }
+            );
+
+        }
+
+        else if(item.acao === "delete"){
+
+            resposta = await fetch(
+                API_URL,
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                        "text/plain;charset=utf-8"
+                    },
+
+                    body:JSON.stringify({
+
+                        action:"delete",
+
+                        tipo:item.tipo,
+
+                        id:item.id
+
+                    })
+                }
+            );
+
+        }
+
+        if(!resposta.ok){
+
+            throw new Error(
+                "HTTP "+resposta.status
+            );
+
+        }
+
+        const resultado =
+            await resposta.json();
+
+        if(!resultado.ok){
+
+            throw new Error(
+                resultado.erro || "Erro Google"
+            );
+
+        }
+
+        filaSync.shift();
+
+        salvarFila();
+
+        sincronizando = false;
+
+        if(filaSync.length){
+
+            syncStatus(
+                `⚡ ${filaSync.length} restante(s)`,
+                "load"
+            );
+
+            setTimeout(
+                processarFila,
+                50
+            );
+
+        }else{
+
+            syncStatus(
+                "☁️ Sincronizado"
+            );
+
+        }
+
+    }catch(erro){
+
+        console.error(
+            "Erro sincronização:",
+            erro
+        );
+
+        item.tentativa =
+            (item.tentativa || 0) + 1;
+
+        salvarFila();
+
+        sincronizando = false;
+
+        syncStatus(
+            "⚠️ Aguardando sincronização",
+            "erro"
+        );
+
+        const espera =
+            Math.min(
+                30000,
+                2000 * item.tentativa
+            );
+
+        setTimeout(
+            processarFila,
+            espera
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   ENVIAR GOOGLE
+============================================================ */
+
+function enviarGoogle(tipo,registro){
+
+    adicionarFila(
+        tipo,
+        registro
+    );
+
+}
+
+
+/* ============================================================
+   EXCLUIR GOOGLE
+============================================================ */
+
+function excluirGoogle(tipo,registroId){
+
+    adicionarExclusaoFila(
+        tipo,
+        registroId
+    );
+
+}
+
+
+/* ============================================================
+   CARREGAR GOOGLE
 ============================================================ */
 
 async function carregarDadosGoogle(){
 
-    syncStatus("☁️ Carregando...", "load");
+    syncStatus(
+        "☁️ Atualizando...",
+        "load"
+    );
 
     try{
 
-        const resposta = await fetch(
-            API_URL + "?action=getAll"
-        );
+        const resposta =
+            await fetch(
+                API_URL+"?action=getAll"
+            );
 
         if(!resposta.ok){
-            throw new Error("Erro HTTP");
+
+            throw new Error(
+                "Erro HTTP"
+            );
+
         }
 
-        const resultado = await resposta.json();
+        const resultado =
+            await resposta.json();
 
-        if(resultado.ok && resultado.dados){
+        if(
+            resultado.ok &&
+            resultado.dados
+        ){
 
-            dados = {
+            /*
+             * IMPORTANTE:
+             * Se houver alterações locais
+             * aguardando sincronização,
+             * não substituímos o banco local
+             * inteiro pelo Google.
+             */
 
-                tarefas: resultado.dados.tarefas || [],
+            if(filaSync.length === 0){
 
-                movimentacoes:
-                    resultado.dados.movimentacoes || [],
+                dados = {
 
-                servicos:
-                    resultado.dados.servicos || [],
+                    tarefas:
+                        resultado.dados.tarefas || [],
 
-                agenda:
-                    resultado.dados.agenda || [],
+                    movimentacoes:
+                        resultado.dados.movimentacoes || [],
 
-                lembretes:
-                    resultado.dados.lembretes || [],
+                    servicos:
+                        resultado.dados.servicos || [],
 
-                programacao:
-                    resultado.dados.programacao || [],
+                    agenda:
+                        resultado.dados.agenda || [],
 
-                bloco:
-                    resultado.dados.bloco || ""
+                    lembretes:
+                        resultado.dados.lembretes || [],
 
-            };
+                    programacao:
+                        resultado.dados.programacao || [],
 
-            salvar();
+                    bloco:
+                        resultado.dados.bloco || ""
 
-            atualizarTudo();
+                };
 
-            syncStatus("☁️ Sincronizado");
+                salvar();
+
+                atualizarTudo();
+
+            }
+
+            syncStatus(
+                filaSync.length
+                ? `⚡ ${filaSync.length} aguardando`
+                : "☁️ Sincronizado"
+            );
+
+            processarFila();
 
         }else{
 
-            throw new Error("Resposta inválida");
+            throw new Error(
+                "Resposta inválida"
+            );
 
         }
 
@@ -1474,7 +1777,10 @@ async function carregarDadosGoogle(){
 
         console.error(erro);
 
-        syncStatus("⚠️ Offline", "erro");
+        syncStatus(
+            "⚠️ Dados locais",
+            "erro"
+        );
 
         atualizarTudo();
 
@@ -1484,128 +1790,42 @@ async function carregarDadosGoogle(){
 
 
 /* ============================================================
-   ENVIAR REGISTRO
+   BLOCO GOOGLE
 ============================================================ */
 
-async function enviarGoogle(tipo, registro){
+let blocoTimer = null;
 
-    try{
 
-        syncStatus("☁️ Salvando...", "load");
+function salvarBloco(){
 
-        const resposta = await fetch(API_URL, {
+    dados.bloco =
+        document.getElementById(
+            "blocoTexto"
+        ).value;
 
-            method:"POST",
+    salvar();
 
-            headers:{
-                "Content-Type":
-                "text/plain;charset=utf-8"
-            },
+    syncStatus(
+        "⚡ Bloco salvo",
+        "ok"
+    );
 
-            body:JSON.stringify({
+    clearTimeout(blocoTimer);
 
-                action:"upsert",
-
-                tipo:tipo,
-
-                registro:registro
-
-            })
-
-        });
-
-        const resultado = await resposta.json();
-
-        if(resultado.ok){
-
-            syncStatus("☁️ Sincronizado");
-
-        }else{
-
-            throw new Error(
-                resultado.erro || "Erro ao salvar"
-            );
-
-        }
-
-    }catch(erro){
-
-        console.error(erro);
-
-        syncStatus("⚠️ Não sincronizado", "erro");
-
-    }
+    blocoTimer =
+        setTimeout(
+            enviarBlocoGoogle,
+            400
+        );
 
 }
 
 
-/* ============================================================
-   EXCLUIR GOOGLE
-============================================================ */
+function enviarBlocoGoogle(){
 
-async function excluirGoogle(tipo, registroId){
-
-    try{
-
-        syncStatus("☁️ Atualizando...", "load");
-
-        const resposta = await fetch(API_URL, {
-
-            method:"POST",
-
-            headers:{
-                "Content-Type":
-                "text/plain;charset=utf-8"
-            },
-
-            body:JSON.stringify({
-
-                action:"delete",
-
-                tipo:tipo,
-
-                id:registroId
-
-            })
-
-        });
-
-        const resultado = await resposta.json();
-
-        if(resultado.ok){
-
-            syncStatus("☁️ Sincronizado");
-
-        }else{
-
-            throw new Error(
-                resultado.erro || "Erro"
-            );
-
-        }
-
-    }catch(erro){
-
-        console.error(erro);
-
-        syncStatus("⚠️ Não sincronizado", "erro");
-
-    }
-
-}
-
-
-/* ============================================================
-   SALVAR BLOCO GOOGLE
-============================================================ */
-
-async function enviarBlocoGoogle(texto){
-
-    try{
-
-        syncStatus("☁️ Salvando...", "load");
-
-        const resposta = await fetch(API_URL, {
+    fetch(
+        API_URL,
+        {
 
             method:"POST",
 
@@ -1618,31 +1838,40 @@ async function enviarBlocoGoogle(texto){
 
                 action:"saveBloco",
 
-                texto:texto
+                texto:dados.bloco
 
             })
 
-        });
-
-        const resultado = await resposta.json();
+        }
+    )
+    .then(r => r.json())
+    .then(resultado => {
 
         if(resultado.ok){
 
-            syncStatus("☁️ Sincronizado");
+            syncStatus(
+                "☁️ Sincronizado"
+            );
 
         }else{
 
-            throw new Error("Erro");
+            throw new Error(
+                resultado.erro || "Erro"
+            );
 
         }
 
-    }catch(erro){
+    })
+    .catch(erro => {
 
         console.error(erro);
 
-        syncStatus("⚠️ Não sincronizado", "erro");
+        syncStatus(
+            "⚠️ Bloco pendente",
+            "erro"
+        );
 
-    }
+    });
 
 }
 
@@ -1655,13 +1884,18 @@ function hoje(){
 
     const d = new Date();
 
-    const ano = d.getFullYear();
+    const ano =
+        d.getFullYear();
 
     const mes =
-        String(d.getMonth()+1).padStart(2,"0");
+        String(
+            d.getMonth()+1
+        ).padStart(2,"0");
 
     const dia =
-        String(d.getDate()).padStart(2,"0");
+        String(
+            d.getDate()
+        ).padStart(2,"0");
 
     return `${ano}-${mes}-${dia}`;
 
@@ -1672,9 +1906,13 @@ function horaAtual(){
 
     const d = new Date();
 
-    return String(d.getHours()).padStart(2,"0")
-        + ":"
-        + String(d.getMinutes()).padStart(2,"0");
+    return String(
+        d.getHours()
+    ).padStart(2,"0")
+    +":"
+    +String(
+        d.getMinutes()
+    ).padStart(2,"0");
 
 }
 
@@ -1688,24 +1926,32 @@ function formatarData(data){
         /^\d{4}-\d{2}-\d{2}$/.test(data)
     ){
 
-        const partes = data.split("-");
+        const partes =
+            data.split("-");
 
         return `${partes[2]}/${partes[1]}/${partes[0]}`;
 
     }
 
-    const d = new Date(data);
+    const d =
+        new Date(data);
 
-    if(isNaN(d)) return data;
+    if(isNaN(d))
+        return data;
 
-    return d.toLocaleDateString("pt-BR");
+    return d.toLocaleDateString(
+        "pt-BR"
+    );
 
 }
 
 
 function escapar(texto){
 
-    if(texto===undefined || texto===null)
+    if(
+        texto === undefined ||
+        texto === null
+    )
         return "";
 
     return String(texto)
@@ -1721,21 +1967,25 @@ function escapar(texto){
 function id(){
 
     return Date.now()
-        + Math.floor(Math.random()*1000);
+        +
+        Math.floor(
+            Math.random()*1000
+        );
 
 }
 
 
 /* ============================================================
-   DATA ATUAL
+   DATA
 ============================================================ */
 
 function atualizarData(){
 
     const d = new Date();
 
-    document.getElementById("dataAtual")
-        .textContent =
+    document.getElementById(
+        "dataAtual"
+    ).textContent =
         d.toLocaleDateString(
             "pt-BR",
             {
@@ -1756,48 +2006,86 @@ function atualizarData(){
 const titulos = {
 
     inicio:"Início",
+
     agenda:"Agenda",
+
     tarefas:"Tarefas",
-    programacao:"Programação Semanal",
+
+    programacao:
+        "Programação Semanal",
+
     lembretes:"Lembretes",
-    servicos:"Serviços Realizados",
-    movimentacoes:"Movimentações",
-    bloco:"Bloco de Notas",
-    pesquisa:"Pesquisa Geral"
+
+    servicos:
+        "Serviços Realizados",
+
+    movimentacoes:
+        "Movimentações",
+
+    bloco:
+        "Bloco de Notas",
+
+    pesquisa:
+        "Pesquisa Geral"
 
 };
 
 
 function abrirPagina(nome){
 
-    paginaAtual = nome;
+    paginaAtual =
+        nome;
 
-    document.querySelectorAll(".page")
-        .forEach(p => p.classList.remove("active"));
+    document.querySelectorAll(
+        ".page"
+    ).forEach(
+        p =>
+        p.classList.remove(
+            "active"
+        )
+    );
 
     const page =
-        document.getElementById("page-"+nome);
+        document.getElementById(
+            "page-"+nome
+        );
 
     if(page)
-        page.classList.add("active");
+        page.classList.add(
+            "active"
+        );
 
-    document.querySelectorAll(".menu button")
-        .forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(
+        ".menu button"
+    ).forEach(
+        b =>
+        b.classList.remove(
+            "active"
+        )
+    );
 
     const menu =
-        document.getElementById("menu-"+nome);
+        document.getElementById(
+            "menu-"+nome
+        );
 
     if(menu)
-        menu.classList.add("active");
+        menu.classList.add(
+            "active"
+        );
 
-    document.getElementById("pageTitle")
-        .textContent =
+    document.getElementById(
+        "pageTitle"
+    ).textContent =
         titulos[nome] || nome;
 
     if(window.innerWidth <= 800){
 
-        document.getElementById("sidebar")
-            .classList.remove("open");
+        document.getElementById(
+            "sidebar"
+        ).classList.remove(
+            "open"
+        );
 
     }
 
@@ -1825,13 +2113,19 @@ function abrirPagina(nome){
     if(nome==="bloco")
         renderBloco();
 
+    if(nome==="pesquisa")
+        renderPesquisa();
+
 }
 
 
 function toggleMenu(){
 
-    document.getElementById("sidebar")
-        .classList.toggle("open");
+    document.getElementById(
+        "sidebar"
+    ).classList.toggle(
+        "open"
+    );
 
 }
 
@@ -1842,7 +2136,8 @@ function toggleMenu(){
 
 function renderInicio(){
 
-    const dataHoje = hoje();
+    const dataHoje =
+        hoje();
 
     const tarefasHoje =
         dados.tarefas.filter(
@@ -1851,38 +2146,54 @@ function renderInicio(){
 
     const pendentes =
         dados.tarefas.filter(
-            x => x.status !== "CONCLUIDA"
+            x =>
+            x.status !==
+            "CONCLUIDA"
         );
 
     const servicosHoje =
         dados.servicos.filter(
-            x => x.data === dataHoje
+            x =>
+            x.data === dataHoje
         );
 
     const movHoje =
         dados.movimentacoes.filter(
-            x => x.data === dataHoje
+            x =>
+            x.data === dataHoje
         );
 
     const lembretes =
         dados.lembretes.filter(
-            x => x.status !== "CONCLUIDO"
+            x =>
+            x.status !==
+            "CONCLUIDO"
         );
 
-    document.getElementById("totalTarefasHoje")
-        .textContent = tarefasHoje.length;
+    document.getElementById(
+        "totalTarefasHoje"
+    ).textContent =
+        tarefasHoje.length;
 
-    document.getElementById("totalPendentes")
-        .textContent = pendentes.length;
+    document.getElementById(
+        "totalPendentes"
+    ).textContent =
+        pendentes.length;
 
-    document.getElementById("totalServicosHoje")
-        .textContent = servicosHoje.length;
+    document.getElementById(
+        "totalServicosHoje"
+    ).textContent =
+        servicosHoje.length;
 
-    document.getElementById("totalMovHoje")
-        .textContent = movHoje.length;
+    document.getElementById(
+        "totalMovHoje"
+    ).textContent =
+        movHoje.length;
 
-    document.getElementById("totalLembretes")
-        .textContent = lembretes.length;
+    document.getElementById(
+        "totalLembretes"
+    ).textContent =
+        lembretes.length;
 
     renderTarefasInicio();
 
@@ -1893,21 +2204,25 @@ function renderInicio(){
 }
 
 
-/* ============================================================
-   TAREFAS INÍCIO
-============================================================ */
-
 function renderTarefasInicio(){
 
     const el =
-        document.getElementById("inicioTarefas");
+        document.getElementById(
+            "inicioTarefas"
+        );
 
     const lista =
         dados.tarefas
-        .filter(x => x.data === hoje())
-        .sort((a,b)=>
+        .filter(
+            x =>
+            x.data === hoje()
+        )
+        .sort(
+            (a,b)=>
             String(a.hora||"")
-            .localeCompare(String(b.hora||""))
+            .localeCompare(
+                String(b.hora||"")
+            )
         )
         .slice(0,6);
 
@@ -1934,9 +2249,20 @@ function renderTarefasInicio(){
                 </div>
 
                 <div class="item-sub">
+
                     ${x.hora || ""}
-                    ${x.observacao ?
-                        " • "+escapar(x.observacao) : ""}
+
+                    ${
+                        x.observacao
+                        ?
+                        " • "+
+                        escapar(
+                            x.observacao
+                        )
+                        :
+                        ""
+                    }
+
                 </div>
 
             </div>
@@ -1944,15 +2270,20 @@ function renderTarefasInicio(){
             <div>
 
                 ${
-                    x.status==="CONCLUIDA"
+                    x.status ===
+                    "CONCLUIDA"
 
-                    ? `<span class="badge badge-green">
+                    ?
+
+                    `<span class="badge badge-green">
                         Concluída
-                       </span>`
+                    </span>`
 
-                    : `<span class="badge badge-yellow">
+                    :
+
+                    `<span class="badge badge-yellow">
                         Pendente
-                       </span>`
+                    </span>`
                 }
 
             </div>
@@ -1964,20 +2295,21 @@ function renderTarefasInicio(){
 }
 
 
-/* ============================================================
-   SERVIÇOS INÍCIO
-============================================================ */
-
 function renderServicosInicio(){
 
     const el =
-        document.getElementById("inicioServicos");
+        document.getElementById(
+            "inicioServicos"
+        );
 
     const lista =
         [...dados.servicos]
-        .sort((a,b)=>
+        .sort(
+            (a,b)=>
             String(b.data||"")
-            .localeCompare(String(a.data||""))
+            .localeCompare(
+                String(a.data||"")
+            )
         )
         .slice(0,6);
 
@@ -2000,13 +2332,26 @@ function renderServicosInicio(){
             <div class="item-main">
 
                 <div class="item-title">
-                    ${escapar(x.ugd || "")}
-                    — ${escapar(x.servico || "")}
+
+                    ${escapar(x.ugd||"")}
+                    —
+                    ${escapar(x.servico||"")}
+
                 </div>
 
                 <div class="item-sub">
+
                     ${formatarData(x.data)}
-                    ${x.os ? " • OS "+escapar(x.os) : ""}
+
+                    ${
+                        x.os
+                        ?
+                        " • OS "+
+                        escapar(x.os)
+                        :
+                        ""
+                    }
+
                 </div>
 
             </div>
@@ -2022,20 +2367,21 @@ function renderServicosInicio(){
 }
 
 
-/* ============================================================
-   MOVIMENTAÇÕES INÍCIO
-============================================================ */
-
 function renderMovInicio(){
 
     const el =
-        document.getElementById("inicioMovimentacoes");
+        document.getElementById(
+            "inicioMovimentacoes"
+        );
 
     const lista =
         [...dados.movimentacoes]
-        .sort((a,b)=>
+        .sort(
+            (a,b)=>
             String(b.data||"")
-            .localeCompare(String(a.data||""))
+            .localeCompare(
+                String(a.data||"")
+            )
         )
         .slice(0,5);
 
@@ -2058,13 +2404,15 @@ function renderMovInicio(){
             <div class="mov-route">
 
                 <div class="ugd">
-                    ${escapar(x.origem || "-")}
+                    ${escapar(x.origem||"-")}
                 </div>
 
-                <div class="arrow">→</div>
+                <div class="arrow">
+                    →
+                </div>
 
                 <div class="ugd">
-                    ${escapar(x.destino || "-")}
+                    ${escapar(x.destino||"-")}
                 </div>
 
                 <span class="badge badge-blue">
@@ -2074,13 +2422,19 @@ function renderMovInicio(){
             </div>
 
             <div class="item-sub">
+
                 <b>Peça:</b>
-                ${escapar(x.peca || "-")}
+                ${escapar(x.peca||"-")}
+
                 ${
                     x.os
-                    ? " • <b>OS:</b> "+escapar(x.os)
-                    : ""
+                    ?
+                    " • <b>OS:</b> "+
+                    escapar(x.os)
+                    :
+                    ""
                 }
+
             </div>
 
         </div>
@@ -2105,29 +2459,31 @@ function filtrarTarefas(){
 
     const busca =
         (
-            document.getElementById("filtroTarefa")?.value
-            || ""
+            document.getElementById(
+                "filtroTarefa"
+            )?.value || ""
         ).toLowerCase();
 
     const status =
-        document.getElementById("filtroStatus")?.value
-        || "";
+        document.getElementById(
+            "filtroStatus"
+        )?.value || "";
 
     let lista =
         [...dados.tarefas]
         .filter(x => {
 
-            const texto = (
+            const texto =
 
                 String(x.titulo||"")
-                + " "
-                + String(x.observacao||"")
-                + " "
-                + String(x.prioridade||"")
+                +" "+
+                String(x.observacao||"")
+                +" "+
+                String(x.prioridade||"");
 
-            ).toLowerCase();
-
-            return texto.includes(busca);
+            return texto
+                .toLowerCase()
+                .includes(busca);
 
         });
 
@@ -2135,21 +2491,29 @@ function filtrarTarefas(){
 
         lista =
             lista.filter(
-                x => x.status === status
+                x =>
+                x.status === status
             );
 
     }
 
-    lista.sort((a,b)=>
+    lista.sort(
+        (a,b)=>
         String(a.data||"")
-        .localeCompare(String(b.data||""))
+        .localeCompare(
+            String(b.data||"")
+        )
         ||
         String(a.hora||"")
-        .localeCompare(String(b.hora||""))
+        .localeCompare(
+            String(b.hora||"")
+        )
     );
 
     const el =
-        document.getElementById("listaTarefas");
+        document.getElementById(
+            "listaTarefas"
+        );
 
     if(!lista.length){
 
@@ -2177,16 +2541,33 @@ function filtrarTarefas(){
 
                     ${formatarData(x.data)}
 
-                    ${x.hora ?
-                        " • "+escapar(x.hora) : ""}
+                    ${
+                        x.hora
+                        ?
+                        " • "+
+                        escapar(x.hora)
+                        :
+                        ""
+                    }
 
-                    ${x.prioridade ?
-                        " • "+escapar(x.prioridade) : ""}
+                    ${
+                        x.prioridade
+                        ?
+                        " • "+
+                        escapar(x.prioridade)
+                        :
+                        ""
+                    }
 
                     ${
                         x.observacao
-                        ? " • "+escapar(x.observacao)
-                        : ""
+                        ?
+                        " • "+
+                        escapar(
+                            x.observacao
+                        )
+                        :
+                        ""
                     }
 
                 </div>
@@ -2196,18 +2577,23 @@ function filtrarTarefas(){
             <div class="item-actions">
 
                 ${
-                    x.status !== "CONCLUIDA"
+                    x.status !==
+                    "CONCLUIDA"
 
-                    ? `<button
+                    ?
+
+                    `<button
                         class="small-btn"
                         title="Concluir"
                         onclick="concluirTarefa(${x.id})">
                         ✓
-                       </button>`
+                    </button>`
 
-                    : `<span class="badge badge-green">
+                    :
+
+                    `<span class="badge badge-green">
                         Concluída
-                       </span>`
+                    </span>`
                 }
 
                 <button
@@ -2236,11 +2622,15 @@ function filtrarTarefas(){
 function salvarTarefa(){
 
     const titulo =
-        document.getElementById("tarefaTitulo").value.trim();
+        document.getElementById(
+            "tarefaTitulo"
+        ).value.trim();
 
     if(!titulo){
 
-        alert("Informe o título da tarefa.");
+        alert(
+            "Informe o título da tarefa."
+        );
 
         return;
 
@@ -2249,31 +2639,43 @@ function salvarTarefa(){
     const registro = {
 
         id:
-            editandoId || id(),
+            editandoId ||
+            id(),
 
         titulo:titulo,
 
         data:
-            document.getElementById("tarefaData").value
-            || hoje(),
+            document.getElementById(
+                "tarefaData"
+            ).value || hoje(),
 
         hora:
-            document.getElementById("tarefaHora").value,
+            document.getElementById(
+                "tarefaHora"
+            ).value,
 
         prioridade:
-            document.getElementById("tarefaPrioridade").value,
+            document.getElementById(
+                "tarefaPrioridade"
+            ).value,
 
         observacao:
-            document.getElementById("tarefaObs").value,
+            document.getElementById(
+                "tarefaObs"
+            ).value,
 
         status:
             editandoId
-            ? (
+            ?
+            (
                 dados.tarefas.find(
-                    x => x.id == editandoId
-                )?.status || "PENDENTE"
-              )
-            : "PENDENTE"
+                    x =>
+                    x.id == editandoId
+                )?.status ||
+                "PENDENTE"
+            )
+            :
+            "PENDENTE"
 
     };
 
@@ -2281,15 +2683,19 @@ function salvarTarefa(){
 
         const index =
             dados.tarefas.findIndex(
-                x => x.id == editandoId
+                x =>
+                x.id == editandoId
             );
 
         if(index >= 0)
-            dados.tarefas[index] = registro;
+            dados.tarefas[index] =
+                registro;
 
     }else{
 
-        dados.tarefas.push(registro);
+        dados.tarefas.push(
+            registro
+        );
 
     }
 
@@ -2297,11 +2703,16 @@ function salvarTarefa(){
 
     fecharModal();
 
-    renderInicio();
+    atualizarTudo();
 
-    renderTarefas();
+    syncStatus(
+        "⚡ Salvo"
+    );
 
-    enviarGoogle("TAREFAS",registro);
+    enviarGoogle(
+        "TAREFAS",
+        registro
+    );
 
 }
 
@@ -2310,41 +2721,56 @@ function concluirTarefa(registroId){
 
     const x =
         dados.tarefas.find(
-            t => t.id == registroId
+            t =>
+            t.id == registroId
         );
 
     if(!x) return;
 
-    x.status = "CONCLUIDA";
+    x.status =
+        "CONCLUIDA";
 
     salvar();
 
-    renderInicio();
+    atualizarTudo();
 
-    renderTarefas();
+    syncStatus(
+        "⚡ Concluída"
+    );
 
-    enviarGoogle("TAREFAS",x);
+    enviarGoogle(
+        "TAREFAS",
+        x
+    );
 
 }
 
 
 function excluirTarefa(registroId){
 
-    if(!confirm("Excluir esta tarefa?"))
+    if(!confirm(
+        "Excluir esta tarefa?"
+    ))
         return;
 
     dados.tarefas =
         dados.tarefas.filter(
-            x => x.id != registroId
+            x =>
+            x.id != registroId
         );
 
     salvar();
 
-    renderInicio();
+    atualizarTudo();
 
-    renderTarefas();
+    syncStatus(
+        "⚡ Excluída"
+    );
 
-    excluirGoogle("TAREFAS",registroId);
+    excluirGoogle(
+        "TAREFAS",
+        registroId
+    );
 
 }
 
@@ -2364,36 +2790,42 @@ function buscarServicos(){
 
     const busca =
         (
-            document.getElementById("buscaServico")?.value
-            || ""
+            document.getElementById(
+                "buscaServico"
+            )?.value || ""
         ).toLowerCase();
 
     const lista =
         [...dados.servicos]
         .filter(x => {
 
-            const texto = (
+            const texto =
 
                 String(x.ugd||"")
-                + " "
-                + String(x.servico||"")
-                + " "
-                + String(x.os||"")
-                + " "
-                + String(x.observacao||"")
+                +" "+
+                String(x.servico||"")
+                +" "+
+                String(x.os||"")
+                +" "+
+                String(x.observacao||"");
 
-            ).toLowerCase();
-
-            return texto.includes(busca);
+            return texto
+                .toLowerCase()
+                .includes(busca);
 
         })
-        .sort((a,b)=>
+        .sort(
+            (a,b)=>
             String(b.data||"")
-            .localeCompare(String(a.data||""))
+            .localeCompare(
+                String(a.data||"")
+            )
         );
 
     const el =
-        document.getElementById("listaServicos");
+        document.getElementById(
+            "listaServicos"
+        );
 
     if(!lista.length){
 
@@ -2415,9 +2847,9 @@ function buscarServicos(){
 
                 <div class="item-title">
 
-                    ${escapar(x.ugd || "")}
+                    ${escapar(x.ugd||"")}
                     —
-                    ${escapar(x.servico || "")}
+                    ${escapar(x.servico||"")}
 
                 </div>
 
@@ -2425,16 +2857,33 @@ function buscarServicos(){
 
                     ${formatarData(x.data)}
 
-                    ${x.hora ?
-                        " • "+escapar(x.hora) : ""}
+                    ${
+                        x.hora
+                        ?
+                        " • "+
+                        escapar(x.hora)
+                        :
+                        ""
+                    }
 
-                    ${x.os ?
-                        " • OS "+escapar(x.os) : ""}
+                    ${
+                        x.os
+                        ?
+                        " • OS "+
+                        escapar(x.os)
+                        :
+                        ""
+                    }
 
                     ${
                         x.observacao
-                        ? " • "+escapar(x.observacao)
-                        : ""
+                        ?
+                        " • "+
+                        escapar(
+                            x.observacao
+                        )
+                        :
+                        ""
                     }
 
                 </div>
@@ -2471,51 +2920,58 @@ function buscarServicos(){
 function salvarServico(){
 
     const ugd =
-        document.getElementById("servicoUgd").value.trim();
+        document.getElementById(
+            "servicoUgd"
+        ).value.trim();
 
     const servico =
-        document.getElementById("servicoNome").value.trim();
+        document.getElementById(
+            "servicoNome"
+        ).value.trim();
 
     if(!ugd || !servico){
 
-        alert("Informe a UGD e o serviço realizado.");
+        alert(
+            "Informe a UGD e o serviço realizado."
+        );
 
         return;
 
     }
 
+    const antigo =
+        dados.servicos.find(
+            x =>
+            x.id == editandoId
+        );
+
     const registro = {
 
         id:
-            editandoId || id(),
+            editandoId ||
+            id(),
 
         ugd:ugd,
 
         servico:servico,
 
         os:
-            document.getElementById("servicoOs").value,
+            document.getElementById(
+                "servicoOs"
+            ).value,
 
         observacao:
-            document.getElementById("servicoObs").value,
+            document.getElementById(
+                "servicoObs"
+            ).value,
 
         data:
-            editandoId
-            ? (
-                dados.servicos.find(
-                    x => x.id == editandoId
-                )?.data || hoje()
-              )
-            : hoje(),
+            antigo?.data ||
+            hoje(),
 
         hora:
-            editandoId
-            ? (
-                dados.servicos.find(
-                    x => x.id == editandoId
-                )?.hora || horaAtual()
-              )
-            : horaAtual()
+            antigo?.hora ||
+            horaAtual()
 
     };
 
@@ -2523,15 +2979,19 @@ function salvarServico(){
 
         const index =
             dados.servicos.findIndex(
-                x => x.id == editandoId
+                x =>
+                x.id == editandoId
             );
 
         if(index>=0)
-            dados.servicos[index]=registro;
+            dados.servicos[index] =
+                registro;
 
     }else{
 
-        dados.servicos.push(registro);
+        dados.servicos.push(
+            registro
+        );
 
     }
 
@@ -2539,32 +2999,45 @@ function salvarServico(){
 
     fecharModal();
 
-    renderInicio();
+    atualizarTudo();
 
-    renderServicos();
+    syncStatus(
+        "⚡ Serviço salvo"
+    );
 
-    enviarGoogle("SERVICOS",registro);
+    enviarGoogle(
+        "SERVICOS",
+        registro
+    );
 
 }
 
 
 function excluirServico(registroId){
 
-    if(!confirm("Excluir este serviço?"))
+    if(!confirm(
+        "Excluir este serviço?"
+    ))
         return;
 
     dados.servicos =
         dados.servicos.filter(
-            x => x.id != registroId
+            x =>
+            x.id != registroId
         );
 
     salvar();
 
-    renderInicio();
+    atualizarTudo();
 
-    renderServicos();
+    syncStatus(
+        "⚡ Serviço excluído"
+    );
 
-    excluirGoogle("SERVICOS",registroId);
+    excluirGoogle(
+        "SERVICOS",
+        registroId
+    );
 
 }
 
@@ -2584,40 +3057,46 @@ function buscarMovimentacoes(){
 
     const busca =
         (
-            document.getElementById("buscaMov")?.value
-            || ""
+            document.getElementById(
+                "buscaMov"
+            )?.value || ""
         ).toLowerCase();
 
     const lista =
         [...dados.movimentacoes]
         .filter(x => {
 
-            const texto = (
+            const texto =
 
                 String(x.origem||"")
-                + " "
-                + String(x.destino||"")
-                + " "
-                + String(x.peca||"")
-                + " "
-                + String(x.os||"")
-                + " "
-                + String(x.numeroSerie||"")
-                + " "
-                + String(x.observacao||"")
+                +" "+
+                String(x.destino||"")
+                +" "+
+                String(x.peca||"")
+                +" "+
+                String(x.os||"")
+                +" "+
+                String(x.numeroSerie||"")
+                +" "+
+                String(x.observacao||"");
 
-            ).toLowerCase();
-
-            return texto.includes(busca);
+            return texto
+                .toLowerCase()
+                .includes(busca);
 
         })
-        .sort((a,b)=>
+        .sort(
+            (a,b)=>
             String(b.data||"")
-            .localeCompare(String(a.data||""))
+            .localeCompare(
+                String(a.data||"")
+            )
         );
 
     const el =
-        document.getElementById("listaMovimentacoes");
+        document.getElementById(
+            "listaMovimentacoes"
+        );
 
     if(!lista.length){
 
@@ -2638,13 +3117,15 @@ function buscarMovimentacoes(){
             <div class="mov-route">
 
                 <div class="ugd">
-                    ${escapar(x.origem || "-")}
+                    ${escapar(x.origem||"-")}
                 </div>
 
-                <div class="arrow">→</div>
+                <div class="arrow">
+                    →
+                </div>
 
                 <div class="ugd">
-                    ${escapar(x.destino || "-")}
+                    ${escapar(x.destino||"-")}
                 </div>
 
             </div>
@@ -2656,7 +3137,7 @@ function buscarMovimentacoes(){
                     <small>PEÇA</small>
 
                     <span>
-                        ${escapar(x.peca || "-")}
+                        ${escapar(x.peca||"-")}
                     </span>
 
                 </div>
@@ -2666,7 +3147,7 @@ function buscarMovimentacoes(){
                     <small>OS</small>
 
                     <span>
-                        ${escapar(x.os || "-")}
+                        ${escapar(x.os||"-")}
                     </span>
 
                 </div>
@@ -2676,7 +3157,7 @@ function buscarMovimentacoes(){
                     <small>Nº SÉRIE</small>
 
                     <span>
-                        ${escapar(x.numeroSerie || "-")}
+                        ${escapar(x.numeroSerie||"-")}
                     </span>
 
                 </div>
@@ -2695,16 +3176,23 @@ function buscarMovimentacoes(){
 
             ${
                 x.observacao
-                ? `<div class="item-sub"
+                ?
+                `<div
+                    class="item-sub"
                     style="margin-top:10px">
+
                     ${escapar(x.observacao)}
-                   </div>`
-                : ""
+
+                </div>`
+                :
+                ""
             }
 
             <div
                 class="item-actions"
-                style="margin-top:10px;justify-content:flex-end">
+                style="
+                    margin-top:10px;
+                    justify-content:flex-end">
 
                 <button
                     class="small-btn"
@@ -2730,15 +3218,25 @@ function buscarMovimentacoes(){
 function salvarMovimentacao(){
 
     const origem =
-        document.getElementById("movOrigem").value.trim();
+        document.getElementById(
+            "movOrigem"
+        ).value.trim();
 
     const destino =
-        document.getElementById("movDestino").value.trim();
+        document.getElementById(
+            "movDestino"
+        ).value.trim();
 
     const peca =
-        document.getElementById("movPeca").value.trim();
+        document.getElementById(
+            "movPeca"
+        ).value.trim();
 
-    if(!origem || !destino || !peca){
+    if(
+        !origem ||
+        !destino ||
+        !peca
+    ){
 
         alert(
             "Informe origem, destino e peça."
@@ -2748,10 +3246,17 @@ function salvarMovimentacao(){
 
     }
 
+    const antigo =
+        dados.movimentacoes.find(
+            x =>
+            x.id == editandoId
+        );
+
     const registro = {
 
         id:
-            editandoId || id(),
+            editandoId ||
+            id(),
 
         origem:origem,
 
@@ -2760,31 +3265,27 @@ function salvarMovimentacao(){
         peca:peca,
 
         os:
-            document.getElementById("movOs").value,
+            document.getElementById(
+                "movOs"
+            ).value,
 
         numeroSerie:
-            document.getElementById("movSerie").value,
+            document.getElementById(
+                "movSerie"
+            ).value,
 
         observacao:
-            document.getElementById("movObs").value,
+            document.getElementById(
+                "movObs"
+            ).value,
 
         data:
-            editandoId
-            ? (
-                dados.movimentacoes.find(
-                    x => x.id == editandoId
-                )?.data || hoje()
-              )
-            : hoje(),
+            antigo?.data ||
+            hoje(),
 
         hora:
-            editandoId
-            ? (
-                dados.movimentacoes.find(
-                    x => x.id == editandoId
-                )?.hora || horaAtual()
-              )
-            : horaAtual()
+            antigo?.hora ||
+            horaAtual()
 
     };
 
@@ -2792,15 +3293,19 @@ function salvarMovimentacao(){
 
         const index =
             dados.movimentacoes.findIndex(
-                x => x.id == editandoId
+                x =>
+                x.id == editandoId
             );
 
         if(index>=0)
-            dados.movimentacoes[index]=registro;
+            dados.movimentacoes[index] =
+                registro;
 
     }else{
 
-        dados.movimentacoes.push(registro);
+        dados.movimentacoes.push(
+            registro
+        );
 
     }
 
@@ -2808,9 +3313,11 @@ function salvarMovimentacao(){
 
     fecharModal();
 
-    renderInicio();
+    atualizarTudo();
 
-    renderMovimentacoes();
+    syncStatus(
+        "⚡ Movimentação salva"
+    );
 
     enviarGoogle(
         "MOVIMENTACOES",
@@ -2822,19 +3329,24 @@ function salvarMovimentacao(){
 
 function excluirMov(registroId){
 
-    if(!confirm("Excluir esta movimentação?"))
+    if(!confirm(
+        "Excluir esta movimentação?"
+    ))
         return;
 
     dados.movimentacoes =
         dados.movimentacoes.filter(
-            x => x.id != registroId
+            x =>
+            x.id != registroId
         );
 
     salvar();
 
-    renderInicio();
+    atualizarTudo();
 
-    renderMovimentacoes();
+    syncStatus(
+        "⚡ Movimentação excluída"
+    );
 
     excluirGoogle(
         "MOVIMENTACOES",
@@ -2851,30 +3363,39 @@ function excluirMov(registroId){
 function renderAgenda(){
 
     const filtro =
-        document.getElementById("filtroAgendaData")?.value
-        || "";
+        document.getElementById(
+            "filtroAgendaData"
+        )?.value || "";
 
     let lista =
         [...dados.agenda]
-        .sort((a,b)=>
+        .sort(
+            (a,b)=>
             String(a.data||"")
-            .localeCompare(String(b.data||""))
+            .localeCompare(
+                String(b.data||"")
+            )
             ||
             String(a.hora||"")
-            .localeCompare(String(b.hora||""))
+            .localeCompare(
+                String(b.hora||"")
+            )
         );
 
     if(filtro){
 
         lista =
             lista.filter(
-                x => x.data === filtro
+                x =>
+                x.data === filtro
             );
 
     }
 
     const el =
-        document.getElementById("listaAgenda");
+        document.getElementById(
+            "listaAgenda"
+        );
 
     if(!lista.length){
 
@@ -2902,13 +3423,24 @@ function renderAgenda(){
 
                     ${formatarData(x.data)}
 
-                    ${x.hora ?
-                        " • "+escapar(x.hora) : ""}
+                    ${
+                        x.hora
+                        ?
+                        " • "+
+                        escapar(x.hora)
+                        :
+                        ""
+                    }
 
                     ${
                         x.observacao
-                        ? " • "+escapar(x.observacao)
-                        : ""
+                        ?
+                        " • "+
+                        escapar(
+                            x.observacao
+                        )
+                        :
+                        ""
                     }
 
                 </div>
@@ -2941,12 +3473,15 @@ function renderAgenda(){
 function salvarAgenda(){
 
     const titulo =
-        document.getElementById("agendaTitulo")
-        .value.trim();
+        document.getElementById(
+            "agendaTitulo"
+        ).value.trim();
 
     if(!titulo){
 
-        alert("Informe o título.");
+        alert(
+            "Informe o título."
+        );
 
         return;
 
@@ -2955,19 +3490,26 @@ function salvarAgenda(){
     const registro = {
 
         id:
-            editandoId || id(),
+            editandoId ||
+            id(),
 
         titulo:titulo,
 
         data:
-            document.getElementById("agendaData").value
-            || hoje(),
+            document.getElementById(
+                "agendaData"
+            ).value ||
+            hoje(),
 
         hora:
-            document.getElementById("agendaHora").value,
+            document.getElementById(
+                "agendaHora"
+            ).value,
 
         observacao:
-            document.getElementById("agendaObs").value
+            document.getElementById(
+                "agendaObs"
+            ).value
 
     };
 
@@ -2975,15 +3517,19 @@ function salvarAgenda(){
 
         const index =
             dados.agenda.findIndex(
-                x => x.id == editandoId
+                x =>
+                x.id == editandoId
             );
 
         if(index>=0)
-            dados.agenda[index]=registro;
+            dados.agenda[index] =
+                registro;
 
     }else{
 
-        dados.agenda.push(registro);
+        dados.agenda.push(
+            registro
+        );
 
     }
 
@@ -2991,26 +3537,40 @@ function salvarAgenda(){
 
     fecharModal();
 
-    renderAgenda();
+    atualizarTudo();
 
-    enviarGoogle("AGENDA",registro);
+    syncStatus(
+        "⚡ Compromisso salvo"
+    );
+
+    enviarGoogle(
+        "AGENDA",
+        registro
+    );
 
 }
 
 
 function excluirAgenda(registroId){
 
-    if(!confirm("Excluir este compromisso?"))
+    if(!confirm(
+        "Excluir este compromisso?"
+    ))
         return;
 
     dados.agenda =
         dados.agenda.filter(
-            x => x.id != registroId
+            x =>
+            x.id != registroId
         );
 
     salvar();
 
-    renderAgenda();
+    atualizarTudo();
+
+    syncStatus(
+        "⚡ Compromisso excluído"
+    );
 
     excluirGoogle(
         "AGENDA",
@@ -3028,13 +3588,18 @@ function renderLembretes(){
 
     const lista =
         [...dados.lembretes]
-        .sort((a,b)=>
+        .sort(
+            (a,b)=>
             String(a.data||"")
-            .localeCompare(String(b.data||""))
+            .localeCompare(
+                String(b.data||"")
+            )
         );
 
     const el =
-        document.getElementById("listaLembretes");
+        document.getElementById(
+            "listaLembretes"
+        );
 
     if(!lista.length){
 
@@ -3062,13 +3627,24 @@ function renderLembretes(){
 
                     ${formatarData(x.data)}
 
-                    ${x.hora ?
-                        " • "+escapar(x.hora) : ""}
+                    ${
+                        x.hora
+                        ?
+                        " • "+
+                        escapar(x.hora)
+                        :
+                        ""
+                    }
 
                     ${
                         x.observacao
-                        ? " • "+escapar(x.observacao)
-                        : ""
+                        ?
+                        " • "+
+                        escapar(
+                            x.observacao
+                        )
+                        :
+                        ""
                     }
 
                 </div>
@@ -3078,17 +3654,22 @@ function renderLembretes(){
             <div class="item-actions">
 
                 ${
-                    x.status !== "CONCLUIDO"
+                    x.status !==
+                    "CONCLUIDO"
 
-                    ? `<button
+                    ?
+
+                    `<button
                         class="small-btn"
                         onclick="concluirLembrete(${x.id})">
                         ✓
-                       </button>`
+                    </button>`
 
-                    : `<span class="badge badge-green">
+                    :
+
+                    `<span class="badge badge-green">
                         Concluído
-                       </span>`
+                    </span>`
                 }
 
                 <button
@@ -3115,12 +3696,15 @@ function renderLembretes(){
 function salvarLembrete(){
 
     const titulo =
-        document.getElementById("lembreteTitulo")
-        .value.trim();
+        document.getElementById(
+            "lembreteTitulo"
+        ).value.trim();
 
     if(!titulo){
 
-        alert("Informe o lembrete.");
+        alert(
+            "Informe o lembrete."
+        );
 
         return;
 
@@ -3128,28 +3712,37 @@ function salvarLembrete(){
 
     const antigo =
         dados.lembretes.find(
-            x => x.id == editandoId
+            x =>
+            x.id == editandoId
         );
 
     const registro = {
 
         id:
-            editandoId || id(),
+            editandoId ||
+            id(),
 
         titulo:titulo,
 
         data:
-            document.getElementById("lembreteData").value
-            || hoje(),
+            document.getElementById(
+                "lembreteData"
+            ).value ||
+            hoje(),
 
         hora:
-            document.getElementById("lembreteHora").value,
+            document.getElementById(
+                "lembreteHora"
+            ).value,
 
         observacao:
-            document.getElementById("lembreteObs").value,
+            document.getElementById(
+                "lembreteObs"
+            ).value,
 
         status:
-            antigo?.status || "PENDENTE"
+            antigo?.status ||
+            "PENDENTE"
 
     };
 
@@ -3157,15 +3750,19 @@ function salvarLembrete(){
 
         const index =
             dados.lembretes.findIndex(
-                x => x.id == editandoId
+                x =>
+                x.id == editandoId
             );
 
         if(index>=0)
-            dados.lembretes[index]=registro;
+            dados.lembretes[index] =
+                registro;
 
     }else{
 
-        dados.lembretes.push(registro);
+        dados.lembretes.push(
+            registro
+        );
 
     }
 
@@ -3173,9 +3770,11 @@ function salvarLembrete(){
 
     fecharModal();
 
-    renderLembretes();
+    atualizarTudo();
 
-    renderInicio();
+    syncStatus(
+        "⚡ Lembrete salvo"
+    );
 
     enviarGoogle(
         "LEMBRETES",
@@ -3189,18 +3788,22 @@ function concluirLembrete(registroId){
 
     const x =
         dados.lembretes.find(
-            t => t.id == registroId
+            t =>
+            t.id == registroId
         );
 
     if(!x) return;
 
-    x.status = "CONCLUIDO";
+    x.status =
+        "CONCLUIDO";
 
     salvar();
 
-    renderLembretes();
+    atualizarTudo();
 
-    renderInicio();
+    syncStatus(
+        "⚡ Lembrete concluído"
+    );
 
     enviarGoogle(
         "LEMBRETES",
@@ -3212,19 +3815,24 @@ function concluirLembrete(registroId){
 
 function excluirLembrete(registroId){
 
-    if(!confirm("Excluir este lembrete?"))
+    if(!confirm(
+        "Excluir este lembrete?"
+    ))
         return;
 
     dados.lembretes =
         dados.lembretes.filter(
-            x => x.id != registroId
+            x =>
+            x.id != registroId
         );
 
     salvar();
 
-    renderLembretes();
+    atualizarTudo();
 
-    renderInicio();
+    syncStatus(
+        "⚡ Lembrete excluído"
+    );
 
     excluirGoogle(
         "LEMBRETES",
@@ -3235,105 +3843,133 @@ function excluirLembrete(registroId){
 
 
 /* ============================================================
-   PROGRAMAÇÃO SEMANAL
+   PROGRAMAÇÃO
 ============================================================ */
 
 function renderProgramacao(){
 
     const dias = [
+
         ["SEG","SEGUNDA"],
+
         ["TER","TERÇA"],
+
         ["QUA","QUARTA"],
+
         ["QUI","QUINTA"],
+
         ["SEX","SEXTA"],
+
         ["SÁB","SÁBADO"]
+
     ];
 
     const el =
-        document.getElementById("weekGrid");
+        document.getElementById(
+            "weekGrid"
+        );
 
     el.innerHTML =
-        dias.map(([sigla,nome]) => {
+        dias.map(
+            ([sigla,nome]) => {
 
-            const itens =
-                dados.programacao.filter(
-                    x =>
-                        String(x.dia||"")
-                        .toUpperCase() === sigla
-                );
+                const itens =
+                    dados.programacao
+                    .filter(
+                        x =>
+                        String(
+                            x.dia||""
+                        )
+                        .toUpperCase()
+                        ===
+                        sigla
+                    );
 
-            return `
+                return `
 
-            <div class="day-column">
+                <div class="day-column">
 
-                <div class="day-head">
-                    ${nome}
-                </div>
+                    <div class="day-head">
+                        ${nome}
+                    </div>
 
-                ${
-                    itens.length
+                    ${
+                        itens.length
 
-                    ? itens.map(x => `
+                        ?
 
-                        <div class="week-item">
+                        itens.map(
+                            x => `
 
-                            <strong>
-                                ${escapar(x.ugd || "")}
-                            </strong>
+                            <div class="week-item">
 
-                            ${escapar(x.servico || "")}
+                                <strong>
+                                    ${escapar(x.ugd||"")}
+                                </strong>
 
-                            ${
-                                x.os
-                                ? `<br>OS ${escapar(x.os)}`
-                                : ""
-                            }
+                                ${escapar(x.servico||"")}
 
-                            ${
-                                x.observacao
-                                ? `<br>
-                                   ${escapar(x.observacao)}`
-                                : ""
-                            }
+                                ${
+                                    x.os
+                                    ?
+                                    `<br>OS ${
+                                        escapar(x.os)
+                                    }`
+                                    :
+                                    ""
+                                }
 
-                            <div
-                                style="
-                                margin-top:7px;
-                                display:flex;
-                                justify-content:flex-end;
-                                gap:4px">
+                                ${
+                                    x.observacao
+                                    ?
+                                    `<br>${
+                                        escapar(
+                                            x.observacao
+                                        )
+                                    }`
+                                    :
+                                    ""
+                                }
 
-                                <button
-                                    class="small-btn"
-                                    onclick="abrirModal(
-                                        'programacao',
-                                        ${x.id}
-                                    )">
-                                    ✎
-                                </button>
+                                <div
+                                    style="
+                                    margin-top:7px;
+                                    display:flex;
+                                    justify-content:flex-end;
+                                    gap:4px">
 
-                                <button
-                                    class="small-btn"
-                                    onclick="excluirProgramacao(${x.id})">
-                                    ×
-                                </button>
+                                    <button
+                                        class="small-btn"
+                                        onclick="abrirModal('programacao',${x.id})">
+                                        ✎
+                                    </button>
+
+                                    <button
+                                        class="small-btn"
+                                        onclick="excluirProgramacao(${x.id})">
+                                        ×
+                                    </button>
+
+                                </div>
 
                             </div>
 
-                        </div>
+                        `
+                        ).join("")
 
-                    `).join("")
+                        :
 
-                    : `<div class="empty">
-                        Sem programação.
-                       </div>`
-                }
+                        `<div class="empty">
+                            Sem programação.
+                        </div>`
+                    }
 
-            </div>
+                </div>
 
-            `;
+                `;
 
-        }).join("");
+            }
+        ).join("");
 
 }
 
@@ -3341,13 +3977,19 @@ function renderProgramacao(){
 function salvarProgramacao(){
 
     const dia =
-        document.getElementById("progDia").value;
+        document.getElementById(
+            "progDia"
+        ).value;
 
     const ugd =
-        document.getElementById("progUgd").value.trim();
+        document.getElementById(
+            "progUgd"
+        ).value.trim();
 
     const servico =
-        document.getElementById("progServico").value.trim();
+        document.getElementById(
+            "progServico"
+        ).value.trim();
 
     if(!dia || !ugd || !servico){
 
@@ -3362,7 +4004,8 @@ function salvarProgramacao(){
     const registro = {
 
         id:
-            editandoId || id(),
+            editandoId ||
+            id(),
 
         dia:dia,
 
@@ -3371,10 +4014,14 @@ function salvarProgramacao(){
         servico:servico,
 
         os:
-            document.getElementById("progOs").value,
+            document.getElementById(
+                "progOs"
+            ).value,
 
         observacao:
-            document.getElementById("progObs").value
+            document.getElementById(
+                "progObs"
+            ).value
 
     };
 
@@ -3382,15 +4029,19 @@ function salvarProgramacao(){
 
         const index =
             dados.programacao.findIndex(
-                x => x.id == editandoId
+                x =>
+                x.id == editandoId
             );
 
         if(index>=0)
-            dados.programacao[index]=registro;
+            dados.programacao[index] =
+                registro;
 
     }else{
 
-        dados.programacao.push(registro);
+        dados.programacao.push(
+            registro
+        );
 
     }
 
@@ -3398,7 +4049,11 @@ function salvarProgramacao(){
 
     fecharModal();
 
-    renderProgramacao();
+    atualizarTudo();
+
+    syncStatus(
+        "⚡ Programação salva"
+    );
 
     enviarGoogle(
         "PROGRAMACAO",
@@ -3410,17 +4065,24 @@ function salvarProgramacao(){
 
 function excluirProgramacao(registroId){
 
-    if(!confirm("Excluir esta programação?"))
+    if(!confirm(
+        "Excluir esta programação?"
+    ))
         return;
 
     dados.programacao =
         dados.programacao.filter(
-            x => x.id != registroId
+            x =>
+            x.id != registroId
         );
 
     salvar();
 
-    renderProgramacao();
+    atualizarTudo();
+
+    syncStatus(
+        "⚡ Programação excluída"
+    );
 
     excluirGoogle(
         "PROGRAMACAO",
@@ -3431,39 +4093,28 @@ function excluirProgramacao(registroId){
 
 
 /* ============================================================
-   BLOCO DE NOTAS
+   BLOCO
 ============================================================ */
 
 function renderBloco(){
 
-    document.getElementById("blocoTexto")
-        .value = dados.bloco || "";
-
-}
-
-
-async function salvarBloco(){
-
-    dados.bloco =
-        document.getElementById("blocoTexto").value;
-
-    salvar();
-
-    await enviarBlocoGoogle(
-        dados.bloco
-    );
+    document.getElementById(
+        "blocoTexto"
+    ).value =
+        dados.bloco || "";
 
 }
 
 
 /* ============================================================
-   PESQUISA GERAL
+   PESQUISA
 ============================================================ */
 
 function renderPesquisa(){
 
-    document.getElementById("resultadoPesquisa")
-        .innerHTML =
+    document.getElementById(
+        "resultadoPesquisa"
+    ).innerHTML =
         `<div class="empty">
             Digite algo para pesquisar.
         </div>`;
@@ -3474,20 +4125,21 @@ function renderPesquisa(){
 function executarPesquisa(){
 
     const termo =
-        document.getElementById("pesquisaGeral")
+        document.getElementById(
+            "pesquisaGeral"
+        )
         .value
         .trim()
         .toLowerCase();
 
     const el =
-        document.getElementById("resultadoPesquisa");
+        document.getElementById(
+            "resultadoPesquisa"
+        );
 
     if(!termo){
 
-        el.innerHTML =
-            `<div class="empty">
-                Digite algo para pesquisar.
-            </div>`;
+        renderPesquisa();
 
         return;
 
@@ -3495,12 +4147,14 @@ function executarPesquisa(){
 
     const resultados = [];
 
+
     dados.tarefas.forEach(x => {
 
-        const texto =
-            JSON.stringify(x).toLowerCase();
-
-        if(texto.includes(termo)){
+        if(
+            JSON.stringify(x)
+            .toLowerCase()
+            .includes(termo)
+        ){
 
             resultados.push({
 
@@ -3510,7 +4164,7 @@ function executarPesquisa(){
 
                 detalhe:
                     `${formatarData(x.data)}
-                     ${x.hora || ""}`,
+                    ${x.hora || ""}`,
 
                 acao:
                     `abrirPagina('tarefas')`
@@ -3521,24 +4175,25 @@ function executarPesquisa(){
 
     });
 
+
     dados.servicos.forEach(x => {
 
-        const texto =
-            JSON.stringify(x).toLowerCase();
-
-        if(texto.includes(termo)){
+        if(
+            JSON.stringify(x)
+            .toLowerCase()
+            .includes(termo)
+        ){
 
             resultados.push({
 
                 tipo:"Serviço",
 
                 titulo:
-                    `${x.ugd || ""}
-                     — ${x.servico || ""}`,
+                    `${x.ugd||""} — ${x.servico||""}`,
 
                 detalhe:
-                    `OS ${x.os || "-"} •
-                     ${formatarData(x.data)}`,
+                    `OS ${x.os||"-"} •
+                    ${formatarData(x.data)}`,
 
                 acao:
                     `abrirPagina('servicos')`
@@ -3549,24 +4204,26 @@ function executarPesquisa(){
 
     });
 
+
     dados.movimentacoes.forEach(x => {
 
-        const texto =
-            JSON.stringify(x).toLowerCase();
-
-        if(texto.includes(termo)){
+        if(
+            JSON.stringify(x)
+            .toLowerCase()
+            .includes(termo)
+        ){
 
             resultados.push({
 
                 tipo:"Movimentação",
 
                 titulo:
-                    `${x.origem || "-"}
-                     → ${x.destino || "-"}`,
+                    `${x.origem||"-"}
+                    → ${x.destino||"-"}`,
 
                 detalhe:
-                    `${x.peca || ""}
-                     ${x.os ? " • OS "+x.os : ""}`,
+                    `${x.peca||""}
+                    ${x.os ? " • OS "+x.os : ""}`,
 
                 acao:
                     `abrirPagina('movimentacoes')`
@@ -3577,12 +4234,14 @@ function executarPesquisa(){
 
     });
 
+
     dados.agenda.forEach(x => {
 
-        const texto =
-            JSON.stringify(x).toLowerCase();
-
-        if(texto.includes(termo)){
+        if(
+            JSON.stringify(x)
+            .toLowerCase()
+            .includes(termo)
+        ){
 
             resultados.push({
 
@@ -3592,7 +4251,7 @@ function executarPesquisa(){
 
                 detalhe:
                     `${formatarData(x.data)}
-                     ${x.hora || ""}`,
+                    ${x.hora || ""}`,
 
                 acao:
                     `abrirPagina('agenda')`
@@ -3603,12 +4262,14 @@ function executarPesquisa(){
 
     });
 
+
     dados.lembretes.forEach(x => {
 
-        const texto =
-            JSON.stringify(x).toLowerCase();
-
-        if(texto.includes(termo)){
+        if(
+            JSON.stringify(x)
+            .toLowerCase()
+            .includes(termo)
+        ){
 
             resultados.push({
 
@@ -3618,7 +4279,7 @@ function executarPesquisa(){
 
                 detalhe:
                     `${formatarData(x.data)}
-                     ${x.hora || ""}`,
+                    ${x.hora || ""}`,
 
                 acao:
                     `abrirPagina('lembretes')`
@@ -3628,6 +4289,7 @@ function executarPesquisa(){
         }
 
     });
+
 
     if(!resultados.length){
 
@@ -3640,33 +4302,36 @@ function executarPesquisa(){
 
     }
 
+
     el.innerHTML =
-        resultados.map(x => `
+        resultados.map(
+            x => `
 
-        <div
-            class="item"
-            onclick="${x.acao}"
-            style="cursor:pointer">
+            <div
+                class="item"
+                onclick="${x.acao}"
+                style="cursor:pointer">
 
-            <div class="item-main">
+                <div class="item-main">
 
-                <div class="item-title">
-                    ${escapar(x.titulo)}
+                    <div class="item-title">
+                        ${escapar(x.titulo)}
+                    </div>
+
+                    <div class="item-sub">
+                        ${escapar(x.detalhe)}
+                    </div>
+
                 </div>
 
-                <div class="item-sub">
-                    ${escapar(x.detalhe)}
-                </div>
+                <span class="badge badge-blue">
+                    ${x.tipo}
+                </span>
 
             </div>
 
-            <span class="badge badge-blue">
-                ${x.tipo}
-            </span>
-
-        </div>
-
-    `).join("");
+        `
+        ).join("");
 
 }
 
@@ -3675,22 +4340,38 @@ function executarPesquisa(){
    MODAL
 ============================================================ */
 
-function abrirModal(tipo, editarId=null){
+function abrirModal(
+    tipo,
+    editarId=null
+){
 
-    editandoId = editarId;
-    editandoTipo = tipo;
+    editandoId =
+        editarId;
+
+    editandoTipo =
+        tipo;
 
     const modal =
-        document.getElementById("modal");
+        document.getElementById(
+            "modal"
+        );
 
     const titulo =
-        document.getElementById("modalTitulo");
+        document.getElementById(
+            "modalTitulo"
+        );
 
     const conteudo =
-        document.getElementById("modalConteudo");
+        document.getElementById(
+            "modalConteudo"
+        );
 
     const nome =
-        editarId ? "Editar" : "Novo";
+        editarId
+        ?
+        "Editar"
+        :
+        "Novo";
 
     let registro = null;
 
@@ -3698,26 +4379,34 @@ function abrirModal(tipo, editarId=null){
 
         const mapas = {
 
-            tarefa:dados.tarefas,
+            tarefa:
+                dados.tarefas,
 
-            servico:dados.servicos,
+            servico:
+                dados.servicos,
 
-            movimentacao:dados.movimentacoes,
+            movimentacao:
+                dados.movimentacoes,
 
-            agenda:dados.agenda,
+            agenda:
+                dados.agenda,
 
-            lembrete:dados.lembretes,
+            lembrete:
+                dados.lembretes,
 
-            programacao:dados.programacao
+            programacao:
+                dados.programacao
 
         };
 
         registro =
             mapas[tipo]?.find(
-                x => x.id == editarId
+                x =>
+                x.id == editarId
             );
 
     }
+
 
     if(tipo==="tarefa"){
 
@@ -3735,7 +4424,7 @@ function abrirModal(tipo, editarId=null){
                 <input
                     class="input"
                     id="tarefaTitulo"
-                    value="${escapar(registro?.titulo || "")}"
+                    value="${escapar(registro?.titulo||"")}"
                     placeholder="Ex.: Verificar UGD 25"
                 >
 
@@ -3749,7 +4438,7 @@ function abrirModal(tipo, editarId=null){
                     type="date"
                     class="input"
                     id="tarefaData"
-                    value="${registro?.data || hoje()}"
+                    value="${registro?.data||hoje()}"
                 >
 
             </div>
@@ -3762,7 +4451,7 @@ function abrirModal(tipo, editarId=null){
                     type="time"
                     class="input"
                     id="tarefaHora"
-                    value="${registro?.hora || ""}"
+                    value="${registro?.hora||""}"
                 >
 
             </div>
@@ -3775,17 +4464,20 @@ function abrirModal(tipo, editarId=null){
                     class="select"
                     id="tarefaPrioridade">
 
-                    <option value="NORMAL"
+                    <option
+                        value="NORMAL"
                         ${registro?.prioridade==="NORMAL"?"selected":""}>
                         Normal
                     </option>
 
-                    <option value="ALTA"
+                    <option
+                        value="ALTA"
                         ${registro?.prioridade==="ALTA"?"selected":""}>
                         Alta
                     </option>
 
-                    <option value="URGENTE"
+                    <option
+                        value="URGENTE"
                         ${registro?.prioridade==="URGENTE"?"selected":""}>
                         Urgente
                     </option>
@@ -3801,7 +4493,7 @@ function abrirModal(tipo, editarId=null){
                 <input
                     class="input"
                     id="tarefaObs"
-                    value="${escapar(registro?.observacao || "")}"
+                    value="${escapar(registro?.observacao||"")}"
                     placeholder="Detalhes"
                 >
 
@@ -3846,7 +4538,7 @@ function abrirModal(tipo, editarId=null){
                 <input
                     class="input"
                     id="servicoUgd"
-                    value="${escapar(registro?.ugd || "")}"
+                    value="${escapar(registro?.ugd||"")}"
                     placeholder="Ex.: UGD25"
                 >
 
@@ -3859,7 +4551,7 @@ function abrirModal(tipo, editarId=null){
                 <input
                     class="input"
                     id="servicoOs"
-                    value="${escapar(registro?.os || "")}"
+                    value="${escapar(registro?.os||"")}"
                     placeholder="Número da OS"
                 >
 
@@ -3872,7 +4564,7 @@ function abrirModal(tipo, editarId=null){
                 <input
                     class="input"
                     id="servicoNome"
-                    value="${escapar(registro?.servico || "")}"
+                    value="${escapar(registro?.servico||"")}"
                     placeholder="Ex.: Troca de filtro"
                 >
 
@@ -3886,7 +4578,7 @@ function abrirModal(tipo, editarId=null){
                     class="textarea"
                     id="servicoObs"
                     placeholder="Descreva o serviço realizado..."
-                >${escapar(registro?.observacao || "")}</textarea>
+                >${escapar(registro?.observacao||"")}</textarea>
 
             </div>
 
@@ -3929,7 +4621,7 @@ function abrirModal(tipo, editarId=null){
                 <input
                     class="input"
                     id="movOrigem"
-                    value="${escapar(registro?.origem || "")}"
+                    value="${escapar(registro?.origem||"")}"
                     placeholder="Ex.: UGD18"
                 >
 
@@ -3942,7 +4634,7 @@ function abrirModal(tipo, editarId=null){
                 <input
                     class="input"
                     id="movDestino"
-                    value="${escapar(registro?.destino || "")}"
+                    value="${escapar(registro?.destino||"")}"
                     placeholder="Ex.: UGD22"
                 >
 
@@ -3955,7 +4647,7 @@ function abrirModal(tipo, editarId=null){
                 <input
                     class="input"
                     id="movPeca"
-                    value="${escapar(registro?.peca || "")}"
+                    value="${escapar(registro?.peca||"")}"
                     placeholder="Ex.: Módulo DEIF"
                 >
 
@@ -3968,7 +4660,7 @@ function abrirModal(tipo, editarId=null){
                 <input
                     class="input"
                     id="movOs"
-                    value="${escapar(registro?.os || "")}"
+                    value="${escapar(registro?.os||"")}"
                     placeholder="Opcional"
                 >
 
@@ -3981,7 +4673,7 @@ function abrirModal(tipo, editarId=null){
                 <input
                     class="input"
                     id="movSerie"
-                    value="${escapar(registro?.numeroSerie || "")}"
+                    value="${escapar(registro?.numeroSerie||"")}"
                     placeholder="Opcional"
                 >
 
@@ -3995,7 +4687,7 @@ function abrirModal(tipo, editarId=null){
                     class="textarea"
                     id="movObs"
                     placeholder="Ex.: Remanejado para reduzir FIX POWER."
-                >${escapar(registro?.observacao || "")}</textarea>
+                >${escapar(registro?.observacao||"")}</textarea>
 
             </div>
 
@@ -4038,7 +4730,7 @@ function abrirModal(tipo, editarId=null){
                 <input
                     class="input"
                     id="agendaTitulo"
-                    value="${escapar(registro?.titulo || "")}"
+                    value="${escapar(registro?.titulo||"")}"
                     placeholder="Ex.: Reunião com manutenção"
                 >
 
@@ -4052,7 +4744,7 @@ function abrirModal(tipo, editarId=null){
                     type="date"
                     class="input"
                     id="agendaData"
-                    value="${registro?.data || hoje()}"
+                    value="${registro?.data||hoje()}"
                 >
 
             </div>
@@ -4065,7 +4757,7 @@ function abrirModal(tipo, editarId=null){
                     type="time"
                     class="input"
                     id="agendaHora"
-                    value="${registro?.hora || ""}"
+                    value="${registro?.hora||""}"
                 >
 
             </div>
@@ -4077,7 +4769,7 @@ function abrirModal(tipo, editarId=null){
                 <textarea
                     class="textarea"
                     id="agendaObs"
-                >${escapar(registro?.observacao || "")}</textarea>
+                >${escapar(registro?.observacao||"")}</textarea>
 
             </div>
 
@@ -4120,7 +4812,7 @@ function abrirModal(tipo, editarId=null){
                 <input
                     class="input"
                     id="lembreteTitulo"
-                    value="${escapar(registro?.titulo || "")}"
+                    value="${escapar(registro?.titulo||"")}"
                     placeholder="O que você precisa lembrar?"
                 >
 
@@ -4134,7 +4826,7 @@ function abrirModal(tipo, editarId=null){
                     type="date"
                     class="input"
                     id="lembreteData"
-                    value="${registro?.data || hoje()}"
+                    value="${registro?.data||hoje()}"
                 >
 
             </div>
@@ -4147,7 +4839,7 @@ function abrirModal(tipo, editarId=null){
                     type="time"
                     class="input"
                     id="lembreteHora"
-                    value="${registro?.hora || ""}"
+                    value="${registro?.hora||""}"
                 >
 
             </div>
@@ -4159,7 +4851,7 @@ function abrirModal(tipo, editarId=null){
                 <textarea
                     class="textarea"
                     id="lembreteObs"
-                >${escapar(registro?.observacao || "")}</textarea>
+                >${escapar(registro?.observacao||"")}</textarea>
 
             </div>
 
@@ -4203,32 +4895,38 @@ function abrirModal(tipo, editarId=null){
                     class="select"
                     id="progDia">
 
-                    <option value="SEG"
+                    <option
+                        value="SEG"
                         ${registro?.dia==="SEG"?"selected":""}>
                         Segunda-feira
                     </option>
 
-                    <option value="TER"
+                    <option
+                        value="TER"
                         ${registro?.dia==="TER"?"selected":""}>
                         Terça-feira
                     </option>
 
-                    <option value="QUA"
+                    <option
+                        value="QUA"
                         ${registro?.dia==="QUA"?"selected":""}>
                         Quarta-feira
                     </option>
 
-                    <option value="QUI"
+                    <option
+                        value="QUI"
                         ${registro?.dia==="QUI"?"selected":""}>
                         Quinta-feira
                     </option>
 
-                    <option value="SEX"
+                    <option
+                        value="SEX"
                         ${registro?.dia==="SEX"?"selected":""}>
                         Sexta-feira
                     </option>
 
-                    <option value="SÁB"
+                    <option
+                        value="SÁB"
                         ${registro?.dia==="SÁB"?"selected":""}>
                         Sábado
                     </option>
@@ -4244,7 +4942,7 @@ function abrirModal(tipo, editarId=null){
                 <input
                     class="input"
                     id="progUgd"
-                    value="${escapar(registro?.ugd || "")}"
+                    value="${escapar(registro?.ugd||"")}"
                     placeholder="Ex.: UGD25"
                 >
 
@@ -4257,7 +4955,7 @@ function abrirModal(tipo, editarId=null){
                 <input
                     class="input"
                     id="progServico"
-                    value="${escapar(registro?.servico || "")}"
+                    value="${escapar(registro?.servico||"")}"
                     placeholder="Serviço planejado"
                 >
 
@@ -4270,7 +4968,7 @@ function abrirModal(tipo, editarId=null){
                 <input
                     class="input"
                     id="progOs"
-                    value="${escapar(registro?.os || "")}"
+                    value="${escapar(registro?.os||"")}"
                     placeholder="Opcional"
                 >
 
@@ -4283,7 +4981,7 @@ function abrirModal(tipo, editarId=null){
                 <input
                     class="input"
                     id="progObs"
-                    value="${escapar(registro?.observacao || "")}"
+                    value="${escapar(registro?.observacao||"")}"
                     placeholder="Detalhes"
                 >
 
@@ -4312,19 +5010,26 @@ function abrirModal(tipo, editarId=null){
     }
 
 
-    modal.classList.add("show");
+    modal.classList.add(
+        "show"
+    );
 
 }
 
 
 function fecharModal(){
 
-    document.getElementById("modal")
-        .classList.remove("show");
+    document.getElementById(
+        "modal"
+    ).classList.remove(
+        "show"
+    );
 
-    editandoId = null;
+    editandoId =
+        null;
 
-    editandoTipo = null;
+    editandoTipo =
+        null;
 
 }
 
@@ -4362,16 +5067,51 @@ function atualizarTudo(){
 
 
 /* ============================================================
-   FECHAR MODAL CLICANDO FORA
+   MODAL FORA
 ============================================================ */
 
-document.getElementById("modal")
-.addEventListener("click",function(e){
+document.getElementById(
+    "modal"
+).addEventListener(
+    "click",
+    function(e){
 
-    if(e.target === this)
-        fecharModal();
+        if(e.target === this)
+            fecharModal();
 
-});
+    }
+);
+
+
+/* ============================================================
+   INTERNET
+============================================================ */
+
+window.addEventListener(
+    "online",
+    function(){
+
+        syncStatus(
+            "☁️ Conectado"
+        );
+
+        processarFila();
+
+    }
+);
+
+
+window.addEventListener(
+    "offline",
+    function(){
+
+        syncStatus(
+            "📱 Offline",
+            "erro"
+        );
+
+    }
+);
 
 
 /* ============================================================
@@ -4380,12 +5120,63 @@ document.getElementById("modal")
 
 atualizarData();
 
-abrirPagina("inicio");
+abrirPagina(
+    "inicio"
+);
 
-carregarDadosGoogle();
+/*
+ * Primeiro mostra o banco local.
+ * Não precisa esperar o Google.
+ */
 
+atualizarTudo();
+
+syncStatus(
+    "⚡ Pronto"
+);
+
+/*
+ * Depois consulta o Google
+ * em segundo plano.
+ */
+
+setTimeout(
+    carregarDadosGoogle,
+    100
+);
+
+/*
+ * Processa alterações pendentes.
+ */
+
+setTimeout(
+    processarFila,
+    500
+);
+
+
+/* ============================================================
+   AUTO-SINCRONIZAÇÃO
+============================================================ */
+
+setInterval(
+    function(){
+
+        if(
+            navigator.onLine &&
+            !sincronizando
+        ){
+
+            processarFila();
+
+        }
+
+    },
+    5000
+);
 
 </script>
 
 </body>
 </html>
+```
