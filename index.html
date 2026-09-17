@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#111827">
 <title>Minha Agenda - UTE Maués</title>
 
 <style>
@@ -11,720 +11,355 @@
     box-sizing:border-box;
     margin:0;
     padding:0;
-    font-family:Arial,Helvetica,sans-serif;
-}
-
-:root{
-    --bg:#070b12;
-    --panel:#0d1420;
-    --panel2:#111b2a;
-    --border:rgba(255,255,255,.08);
-    --blue:#1683ff;
-    --cyan:#00d9ff;
-    --green:#20d889;
-    --yellow:#ffc107;
-    --orange:#ff8c32;
-    --red:#ff4d5f;
-    --white:#f4f7fb;
-    --muted:#8390a3;
 }
 
 body{
-    background:
-        radial-gradient(circle at 15% 20%,rgba(0,140,255,.12),transparent 25%),
-        radial-gradient(circle at 85% 80%,rgba(0,220,255,.08),transparent 25%),
-        var(--bg);
-    color:var(--white);
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f3f4f6;
+    color:#111827;
+}
+
+button,
+input,
+textarea,
+select{
+    font:inherit;
+}
+
+.app{
+    display:flex;
     min-height:100vh;
-    overflow-x:hidden;
 }
 
-body:before{
-    content:"";
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    opacity:.15;
-    background-image:
-        linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
-    background-size:40px 40px;
-}
-
-/* ================= SIDEBAR ================= */
+/* MENU */
 
 .sidebar{
+    width:240px;
+    background:#111827;
+    color:white;
     position:fixed;
     left:0;
     top:0;
     bottom:0;
-    width:255px;
-    background:rgba(7,12,20,.92);
-    border-right:1px solid var(--border);
-    backdrop-filter:blur(20px);
-    z-index:1000;
-    padding:20px 14px;
-    transition:.3s;
+    padding:20px 12px;
+    z-index:100;
 }
 
 .logo{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:8px 12px 24px;
-}
-
-.logo-icon{
-    width:42px;
-    height:42px;
-    border-radius:13px;
-    background:linear-gradient(135deg,var(--blue),var(--cyan));
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:21px;
-    box-shadow:0 0 25px rgba(0,180,255,.25);
-}
-
-.logo h2{
-    font-size:17px;
-}
-
-.logo small{
-    color:var(--muted);
-    font-size:10px;
-    display:block;
-    margin-top:3px;
-}
-
-.menu-title{
-    color:#526075;
-    font-size:10px;
-    letter-spacing:1.5px;
-    padding:18px 12px 8px;
+    font-size:20px;
+    font-weight:bold;
+    padding:10px;
+    margin-bottom:20px;
 }
 
 .menu button{
     width:100%;
     border:0;
     background:transparent;
-    color:#aab5c5;
-    padding:11px 13px;
-    border-radius:10px;
+    color:#d1d5db;
+    padding:13px 12px;
+    margin-bottom:4px;
+    border-radius:8px;
     text-align:left;
     cursor:pointer;
-    margin:2px 0;
-    transition:.2s;
-    font-size:13px;
 }
 
 .menu button:hover,
 .menu button.active{
-    background:linear-gradient(90deg,rgba(22,131,255,.18),rgba(0,217,255,.06));
+    background:#374151;
     color:white;
 }
 
-.menu button.active{
-    border-left:3px solid var(--cyan);
-}
-
-.menu-icon{
-    width:25px;
-    display:inline-block;
-}
-
-/* ================= MAIN ================= */
+/* CONTEÚDO */
 
 .main{
-    margin-left:255px;
-    min-height:100vh;
+    margin-left:240px;
+    width:calc(100% - 240px);
+    padding:20px;
 }
 
 .topbar{
-    height:70px;
-    border-bottom:1px solid var(--border);
+    background:white;
+    padding:15px 20px;
+    border-radius:12px;
+    margin-bottom:20px;
     display:flex;
-    align-items:center;
     justify-content:space-between;
-    padding:0 28px;
-    background:rgba(7,11,18,.7);
-    backdrop-filter:blur(15px);
-    position:sticky;
-    top:0;
-    z-index:500;
-}
-
-.top-left{
-    display:flex;
     align-items:center;
     gap:15px;
 }
 
-.page-title{
-    font-size:21px;
-    font-weight:700;
-}
-
-.date-top{
-    color:var(--muted);
-    font-size:12px;
-}
-
-.top-actions{
+.status{
     display:flex;
     align-items:center;
-    gap:10px;
+    gap:8px;
+    font-size:13px;
 }
 
-.sync-status{
-    font-size:11px;
-    color:var(--green);
-    padding:7px 10px;
-    border:1px solid rgba(32,216,137,.2);
-    border-radius:20px;
-    background:rgba(32,216,137,.05);
+.status-dot{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:#22c55e;
 }
 
-.btn{
-    border:1px solid var(--border);
-    background:rgba(255,255,255,.04);
-    color:white;
-    padding:9px 14px;
-    border-radius:9px;
-    cursor:pointer;
-    font-size:12px;
-    transition:.2s;
+.status-dot.offline{
+    background:#ef4444;
 }
 
-.btn:hover{
-    transform:translateY(-1px);
-    border-color:rgba(0,217,255,.35);
+.status-dot.pending{
+    background:#f59e0b;
 }
 
-.btn-primary{
-    background:linear-gradient(135deg,#126ee0,#00a9d8);
-    border:0;
+.status-dot.sync{
+    background:#3b82f6;
 }
 
-.content{
-    padding:28px;
-}
-
-/* ================= PAGES ================= */
+/* PÁGINAS */
 
 .page{
     display:none;
-    animation:fadeIn .25s ease;
 }
 
 .page.active{
     display:block;
 }
 
-@keyframes fadeIn{
-    from{
-        opacity:0;
-        transform:translateY(5px);
-    }
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
-}
-
-/* ================= DASHBOARD ================= */
-
-.welcome{
-    margin-bottom:25px;
-}
-
-.welcome h1{
-    font-size:28px;
-    margin-bottom:6px;
-}
-
-.welcome p{
-    color:var(--muted);
-    font-size:13px;
-}
-
-.dashboard-grid{
-    display:grid;
-    grid-template-columns:repeat(5,1fr);
-    gap:15px;
-    margin-bottom:25px;
-}
-
-.stat-card{
-    position:relative;
-    overflow:hidden;
-    background:linear-gradient(145deg,rgba(20,30,45,.85),rgba(10,16,26,.9));
-    border:1px solid var(--border);
-    border-radius:17px;
-    padding:18px;
-    min-height:125px;
-    box-shadow:0 15px 40px rgba(0,0,0,.15);
-}
-
-.stat-card:after{
-    content:"";
-    position:absolute;
-    width:100px;
-    height:100px;
-    border-radius:50%;
-    right:-40px;
-    top:-40px;
-    background:rgba(0,180,255,.06);
-}
-
-.stat-icon{
-    font-size:20px;
-    margin-bottom:12px;
-}
-
-.stat-value{
-    font-size:27px;
-    font-weight:bold;
-}
-
-.stat-label{
-    color:var(--muted);
-    font-size:11px;
-    margin-top:4px;
-}
-
-.grid-2{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:18px;
-}
-
-.panel{
-    background:rgba(13,20,32,.82);
-    border:1px solid var(--border);
-    border-radius:17px;
-    padding:20px;
-    backdrop-filter:blur(15px);
-    box-shadow:0 15px 40px rgba(0,0,0,.13);
-}
-
-.panel-title{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:17px;
-}
-
-.panel-title h3{
-    font-size:15px;
-}
-
-.panel-title span{
-    color:var(--muted);
-    font-size:11px;
-}
-
-.quick-grid{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:10px;
-}
-
-.quick-btn{
-    background:rgba(255,255,255,.035);
-    border:1px solid var(--border);
-    color:#dbe5f2;
-    border-radius:12px;
-    padding:14px 7px;
-    cursor:pointer;
-    transition:.2s;
-    text-align:center;
-    font-size:11px;
-}
-
-.quick-btn:hover{
-    transform:translateY(-2px);
-    border-color:rgba(0,217,255,.35);
-    background:rgba(0,217,255,.06);
-}
-
-.quick-btn div{
-    font-size:20px;
-    margin-bottom:7px;
-}
-
-/* ================= LISTAS ================= */
-
-.item-list{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-}
-
-.item{
-    background:rgba(255,255,255,.025);
-    border:1px solid rgba(255,255,255,.05);
-    border-radius:11px;
-    padding:12px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-}
-
-.item-main{
-    min-width:0;
-}
-
-.item-title{
-    font-size:12px;
-    font-weight:bold;
-}
-
-.item-sub{
-    font-size:10px;
-    color:var(--muted);
-    margin-top:4px;
-}
-
-.item-actions{
-    display:flex;
-    gap:5px;
-}
-
-.small-btn{
-    border:1px solid var(--border);
-    background:rgba(255,255,255,.04);
-    color:#b9c5d6;
-    width:28px;
-    height:28px;
-    border-radius:7px;
-    cursor:pointer;
-}
-
-.small-btn:hover{
-    color:white;
-    border-color:var(--cyan);
-}
-
-.badge{
-    padding:4px 7px;
-    border-radius:20px;
-    font-size:9px;
-    white-space:nowrap;
-}
-
-.badge-green{
-    background:rgba(32,216,137,.1);
-    color:var(--green);
-}
-
-.badge-yellow{
-    background:rgba(255,193,7,.1);
-    color:var(--yellow);
-}
-
-.badge-red{
-    background:rgba(255,77,95,.1);
-    color:var(--red);
-}
-
-.badge-blue{
-    background:rgba(22,131,255,.1);
-    color:#55a7ff;
-}
-
-.badge-orange{
-    background:rgba(255,140,50,.1);
-    color:var(--orange);
-}
-
-/* ================= PAGE HEADER ================= */
-
-.page-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+.page-title{
     margin-bottom:20px;
 }
 
-.page-header h2{
-    font-size:22px;
+.page-title h1{
+    font-size:25px;
 }
 
-.page-header p{
-    color:var(--muted);
-    font-size:12px;
-    margin-top:4px;
+.page-title p{
+    color:#6b7280;
+    margin-top:5px;
 }
 
-.filters{
-    display:flex;
-    gap:8px;
-    margin-bottom:15px;
-    flex-wrap:wrap;
+/* CARDS */
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-bottom:20px;
 }
 
-.input,
-.select,
-.textarea{
-    width:100%;
-    background:#0b121d;
-    border:1px solid var(--border);
-    color:white;
-    border-radius:9px;
-    padding:10px 11px;
-    outline:none;
-    font-size:12px;
+.card{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 1px 4px rgba(0,0,0,.08);
 }
 
-.input:focus,
-.select:focus,
-.textarea:focus{
-    border-color:rgba(0,217,255,.45);
+.card small{
+    color:#6b7280;
 }
 
-.filters .input,
-.filters .select{
-    width:auto;
-    min-width:170px;
+.card strong{
+    display:block;
+    font-size:28px;
+    margin-top:8px;
 }
 
-.textarea{
-    resize:vertical;
-    min-height:100px;
-}
+/* FORM */
 
-/* ================= FORMS ================= */
+.panel{
+    background:white;
+    border-radius:12px;
+    padding:20px;
+    margin-bottom:20px;
+    box-shadow:0 1px 4px rgba(0,0,0,.06);
+}
 
 .form-grid{
     display:grid;
     grid-template-columns:repeat(2,1fr);
-    gap:12px;
+    gap:15px;
 }
 
-.form-group{
+.field{
     display:flex;
     flex-direction:column;
     gap:6px;
 }
 
-.form-group.full{
+.field.full{
     grid-column:1/-1;
 }
 
-.form-group label{
-    color:#9daabc;
-    font-size:11px;
-}
-
-.modal{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.65);
-    backdrop-filter:blur(7px);
-    z-index:2000;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-}
-
-.modal.show{
-    display:flex;
-}
-
-.modal-box{
-    width:min(650px,100%);
-    max-height:90vh;
-    overflow:auto;
-    background:#0d1623;
-    border:1px solid rgba(255,255,255,.1);
-    border-radius:18px;
-    padding:22px;
-    box-shadow:0 30px 80px rgba(0,0,0,.5);
-}
-
-.modal-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:20px;
-}
-
-.modal-head h3{
-    font-size:17px;
-}
-
-.close{
-    border:0;
-    background:transparent;
-    color:#8290a4;
-    font-size:23px;
-    cursor:pointer;
-}
-
-.modal-footer{
-    display:flex;
-    justify-content:flex-end;
-    gap:8px;
-    margin-top:18px;
-}
-
-/* ================= MOVIMENTAÇÕES ================= */
-
-.mov-card{
-    border:1px solid var(--border);
-    border-radius:14px;
-    padding:16px;
-    background:rgba(255,255,255,.025);
-    margin-bottom:10px;
-}
-
-.mov-route{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin-bottom:10px;
-}
-
-.ugd{
-    background:rgba(0,217,255,.08);
-    border:1px solid rgba(0,217,255,.15);
-    border-radius:9px;
-    padding:8px 11px;
+.field label{
+    font-size:13px;
     font-weight:bold;
-    font-size:12px;
 }
 
-.arrow{
-    color:var(--cyan);
-}
-
-.mov-info{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:8px;
-}
-
-.info-box{
-    background:rgba(255,255,255,.025);
-    padding:8px;
+.field input,
+.field textarea,
+.field select{
+    border:1px solid #d1d5db;
     border-radius:8px;
+    padding:10px;
+    outline:none;
 }
 
-.info-box small{
-    display:block;
-    color:var(--muted);
-    font-size:9px;
-    margin-bottom:3px;
+.field input:focus,
+.field textarea:focus,
+.field select:focus{
+    border-color:#2563eb;
 }
 
-.info-box span{
-    font-size:11px;
+textarea{
+    min-height:100px;
+    resize:vertical;
 }
 
-/* ================= WEEK ================= */
+.actions{
+    display:flex;
+    gap:10px;
+    margin-top:15px;
+}
 
-.week-grid{
-    display:grid;
-    grid-template-columns:repeat(6,1fr);
+.btn{
+    border:0;
+    padding:10px 16px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.btn-primary{
+    background:#2563eb;
+    color:white;
+}
+
+.btn-secondary{
+    background:#e5e7eb;
+    color:#111827;
+}
+
+.btn-danger{
+    background:#dc2626;
+    color:white;
+}
+
+.btn:hover{
+    opacity:.9;
+}
+
+/* LISTA */
+
+.lista{
+    display:flex;
+    flex-direction:column;
     gap:10px;
 }
 
-.day-column{
-    background:rgba(255,255,255,.025);
-    border:1px solid var(--border);
-    border-radius:13px;
-    min-height:300px;
-    padding:10px;
+.item{
+    background:white;
+    border-radius:10px;
+    padding:15px;
+    border-left:4px solid #2563eb;
+    box-shadow:0 1px 4px rgba(0,0,0,.06);
 }
 
-.day-head{
-    text-align:center;
-    font-size:11px;
-    color:var(--cyan);
-    padding-bottom:10px;
-    border-bottom:1px solid var(--border);
-    margin-bottom:10px;
-}
-
-.week-item{
-    background:rgba(22,131,255,.07);
-    border-left:3px solid var(--blue);
-    padding:9px;
-    border-radius:7px;
-    margin-bottom:7px;
-    font-size:10px;
-}
-
-.week-item strong{
-    display:block;
-    font-size:11px;
-    margin-bottom:4px;
-}
-
-/* ================= NOTAS ================= */
-
-.note-area{
-    width:100%;
-    min-height:500px;
-    background:
-        linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px);
-    background-size:100% 28px;
-    border:1px solid var(--border);
-    border-radius:14px;
-    color:white;
-    padding:18px;
-    resize:vertical;
-    outline:none;
-    line-height:28px;
-    font-size:13px;
-}
-
-/* ================= SEARCH ================= */
-
-.search-box{
+.item-header{
     display:flex;
-    gap:8px;
-    margin-bottom:18px;
+    justify-content:space-between;
+    gap:10px;
 }
 
-.search-box .input{
-    flex:1;
+.item-title{
+    font-weight:bold;
 }
 
-/* ================= EMPTY ================= */
-
-.empty{
-    text-align:center;
-    padding:30px 10px;
-    color:#627086;
+.item-meta{
+    color:#6b7280;
     font-size:12px;
+    margin-top:5px;
 }
 
-/* ================= MOBILE ================= */
+.item-text{
+    margin-top:10px;
+    white-space:pre-wrap;
+}
 
-.mobile-menu{
-    display:none;
-    border:1px solid var(--border);
-    background:rgba(255,255,255,.05);
-    color:white;
-    width:38px;
-    height:38px;
-    border-radius:9px;
+.item-actions{
+    display:flex;
+    gap:6px;
+    margin-top:12px;
+}
+
+.item-actions button{
+    padding:6px 10px;
+    border:0;
+    border-radius:6px;
     cursor:pointer;
 }
 
-@media(max-width:1100px){
-    .dashboard-grid{
-        grid-template-columns:repeat(3,1fr);
-    }
+/* AGENDA */
+
+.agenda-grid{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:8px;
 }
 
-@media(max-width:800px){
+.dia{
+    background:white;
+    border-radius:10px;
+    min-height:180px;
+    padding:10px;
+}
+
+.dia h3{
+    font-size:14px;
+    margin-bottom:10px;
+}
+
+.agenda-evento{
+    background:#eff6ff;
+    border-left:3px solid #2563eb;
+    padding:8px;
+    border-radius:6px;
+    margin-bottom:6px;
+    font-size:12px;
+}
+
+/* NOTIFICAÇÃO */
+
+.toast{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    background:#111827;
+    color:white;
+    padding:14px 18px;
+    border-radius:10px;
+    opacity:0;
+    pointer-events:none;
+    transform:translateY(20px);
+    transition:.25s;
+    z-index:9999;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translateY(0);
+}
+
+/* MOBILE */
+
+.mobile-menu{
+    display:none;
+}
+
+@media(max-width:900px){
+
     .sidebar{
         transform:translateX(-100%);
+        transition:.2s;
     }
 
     .sidebar.open{
@@ -733,75 +368,44 @@ body:before{
 
     .main{
         margin-left:0;
+        width:100%;
+        padding:12px;
     }
 
     .mobile-menu{
         display:block;
+        border:0;
+        background:#111827;
+        color:white;
+        padding:10px 14px;
+        border-radius:8px;
+        cursor:pointer;
     }
 
-    .topbar{
-        padding:0 14px;
-    }
-
-    .content{
-        padding:18px 14px;
-    }
-
-    .dashboard-grid{
+    .cards{
         grid-template-columns:repeat(2,1fr);
     }
 
-    .grid-2{
+    .agenda-grid{
         grid-template-columns:1fr;
-    }
-
-    .quick-grid{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .week-grid{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .mov-info{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .date-top{
-        display:none;
-    }
-
-    .sync-status{
-        display:none;
     }
 }
 
-@media(max-width:500px){
-    .dashboard-grid{
+@media(max-width:600px){
+
+    .cards{
         grid-template-columns:1fr 1fr;
-    }
-
-    .page-title{
-        font-size:17px;
-    }
-
-    .top-actions .btn{
-        display:none;
     }
 
     .form-grid{
         grid-template-columns:1fr;
     }
 
-    .form-group.full{
+    .field.full{
         grid-column:auto;
     }
 
-    .week-grid{
-        grid-template-columns:1fr;
-    }
-
-    .mov-route{
+    .topbar{
         flex-wrap:wrap;
     }
 }
@@ -810,933 +414,630 @@ body:before{
 
 <body>
 
-<!-- ================= SIDEBAR ================= -->
+<div class="app">
 
 <aside class="sidebar" id="sidebar">
 
-    <div class="logo">
-        <div class="logo-icon">⚡</div>
+<div class="logo">
+    ⚙️ UTE MAUÉS
+</div>
 
-        <div>
-            <h2>Minha Agenda</h2>
-            <small>UTE MAUÉS • CONTROLE PESSOAL</small>
-        </div>
-    </div>
+<div class="menu">
 
-    <div class="menu">
+<button onclick="abrirPagina('inicio')" class="active" id="menu-inicio">
+    🏠 Início
+</button>
 
-        <button onclick="abrirPagina('inicio')" id="menu-inicio">
-            <span class="menu-icon">⌂</span> Início
-        </button>
+<button onclick="abrirPagina('agenda')" id="menu-agenda">
+    📅 Agenda
+</button>
 
-        <button onclick="abrirPagina('agenda')" id="menu-agenda">
-            <span class="menu-icon">📅</span> Agenda
-        </button>
+<button onclick="abrirPagina('tarefas')" id="menu-tarefas">
+    ✅ Tarefas
+</button>
 
-        <button onclick="abrirPagina('tarefas')" id="menu-tarefas">
-            <span class="menu-icon">✓</span> Tarefas
-        </button>
+<button onclick="abrirPagina('servicos')" id="menu-servicos">
+    🔧 Serviços
+</button>
 
-        <button onclick="abrirPagina('programacao')" id="menu-programacao">
-            <span class="menu-icon">🗓</span> Programação Semanal
-        </button>
+<button onclick="abrirPagina('movimentacoes')" id="menu-movimentacoes">
+    🔄 Movimentações
+</button>
 
-        <button onclick="abrirPagina('lembretes')" id="menu-lembretes">
-            <span class="menu-icon">🔔</span> Lembretes
-        </button>
+<button onclick="abrirPagina('notas')" id="menu-notas">
+    📝 Notas
+</button>
 
-        <div class="menu-title">REGISTROS</div>
+<button onclick="abrirPagina('programacao')" id="menu-programacao">
+    📋 Programação Semanal
+</button>
 
-        <button onclick="abrirPagina('servicos')" id="menu-servicos">
-            <span class="menu-icon">🔧</span> Serviços Realizados
-        </button>
+<button onclick="abrirPagina('lembretes')" id="menu-lembretes">
+    🔔 Lembretes
+</button>
 
-        <button onclick="abrirPagina('movimentacoes')" id="menu-movimentacoes">
-            <span class="menu-icon">🔄</span> Movimentações
-        </button>
+<button onclick="abrirPagina('bloco')" id="menu-bloco">
+    📒 Bloco de Notas
+</button>
 
-        <button onclick="abrirPagina('bloco')" id="menu-bloco">
-            <span class="menu-icon">📝</span> Bloco de Notas
-        </button>
-
-        <div class="menu-title">SISTEMA</div>
-
-        <button onclick="abrirPagina('pesquisa')" id="menu-pesquisa">
-            <span class="menu-icon">🔎</span> Pesquisa Geral
-        </button>
-
-    </div>
-
+</div>
 </aside>
-
-<!-- ================= MAIN ================= -->
 
 <main class="main">
 
-    <header class="topbar">
+<div class="topbar">
 
-        <div class="top-left">
+<button class="mobile-menu" onclick="toggleMenu()">
+    ☰ Menu
+</button>
 
-            <button class="mobile-menu" onclick="toggleMenu()">☰</button>
+<div>
+    <strong id="dataAtual"></strong>
+</div>
 
-            <div>
-                <div class="page-title" id="pageTitle">Início</div>
-                <div class="date-top" id="dataAtual"></div>
-            </div>
+<div class="status">
+    <span class="status-dot" id="statusDot"></span>
+    <span id="statusTexto">Sincronizado</span>
+</div>
 
-        </div>
+</div>
 
-        <div class="top-actions">
 
-            <div class="sync-status" id="syncStatus">
-                ☁️ Sincronizando...
-            </div>
+<!-- INÍCIO -->
 
-            <button class="btn btn-primary" onclick="abrirModal('tarefa')">
-                + Nova Tarefa
-            </button>
+<section class="page active" id="page-inicio">
 
-        </div>
+<div class="page-title">
+<h1>Minha Agenda</h1>
+<p>Controle pessoal das atividades da UTE.</p>
+</div>
 
-    </header>
+<div class="cards">
 
-    <div class="content">
+<div class="card">
+<small>Tarefas pendentes</small>
+<strong id="contadorTarefas">0</strong>
+</div>
 
-        <!-- ================= INÍCIO ================= -->
+<div class="card">
+<small>Serviços</small>
+<strong id="contadorServicos">0</strong>
+</div>
 
-        <section class="page" id="page-inicio">
+<div class="card">
+<small>Movimentações</small>
+<strong id="contadorMovimentacoes">0</strong>
+</div>
 
-            <div class="welcome">
-                <h1>Bom trabalho, Gabriel 👋</h1>
-                <p>Seu controle pessoal das atividades da UTE Maués.</p>
-            </div>
+<div class="card">
+<small>Lembretes</small>
+<strong id="contadorLembretes">0</strong>
+</div>
 
-            <div class="dashboard-grid">
+</div>
 
-                <div class="stat-card">
-                    <div class="stat-icon">📋</div>
-                    <div class="stat-value" id="totalTarefasHoje">0</div>
-                    <div class="stat-label">Tarefas hoje</div>
-                </div>
+<div class="panel">
 
-                <div class="stat-card">
-                    <div class="stat-icon">⏳</div>
-                    <div class="stat-value" id="totalPendentes">0</div>
-                    <div class="stat-label">Tarefas pendentes</div>
-                </div>
+<h2>Resumo</h2>
 
-                <div class="stat-card">
-                    <div class="stat-icon">🔧</div>
-                    <div class="stat-value" id="totalServicosHoje">0</div>
-                    <div class="stat-label">Serviços hoje</div>
-                </div>
+<br>
 
-                <div class="stat-card">
-                    <div class="stat-icon">🔄</div>
-                    <div class="stat-value" id="totalMovHoje">0</div>
-                    <div class="stat-label">Movimentações hoje</div>
-                </div>
+<div id="resumoInicio"></div>
 
-                <div class="stat-card">
-                    <div class="stat-icon">🔔</div>
-                    <div class="stat-value" id="totalLembretes">0</div>
-                    <div class="stat-label">Lembretes pendentes</div>
-                </div>
+</div>
 
-            </div>
+</section>
 
-            <div class="panel" style="margin-bottom:18px">
 
-                <div class="panel-title">
-                    <h3>Ações rápidas</h3>
-                    <span>Controle pessoal</span>
-                </div>
+<!-- AGENDA -->
 
-                <div class="quick-grid">
+<section class="page" id="page-agenda">
 
-                    <button class="quick-btn" onclick="abrirModal('tarefa')">
-                        <div>📋</div>
-                        Nova Tarefa
-                    </button>
+<div class="page-title">
+<h1>Agenda</h1>
+<p>Organize seus compromissos.</p>
+</div>
 
-                    <button class="quick-btn" onclick="abrirModal('servico')">
-                        <div>🔧</div>
-                        Serviço Realizado
-                    </button>
+<div class="panel">
 
-                    <button class="quick-btn" onclick="abrirModal('movimentacao')">
-                        <div>🔄</div>
-                        Movimentação
-                    </button>
+<div class="form-grid">
 
-                    <button class="quick-btn" onclick="abrirModal('lembrete')">
-                        <div>🔔</div>
-                        Lembrete
-                    </button>
+<div class="field">
+<label>Data</label>
+<input type="date" id="agendaData">
+</div>
 
-                    <button class="quick-btn" onclick="abrirPagina('agenda')">
-                        <div>📅</div>
-                        Agenda
-                    </button>
+<div class="field">
+<label>Horário</label>
+<input type="time" id="agendaHora">
+</div>
 
-                    <button class="quick-btn" onclick="abrirModal('programacao')">
-                        <div>🗓</div>
-                        Programação
-                    </button>
+<div class="field full">
+<label>Título</label>
+<input id="agendaTitulo" placeholder="Ex.: Reunião, inspeção, acompanhamento...">
+</div>
 
-                    <button class="quick-btn" onclick="abrirPagina('servicos')">
-                        <div>📚</div>
-                        Histórico
-                    </button>
+<div class="field full">
+<label>Descrição</label>
+<textarea id="agendaDescricao"></textarea>
+</div>
 
-                    <button class="quick-btn" onclick="abrirPagina('pesquisa')">
-                        <div>🔎</div>
-                        Pesquisa Geral
-                    </button>
+</div>
 
-                </div>
+<div class="actions">
 
-            </div>
+<button class="btn btn-primary" onclick="salvarAgenda()">
+Salvar
+</button>
 
-            <div class="grid-2">
+<button class="btn btn-secondary" onclick="limparFormulario('agenda')">
+Limpar
+</button>
 
-                <div class="panel">
+</div>
 
-                    <div class="panel-title">
-                        <h3>Tarefas de hoje</h3>
-                        <span onclick="abrirPagina('tarefas')" style="cursor:pointer">
-                            Ver todas →
-                        </span>
-                    </div>
+</div>
 
-                    <div class="item-list" id="inicioTarefas"></div>
+<div id="listaAgenda" class="lista"></div>
 
-                </div>
+</section>
 
-                <div class="panel">
 
-                    <div class="panel-title">
-                        <h3>Últimos serviços</h3>
-                        <span onclick="abrirPagina('servicos')" style="cursor:pointer">
-                            Histórico →
-                        </span>
-                    </div>
+<!-- TAREFAS -->
 
-                    <div class="item-list" id="inicioServicos"></div>
+<section class="page" id="page-tarefas">
 
-                </div>
+<div class="page-title">
+<h1>Tarefas</h1>
+<p>Controle suas tarefas pessoais.</p>
+</div>
 
-            </div>
+<div class="panel">
 
-            <div class="panel" style="margin-top:18px">
+<div class="form-grid">
 
-                <div class="panel-title">
-                    <h3>Últimas movimentações</h3>
-                    <span onclick="abrirPagina('movimentacoes')" style="cursor:pointer">
-                        Ver todas →
-                    </span>
-                </div>
+<div class="field">
+<label>Tarefa</label>
+<input id="tarefaTitulo" placeholder="Ex.: Verificar UGD 25">
+</div>
 
-                <div id="inicioMovimentacoes"></div>
+<div class="field">
+<label>Prioridade</label>
+<select id="tarefaPrioridade">
+<option>Normal</option>
+<option>Alta</option>
+<option>Urgente</option>
+</select>
+</div>
 
-            </div>
+<div class="field">
+<label>Data</label>
+<input type="date" id="tarefaData">
+</div>
 
-        </section>
+<div class="field">
+<label>Status</label>
+<select id="tarefaStatus">
+<option>Pendente</option>
+<option>Em andamento</option>
+<option>Concluída</option>
+</select>
+</div>
 
-        <!-- ================= AGENDA ================= -->
+<div class="field full">
+<label>Observação</label>
+<textarea id="tarefaDescricao"></textarea>
+</div>
 
-        <section class="page" id="page-agenda">
+</div>
 
-            <div class="page-header">
+<div class="actions">
 
-                <div>
-                    <h2>Agenda</h2>
-                    <p>Compromissos e atividades programadas.</p>
-                </div>
+<button class="btn btn-primary" onclick="salvarTarefa()">
+Salvar tarefa
+</button>
 
-                <button class="btn btn-primary" onclick="abrirModal('agenda')">
-                    + Novo compromisso
-                </button>
+</div>
 
-            </div>
+</div>
 
-            <div class="panel">
+<div id="listaTarefas" class="lista"></div>
 
-                <div class="filters">
+</section>
 
-                    <input
-                        type="date"
-                        class="input"
-                        id="filtroAgendaData"
-                        onchange="renderAgenda()"
-                    >
 
-                </div>
+<!-- SERVIÇOS -->
 
-                <div class="item-list" id="listaAgenda"></div>
+<section class="page" id="page-servicos">
 
-            </div>
+<div class="page-title">
+<h1>Serviços</h1>
+<p>Controle dos serviços e acompanhamentos.</p>
+</div>
 
-        </section>
+<div class="panel">
 
-        <!-- ================= TAREFAS ================= -->
+<div class="form-grid">
 
-        <section class="page" id="page-tarefas">
+<div class="field">
+<label>UGD</label>
+<input id="servicoUgd" placeholder="Ex.: UGD25">
+</div>
 
-            <div class="page-header">
+<div class="field">
+<label>OS</label>
+<input id="servicoOS" placeholder="Ex.: 262334">
+</div>
 
-                <div>
-                    <h2>Tarefas</h2>
-                    <p>Controle das atividades que precisam ser realizadas.</p>
-                </div>
+<div class="field full">
+<label>Serviço</label>
+<input id="servicoTitulo" placeholder="Descrição do serviço">
+</div>
 
-                <button class="btn btn-primary" onclick="abrirModal('tarefa')">
-                    + Nova tarefa
-                </button>
+<div class="field">
+<label>Status</label>
+<select id="servicoStatus">
+<option>Pendente</option>
+<option>Em andamento</option>
+<option>Concluído</option>
+</select>
+</div>
 
-            </div>
+<div class="field">
+<label>Data</label>
+<input type="date" id="servicoData">
+</div>
 
-            <div class="panel">
+<div class="field full">
+<label>Observação</label>
+<textarea id="servicoDescricao"></textarea>
+</div>
 
-                <div class="filters">
+</div>
 
-                    <input
-                        class="input"
-                        id="filtroTarefa"
-                        placeholder="Pesquisar tarefa..."
-                        oninput="filtrarTarefas()"
-                    >
+<div class="actions">
 
-                    <select
-                        class="select"
-                        id="filtroStatus"
-                        onchange="filtrarTarefas()"
-                    >
-                        <option value="">Todos</option>
-                        <option value="PENDENTE">Pendentes</option>
-                        <option value="CONCLUIDA">Concluídas</option>
-                    </select>
+<button class="btn btn-primary" onclick="salvarServico()">
+Salvar serviço
+</button>
 
-                </div>
+</div>
 
-                <div class="item-list" id="listaTarefas"></div>
+</div>
 
-            </div>
+<div id="listaServicos" class="lista"></div>
 
-        </section>
+</section>
 
-        <!-- ================= PROGRAMAÇÃO ================= -->
 
-        <section class="page" id="page-programacao">
+<!-- MOVIMENTAÇÕES -->
 
-            <div class="page-header">
+<section class="page" id="page-movimentacoes">
 
-                <div>
-                    <h2>Programação Semanal</h2>
-                    <p>Organize serviços e atividades por dia.</p>
-                </div>
+<div class="page-title">
+<h1>Movimentações</h1>
+<p>Registre rapidamente peças movimentadas entre máquinas.</p>
+</div>
 
-                <button class="btn btn-primary" onclick="abrirModal('programacao')">
-                    + Programar
-                </button>
+<div class="panel">
 
-            </div>
+<div class="form-grid">
 
-            <div class="week-grid" id="weekGrid"></div>
+<div class="field">
+<label>Data</label>
+<input type="date" id="movData">
+</div>
 
-        </section>
+<div class="field">
+<label>OS</label>
+<input id="movOS" placeholder="Opcional">
+</div>
 
-        <!-- ================= LEMBRETES ================= -->
+<div class="field full">
+<label>Movimentação</label>
+<textarea id="movDescricao"
+placeholder="Ex.: Retirado DEIF da UGD18 e instalado na UGD22."></textarea>
+</div>
 
-        <section class="page" id="page-lembretes">
+</div>
 
-            <div class="page-header">
+<div class="actions">
 
-                <div>
-                    <h2>Lembretes</h2>
-                    <p>Não deixe uma atividade importante passar.</p>
-                </div>
+<button class="btn btn-primary" onclick="salvarMovimentacao()">
+Registrar movimentação
+</button>
 
-                <button class="btn btn-primary" onclick="abrirModal('lembrete')">
-                    + Novo lembrete
-                </button>
+</div>
 
-            </div>
+</div>
 
-            <div class="panel">
+<div id="listaMovimentacoes" class="lista"></div>
 
-                <div class="item-list" id="listaLembretes"></div>
+</section>
 
-            </div>
 
-        </section>
+<!-- NOTAS -->
 
-        <!-- ================= SERVIÇOS ================= -->
+<section class="page" id="page-notas">
 
-        <section class="page" id="page-servicos">
+<div class="page-title">
+<h1>Notas</h1>
+<p>Anotações rápidas.</p>
+</div>
 
-            <div class="page-header">
+<div class="panel">
 
-                <div>
-                    <h2>Serviços Realizados</h2>
-                    <p>Histórico dos serviços executados nas UGDs.</p>
-                </div>
+<div class="form-grid">
 
-                <button class="btn btn-primary" onclick="abrirModal('servico')">
-                    + Registrar serviço
-                </button>
+<div class="field full">
+<label>Título</label>
+<input id="notaTitulo">
+</div>
 
-            </div>
+<div class="field full">
+<label>Nota</label>
+<textarea id="notaDescricao"></textarea>
+</div>
 
-            <div class="panel">
+</div>
 
-                <div class="filters">
+<div class="actions">
 
-                    <input
-                        class="input"
-                        id="buscaServico"
-                        placeholder="Pesquisar UGD, serviço, OS..."
-                        oninput="buscarServicos()"
-                    >
+<button class="btn btn-primary" onclick="salvarNota()">
+Salvar nota
+</button>
 
-                </div>
+</div>
 
-                <div id="listaServicos"></div>
+</div>
 
-            </div>
+<div id="listaNotas" class="lista"></div>
 
-        </section>
+</section>
 
-        <!-- ================= MOVIMENTAÇÕES ================= -->
 
-        <section class="page" id="page-movimentacoes">
+<!-- PROGRAMAÇÃO -->
 
-            <div class="page-header">
+<section class="page" id="page-programacao">
 
-                <div>
-                    <h2>Movimentações</h2>
-                    <p>Registre de forma simples as peças movimentadas entre UGDs.</p>
-                </div>
+<div class="page-title">
+<h1>Programação Semanal</h1>
+<p>Planejamento das atividades da semana.</p>
+</div>
 
-                <button class="btn btn-primary" onclick="abrirModal('movimentacao')">
-                    + Registrar movimentação
-                </button>
+<div class="panel">
 
-            </div>
+<div class="form-grid">
 
-            <div class="panel">
+<div class="field">
+<label>Data</label>
+<input type="date" id="progData">
+</div>
 
-                <div class="filters">
+<div class="field">
+<label>UGD</label>
+<input id="progUgd" placeholder="UGD01">
+</div>
 
-                    <input
-                        class="input"
-                        id="buscaMov"
-                        placeholder="Pesquisar peça, UGD, OS, série..."
-                        oninput="buscarMovimentacoes()"
-                    >
+<div class="field">
+<label>OS</label>
+<input id="progOS">
+</div>
 
-                </div>
+<div class="field">
+<label>Responsável</label>
+<input id="progResponsavel">
+</div>
 
-                <div id="listaMovimentacoes"></div>
+<div class="field full">
+<label>Atividade</label>
+<textarea id="progDescricao"></textarea>
+</div>
 
-            </div>
+</div>
 
-        </section>
+<div class="actions">
 
-        <!-- ================= BLOCO ================= -->
+<button class="btn btn-primary" onclick="salvarProgramacao()">
+Salvar programação
+</button>
 
-        <section class="page" id="page-bloco">
+</div>
 
-            <div class="page-header">
+</div>
 
-                <div>
-                    <h2>Bloco de Notas</h2>
-                    <p>Anotações rápidas para lembrar depois.</p>
-                </div>
+<div id="listaProgramacao" class="lista"></div>
 
-                <button class="btn btn-primary" onclick="salvarBloco()">
-                    💾 Salvar
-                </button>
+</section>
 
-            </div>
 
-            <div class="panel">
+<!-- LEMBRETES -->
 
-                <textarea
-                    class="note-area"
-                    id="blocoTexto"
-                    placeholder="Digite suas anotações..."
-                ></textarea>
+<section class="page" id="page-lembretes">
 
-            </div>
+<div class="page-title">
+<h1>Lembretes</h1>
+<p>Não deixe atividades importantes passarem.</p>
+</div>
 
-        </section>
+<div class="panel">
 
-        <!-- ================= PESQUISA ================= -->
+<div class="form-grid">
 
-        <section class="page" id="page-pesquisa">
+<div class="field full">
+<label>Lembrete</label>
+<input id="lembreteTitulo">
+</div>
 
-            <div class="page-header">
+<div class="field">
+<label>Data</label>
+<input type="date" id="lembreteData">
+</div>
 
-                <div>
-                    <h2>Pesquisa Geral</h2>
-                    <p>Pesquise em tarefas, serviços, movimentações, agenda e lembretes.</p>
-                </div>
+<div class="field">
+<label>Horário</label>
+<input type="time" id="lembreteHora">
+</div>
 
-            </div>
+<div class="field full">
+<label>Observação</label>
+<textarea id="lembreteDescricao"></textarea>
+</div>
 
-            <div class="panel">
+</div>
 
-                <div class="search-box">
+<div class="actions">
 
-                    <input
-                        class="input"
-                        id="pesquisaGeral"
-                        placeholder="Digite o que deseja encontrar..."
-                        onkeydown="if(event.key==='Enter') executarPesquisa()"
-                    >
+<button class="btn btn-primary" onclick="salvarLembrete()">
+Salvar lembrete
+</button>
 
-                    <button class="btn btn-primary" onclick="executarPesquisa()">
-                        Pesquisar
-                    </button>
+</div>
 
-                </div>
+</div>
 
-                <div id="resultadoPesquisa"></div>
+<div id="listaLembretes" class="lista"></div>
 
-            </div>
+</section>
 
-        </section>
 
-    </div>
+<!-- BLOCO -->
+
+<section class="page" id="page-bloco">
+
+<div class="page-title">
+<h1>Bloco de Notas</h1>
+<p>Texto livre salvo automaticamente no navegador.</p>
+</div>
+
+<div class="panel">
+
+<textarea
+id="blocoTexto"
+style="width:100%;min-height:400px"
+placeholder="Digite suas anotações..."
+oninput="salvarBlocoLocal()"
+></textarea>
+
+<div class="actions">
+
+<button class="btn btn-primary" onclick="sincronizarBloco()">
+Sincronizar bloco
+</button>
+
+<button class="btn btn-secondary" onclick="limparBloco()">
+Limpar
+</button>
+
+</div>
+
+</div>
+
+</section>
 
 </main>
 
-<!-- ================= MODAL ================= -->
-
-<div class="modal" id="modal">
-
-    <div class="modal-box">
-
-        <div class="modal-head">
-
-            <h3 id="modalTitulo">Novo registro</h3>
-
-            <button class="close" onclick="fecharModal()">×</button>
-
-        </div>
-
-        <div id="modalConteudo"></div>
-
-    </div>
-
 </div>
+
+
+<div class="toast" id="toast"></div>
+
 
 <script>
 
 /* ============================================================
-   GOOGLE SHEETS
-============================================================ */
+   CONFIGURAÇÃO
+   ============================================================ */
 
-const API_URL =
-"https://script.google.com/macros/s/AKfycbwnh_sGGgGxDybRlvRhv8afEmaOjPPYDKyQOZBorWMJHRP2pv1u_UDgnrz32zVQkoA2bw/exec";
+const CONFIG = {
 
+    /*
+     * COLOQUE AQUI A URL DO SEU GOOGLE APPS SCRIPT
+     */
+    URL_API: "COLE_AQUI_A_URL_DO_SEU_APPS_SCRIPT",
 
-/* ============================================================
-   BANCO LOCAL
-============================================================ */
+    ABAS: {
+        TAREFAS: "TAREFAS",
+        SERVICOS: "SERVICOS",
+        MOVIMENTACOES: "MOVIMENTACOES",
+        AGENDA: "AGENDA",
+        NOTAS: "NOTAS",
+        PROGRAMACAO: "PROGRAMACAO",
+        LEMBRETES: "LEMBRETES",
+        BLOCO: "BLOCO_NOTAS"
+    },
 
-let dados = JSON.parse(
-    localStorage.getItem("minha_agenda_ute")
-) || {
-    tarefas:[],
-    movimentacoes:[],
-    servicos:[],
-    agenda:[],
-    lembretes:[],
-    programacao:[],
-    bloco:""
+    STORAGE: {
+        DADOS: "UTE_AGENDA_DADOS_V2",
+        FILA: "UTE_AGENDA_FILA_V2",
+        BLOCO: "UTE_AGENDA_BLOCO_V2"
+    },
+
+    INTERVALO_SYNC: 3000,
+    DEBOUNCE: 400,
+    MAX_TENTATIVAS: 5
 };
 
 
 /* ============================================================
-   CONTROLE
-============================================================ */
+   BANCO LOCAL
+   ============================================================ */
 
-let paginaAtual = "inicio";
-let editandoId = null;
-let editandoTipo = null;
+let dados = {
 
+    tarefas: [],
+    servicos: [],
+    movimentacoes: [],
+    agenda: [],
+    notas: [],
+    programacao: [],
+    lembretes: []
+};
 
-/* ============================================================
-   SALVAR LOCAL
-============================================================ */
+let filaSync = [];
 
-function salvar(){
+let sincronizando = false;
 
-    localStorage.setItem(
-        "minha_agenda_ute",
-        JSON.stringify(dados)
-    );
+let timerSync = null;
 
-}
-
-
-/* ============================================================
-   STATUS DE SINCRONIZAÇÃO
-============================================================ */
-
-function syncStatus(texto, tipo="ok"){
-
-    const el = document.getElementById("syncStatus");
-
-    if(!el) return;
-
-    el.textContent = texto;
-
-    if(tipo==="erro"){
-        el.style.color = "#ff4d5f";
-        el.style.borderColor = "rgba(255,77,95,.2)";
-    }
-
-    else if(tipo==="load"){
-        el.style.color = "#ffc107";
-        el.style.borderColor = "rgba(255,193,7,.2)";
-    }
-
-    else{
-        el.style.color = "#20d889";
-        el.style.borderColor = "rgba(32,216,137,.2)";
-    }
-
-}
+let timerDebounce = null;
 
 
 /* ============================================================
-   CARREGAR GOOGLE SHEETS
-============================================================ */
+   INICIALIZAÇÃO
+   ============================================================ */
 
-async function carregarDadosGoogle(){
+document.addEventListener("DOMContentLoaded", function(){
 
-    syncStatus("☁️ Carregando...", "load");
+    carregarDadosLocal();
 
-    try{
+    carregarFilaLocal();
 
-        const resposta = await fetch(
-            API_URL + "?action=getAll"
-        );
+    carregarBlocoLocal();
 
-        if(!resposta.ok){
-            throw new Error("Erro HTTP");
-        }
+    atualizarData();
 
-        const resultado = await resposta.json();
+    renderizarTudo();
 
-        if(resultado.ok && resultado.dados){
+    abrirPagina("inicio");
 
-            dados = {
+    atualizarStatus();
 
-                tarefas: resultado.dados.tarefas || [],
+    iniciarSincronizacao();
 
-                movimentacoes:
-                    resultado.dados.movimentacoes || [],
-
-                servicos:
-                    resultado.dados.servicos || [],
-
-                agenda:
-                    resultado.dados.agenda || [],
-
-                lembretes:
-                    resultado.dados.lembretes || [],
-
-                programacao:
-                    resultado.dados.programacao || [],
-
-                bloco:
-                    resultado.dados.bloco || ""
-
-            };
-
-            salvar();
-
-            atualizarTudo();
-
-            syncStatus("☁️ Sincronizado");
-
-        }else{
-
-            throw new Error("Resposta inválida");
-
-        }
-
-    }catch(erro){
-
-        console.error(erro);
-
-        syncStatus("⚠️ Offline", "erro");
-
-        atualizarTudo();
-
-    }
-
-}
+});
 
 
 /* ============================================================
-   ENVIAR REGISTRO
-============================================================ */
-
-async function enviarGoogle(tipo, registro){
-
-    try{
-
-        syncStatus("☁️ Salvando...", "load");
-
-        const resposta = await fetch(API_URL, {
-
-            method:"POST",
-
-            headers:{
-                "Content-Type":
-                "text/plain;charset=utf-8"
-            },
-
-            body:JSON.stringify({
-
-                action:"upsert",
-
-                tipo:tipo,
-
-                registro:registro
-
-            })
-
-        });
-
-        const resultado = await resposta.json();
-
-        if(resultado.ok){
-
-            syncStatus("☁️ Sincronizado");
-
-        }else{
-
-            throw new Error(
-                resultado.erro || "Erro ao salvar"
-            );
-
-        }
-
-    }catch(erro){
-
-        console.error(erro);
-
-        syncStatus("⚠️ Não sincronizado", "erro");
-
-    }
-
-}
-
-
-/* ============================================================
-   EXCLUIR GOOGLE
-============================================================ */
-
-async function excluirGoogle(tipo, registroId){
-
-    try{
-
-        syncStatus("☁️ Atualizando...", "load");
-
-        const resposta = await fetch(API_URL, {
-
-            method:"POST",
-
-            headers:{
-                "Content-Type":
-                "text/plain;charset=utf-8"
-            },
-
-            body:JSON.stringify({
-
-                action:"delete",
-
-                tipo:tipo,
-
-                id:registroId
-
-            })
-
-        });
-
-        const resultado = await resposta.json();
-
-        if(resultado.ok){
-
-            syncStatus("☁️ Sincronizado");
-
-        }else{
-
-            throw new Error(
-                resultado.erro || "Erro"
-            );
-
-        }
-
-    }catch(erro){
-
-        console.error(erro);
-
-        syncStatus("⚠️ Não sincronizado", "erro");
-
-    }
-
-}
-
-
-/* ============================================================
-   SALVAR BLOCO GOOGLE
-============================================================ */
-
-async function enviarBlocoGoogle(texto){
-
-    try{
-
-        syncStatus("☁️ Salvando...", "load");
-
-        const resposta = await fetch(API_URL, {
-
-            method:"POST",
-
-            headers:{
-                "Content-Type":
-                "text/plain;charset=utf-8"
-            },
-
-            body:JSON.stringify({
-
-                action:"saveBloco",
-
-                texto:texto
-
-            })
-
-        });
-
-        const resultado = await resposta.json();
-
-        if(resultado.ok){
-
-            syncStatus("☁️ Sincronizado");
-
-        }else{
-
-            throw new Error("Erro");
-
-        }
-
-    }catch(erro){
-
-        console.error(erro);
-
-        syncStatus("⚠️ Não sincronizado", "erro");
-
-    }
-
-}
-
-
-/* ============================================================
-   UTILIDADES
-============================================================ */
-
-function hoje(){
-
-    const d = new Date();
-
-    const ano = d.getFullYear();
-
-    const mes =
-        String(d.getMonth()+1).padStart(2,"0");
-
-    const dia =
-        String(d.getDate()).padStart(2,"0");
-
-    return `${ano}-${mes}-${dia}`;
-
-}
-
-
-function horaAtual(){
-
-    const d = new Date();
-
-    return String(d.getHours()).padStart(2,"0")
-        + ":"
-        + String(d.getMinutes()).padStart(2,"0");
-
-}
-
-
-function formatarData(data){
-
-    if(!data) return "";
-
-    if(
-        typeof data === "string" &&
-        /^\d{4}-\d{2}-\d{2}$/.test(data)
-    ){
-
-        const partes = data.split("-");
-
-        return `${partes[2]}/${partes[1]}/${partes[0]}`;
-
-    }
-
-    const d = new Date(data);
-
-    if(isNaN(d)) return data;
-
-    return d.toLocaleDateString("pt-BR");
-
-}
-
-
-function escapar(texto){
-
-    if(texto===undefined || texto===null)
-        return "";
-
-    return String(texto)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
-
-}
-
-
-function id(){
-
-    return Date.now()
-        + Math.floor(Math.random()*1000);
-
-}
-
-
-/* ============================================================
-   DATA ATUAL
-============================================================ */
+   DATA
+   ============================================================ */
 
 function atualizarData(){
 
-    const d = new Date();
+    const agora = new Date();
 
-    document.getElementById("dataAtual")
-        .textContent =
-        d.toLocaleDateString(
+    document.getElementById("dataAtual").textContent =
+        agora.toLocaleDateString(
             "pt-BR",
             {
                 weekday:"long",
@@ -1750,497 +1051,484 @@ function atualizarData(){
 
 
 /* ============================================================
-   NAVEGAÇÃO
-============================================================ */
+   LOCAL STORAGE
+   ============================================================ */
 
-const titulos = {
+function carregarDadosLocal(){
 
-    inicio:"Início",
-    agenda:"Agenda",
-    tarefas:"Tarefas",
-    programacao:"Programação Semanal",
-    lembretes:"Lembretes",
-    servicos:"Serviços Realizados",
-    movimentacoes:"Movimentações",
-    bloco:"Bloco de Notas",
-    pesquisa:"Pesquisa Geral"
+    try{
 
-};
+        const salvo =
+            localStorage.getItem(CONFIG.STORAGE.DADOS);
 
+        if(salvo){
 
-function abrirPagina(nome){
+            const local =
+                JSON.parse(salvo);
 
-    paginaAtual = nome;
+            dados = {
 
-    document.querySelectorAll(".page")
-        .forEach(p => p.classList.remove("active"));
+                tarefas: local.tarefas || [],
+                servicos: local.servicos || [],
+                movimentacoes: local.movimentacoes || [],
+                agenda: local.agenda || [],
+                notas: local.notas || [],
+                programacao: local.programacao || [],
+                lembretes: local.lembretes || []
 
-    const page =
-        document.getElementById("page-"+nome);
+            };
 
-    if(page)
-        page.classList.add("active");
+        }
 
-    document.querySelectorAll(".menu button")
-        .forEach(b => b.classList.remove("active"));
+    }catch(e){
 
-    const menu =
-        document.getElementById("menu-"+nome);
-
-    if(menu)
-        menu.classList.add("active");
-
-    document.getElementById("pageTitle")
-        .textContent =
-        titulos[nome] || nome;
-
-    if(window.innerWidth <= 800){
-
-        document.getElementById("sidebar")
-            .classList.remove("open");
+        console.error(
+            "Erro ao carregar dados locais:",
+            e
+        );
 
     }
-
-    if(nome==="inicio")
-        renderInicio();
-
-    if(nome==="tarefas")
-        renderTarefas();
-
-    if(nome==="servicos")
-        renderServicos();
-
-    if(nome==="movimentacoes")
-        renderMovimentacoes();
-
-    if(nome==="agenda")
-        renderAgenda();
-
-    if(nome==="lembretes")
-        renderLembretes();
-
-    if(nome==="programacao")
-        renderProgramacao();
-
-    if(nome==="bloco")
-        renderBloco();
 
 }
 
 
-function toggleMenu(){
+function salvarDadosLocal(){
 
-    document.getElementById("sidebar")
-        .classList.toggle("open");
+    try{
+
+        localStorage.setItem(
+            CONFIG.STORAGE.DADOS,
+            JSON.stringify(dados)
+        );
+
+    }catch(e){
+
+        console.error(
+            "Erro ao salvar dados:",
+            e
+        );
+
+    }
 
 }
 
 
 /* ============================================================
-   INÍCIO
-============================================================ */
+   FILA
+   ============================================================ */
 
-function renderInicio(){
+function carregarFilaLocal(){
 
-    const dataHoje = hoje();
+    try{
 
-    const tarefasHoje =
-        dados.tarefas.filter(
-            x => x.data === dataHoje
-        );
+        const fila =
+            localStorage.getItem(
+                CONFIG.STORAGE.FILA
+            );
 
-    const pendentes =
-        dados.tarefas.filter(
-            x => x.status !== "CONCLUIDA"
-        );
+        filaSync =
+            fila ? JSON.parse(fila) : [];
 
-    const servicosHoje =
-        dados.servicos.filter(
-            x => x.data === dataHoje
-        );
+        if(!Array.isArray(filaSync)){
+            filaSync = [];
+        }
 
-    const movHoje =
-        dados.movimentacoes.filter(
-            x => x.data === dataHoje
-        );
+    }catch(e){
 
-    const lembretes =
-        dados.lembretes.filter(
-            x => x.status !== "CONCLUIDO"
-        );
+        filaSync = [];
 
-    document.getElementById("totalTarefasHoje")
-        .textContent = tarefasHoje.length;
+    }
 
-    document.getElementById("totalPendentes")
-        .textContent = pendentes.length;
+}
 
-    document.getElementById("totalServicosHoje")
-        .textContent = servicosHoje.length;
 
-    document.getElementById("totalMovHoje")
-        .textContent = movHoje.length;
+function salvarFilaLocal(){
 
-    document.getElementById("totalLembretes")
-        .textContent = lembretes.length;
-
-    renderTarefasInicio();
-
-    renderServicosInicio();
-
-    renderMovInicio();
+    localStorage.setItem(
+        CONFIG.STORAGE.FILA,
+        JSON.stringify(filaSync)
+    );
 
 }
 
 
 /* ============================================================
-   TAREFAS INÍCIO
-============================================================ */
+   CRIAR ID
+   ============================================================ */
 
-function renderTarefasInicio(){
+function novoID(){
 
-    const el =
-        document.getElementById("inicioTarefas");
+    return Date.now().toString(36) +
+        Math.random()
+        .toString(36)
+        .substring(2,9);
 
-    const lista =
-        dados.tarefas
-        .filter(x => x.data === hoje())
-        .sort((a,b)=>
-            String(a.hora||"")
-            .localeCompare(String(b.hora||""))
-        )
-        .slice(0,6);
+}
 
-    if(!lista.length){
 
-        el.innerHTML =
-            `<div class="empty">
-                Nenhuma tarefa para hoje.
-            </div>`;
+/* ============================================================
+   ADICIONAR FILA
+   ============================================================ */
 
-        return;
+function adicionarFila(
+    acao,
+    aba,
+    registro
+){
 
-    }
+    const item = {
 
-    el.innerHTML =
-        lista.map(x => `
+        idFila: novoID(),
 
-        <div class="item">
+        acao: acao,
 
-            <div class="item-main">
+        aba: aba,
 
-                <div class="item-title">
-                    ${escapar(x.titulo)}
-                </div>
+        registro: registro,
 
-                <div class="item-sub">
-                    ${x.hora || ""}
-                    ${x.observacao ?
-                        " • "+escapar(x.observacao) : ""}
-                </div>
+        tentativas: 0,
 
-            </div>
+        criadoEm: Date.now()
 
-            <div>
+    };
 
-                ${
-                    x.status==="CONCLUIDA"
+    filaSync.push(item);
 
-                    ? `<span class="badge badge-green">
-                        Concluída
-                       </span>`
+    salvarFilaLocal();
 
-                    : `<span class="badge badge-yellow">
-                        Pendente
-                       </span>`
+    atualizarStatus();
+
+    iniciarDebounce();
+
+}
+
+
+/* ============================================================
+   DEBOUNCE
+   ============================================================ */
+
+function iniciarDebounce(){
+
+    clearTimeout(timerDebounce);
+
+    timerDebounce =
+        setTimeout(
+            processarFila,
+            CONFIG.DEBOUNCE
+        );
+
+}
+
+
+/* ============================================================
+   SINCRONIZAÇÃO AUTOMÁTICA
+   ============================================================ */
+
+function iniciarSincronizacao(){
+
+    clearInterval(timerSync);
+
+    timerSync =
+        setInterval(
+            function(){
+
+                if(
+                    filaSync.length &&
+                    !sincronizando
+                ){
+
+                    processarFila();
+
                 }
 
-            </div>
+            },
+            CONFIG.INTERVALO_SYNC
+        );
 
-        </div>
+    if(filaSync.length){
 
-    `).join("");
+        setTimeout(
+            processarFila,
+            500
+        );
+
+    }
 
 }
 
 
 /* ============================================================
-   SERVIÇOS INÍCIO
-============================================================ */
+   PROCESSAR FILA
+   ============================================================ */
 
-function renderServicosInicio(){
+async function processarFila(){
 
-    const el =
-        document.getElementById("inicioServicos");
+    if(sincronizando) return;
 
-    const lista =
-        [...dados.servicos]
-        .sort((a,b)=>
-            String(b.data||"")
-            .localeCompare(String(a.data||""))
-        )
-        .slice(0,6);
+    if(!filaSync.length){
 
-    if(!lista.length){
-
-        el.innerHTML =
-            `<div class="empty">
-                Nenhum serviço registrado.
-            </div>`;
+        atualizarStatus();
 
         return;
 
     }
 
-    el.innerHTML =
-        lista.map(x => `
+    if(!navigator.onLine){
 
-        <div class="item">
+        atualizarStatus();
 
-            <div class="item-main">
+        return;
 
-                <div class="item-title">
-                    ${escapar(x.ugd || "")}
-                    — ${escapar(x.servico || "")}
-                </div>
+    }
 
-                <div class="item-sub">
-                    ${formatarData(x.data)}
-                    ${x.os ? " • OS "+escapar(x.os) : ""}
-                </div>
+    if(
+        !CONFIG.URL_API ||
+        CONFIG.URL_API.includes("COLE_AQUI")
+    ){
 
-            </div>
+        atualizarStatus();
 
-            <span class="badge badge-blue">
-                Serviço
-            </span>
+        return;
 
-        </div>
+    }
 
-    `).join("");
+    sincronizando = true;
+
+    atualizarStatus("sync");
+
+    const item = filaSync[0];
+
+    try{
+
+        const resposta =
+            await enviarParaGoogle(item);
+
+        if(resposta){
+
+            filaSync.shift();
+
+            salvarFilaLocal();
+
+            sincronizando = false;
+
+            atualizarStatus();
+
+            if(filaSync.length){
+
+                setTimeout(
+                    processarFila,
+                    50
+                );
+
+            }
+
+            return;
+
+        }
+
+    }catch(e){
+
+        console.error(
+            "Erro na sincronização:",
+            e
+        );
+
+        item.tentativas++;
+
+        if(
+            item.tentativas >=
+            CONFIG.MAX_TENTATIVAS
+        ){
+
+            console.warn(
+                "Item mantido como pendente:",
+                item
+            );
+
+        }
+
+        salvarFilaLocal();
+
+    }
+
+    sincronizando = false;
+
+    atualizarStatus();
 
 }
 
 
 /* ============================================================
-   MOVIMENTAÇÕES INÍCIO
-============================================================ */
+   ENVIO PARA GOOGLE
+   ============================================================ */
 
-function renderMovInicio(){
+async function enviarParaGoogle(item){
 
-    const el =
-        document.getElementById("inicioMovimentacoes");
+    const payload = {
 
-    const lista =
-        [...dados.movimentacoes]
-        .sort((a,b)=>
-            String(b.data||"")
-            .localeCompare(String(a.data||""))
-        )
-        .slice(0,5);
+        acao: item.acao,
 
-    if(!lista.length){
+        aba: item.aba,
 
-        el.innerHTML =
-            `<div class="empty">
-                Nenhuma movimentação registrada.
-            </div>`;
+        registro: item.registro,
 
-        return;
+        id: item.registro.id,
+
+        timestamp: new Date().toISOString()
+
+    };
+
+    const resposta =
+        await fetch(
+            CONFIG.URL_API,
+            {
+
+                method:"POST",
+
+                headers:{
+                    "Content-Type":
+                        "text/plain;charset=utf-8"
+                },
+
+                body:
+                    JSON.stringify(payload),
+
+                redirect:"follow"
+
+            }
+        );
+
+    if(!resposta.ok){
+
+        throw new Error(
+            "HTTP " + resposta.status
+        );
 
     }
 
-    el.innerHTML =
-        lista.map(x => `
+    /*
+     * Apps Script normalmente retorna JSON.
+     * Caso não consiga interpretar, consideramos
+     * que a requisição HTTP foi aceita.
+     */
 
-        <div class="mov-card">
+    try{
 
-            <div class="mov-route">
+        const texto =
+            await resposta.text();
 
-                <div class="ugd">
-                    ${escapar(x.origem || "-")}
-                </div>
+        if(texto){
 
-                <div class="arrow">→</div>
+            try{
 
-                <div class="ugd">
-                    ${escapar(x.destino || "-")}
-                </div>
+                const json =
+                    JSON.parse(texto);
 
-                <span class="badge badge-blue">
-                    ${formatarData(x.data)}
-                </span>
+                if(
+                    json.sucesso === false ||
+                    json.success === false
+                ){
 
-            </div>
+                    return false;
 
-            <div class="item-sub">
-                <b>Peça:</b>
-                ${escapar(x.peca || "-")}
-                ${
-                    x.os
-                    ? " • <b>OS:</b> "+escapar(x.os)
-                    : ""
                 }
-            </div>
 
-        </div>
+            }catch(e){}
 
-    `).join("");
+        }
+
+    }catch(e){}
+
+    return true;
+
+}
+
+
+/* ============================================================
+   SALVAR REGISTRO LOCAL + FILA
+   ============================================================ */
+
+function salvarRegistro(
+    colecao,
+    aba,
+    registro
+){
+
+    dados[colecao].push(registro);
+
+    salvarDadosLocal();
+
+    adicionarFila(
+        "SALVAR",
+        aba,
+        registro
+    );
+
+    renderizarTudo();
+
+    toast(
+        "Salvo imediatamente. Sincronizando..."
+    );
+
+}
+
+
+/* ============================================================
+   EXCLUIR REGISTRO
+   ============================================================ */
+
+function excluirRegistro(
+    colecao,
+    aba,
+    id
+){
+
+    const indice =
+        dados[colecao].findIndex(
+            x => x.id === id
+        );
+
+    if(indice === -1) return;
+
+    const registro =
+        dados[colecao][indice];
+
+    dados[colecao].splice(
+        indice,
+        1
+    );
+
+    salvarDadosLocal();
+
+    adicionarFila(
+        "EXCLUIR",
+        aba,
+        {
+            id: id
+        }
+    );
+
+    renderizarTudo();
+
+    toast(
+        "Excluído. Sincronizando..."
+    );
 
 }
 
 
 /* ============================================================
    TAREFAS
-============================================================ */
-
-function renderTarefas(){
-
-    filtrarTarefas();
-
-}
-
-
-function filtrarTarefas(){
-
-    const busca =
-        (
-            document.getElementById("filtroTarefa")?.value
-            || ""
-        ).toLowerCase();
-
-    const status =
-        document.getElementById("filtroStatus")?.value
-        || "";
-
-    let lista =
-        [...dados.tarefas]
-        .filter(x => {
-
-            const texto = (
-
-                String(x.titulo||"")
-                + " "
-                + String(x.observacao||"")
-                + " "
-                + String(x.prioridade||"")
-
-            ).toLowerCase();
-
-            return texto.includes(busca);
-
-        });
-
-    if(status){
-
-        lista =
-            lista.filter(
-                x => x.status === status
-            );
-
-    }
-
-    lista.sort((a,b)=>
-        String(a.data||"")
-        .localeCompare(String(b.data||""))
-        ||
-        String(a.hora||"")
-        .localeCompare(String(b.hora||""))
-    );
-
-    const el =
-        document.getElementById("listaTarefas");
-
-    if(!lista.length){
-
-        el.innerHTML =
-            `<div class="empty">
-                Nenhuma tarefa encontrada.
-            </div>`;
-
-        return;
-
-    }
-
-    el.innerHTML =
-        lista.map(x => `
-
-        <div class="item">
-
-            <div class="item-main">
-
-                <div class="item-title">
-                    ${escapar(x.titulo)}
-                </div>
-
-                <div class="item-sub">
-
-                    ${formatarData(x.data)}
-
-                    ${x.hora ?
-                        " • "+escapar(x.hora) : ""}
-
-                    ${x.prioridade ?
-                        " • "+escapar(x.prioridade) : ""}
-
-                    ${
-                        x.observacao
-                        ? " • "+escapar(x.observacao)
-                        : ""
-                    }
-
-                </div>
-
-            </div>
-
-            <div class="item-actions">
-
-                ${
-                    x.status !== "CONCLUIDA"
-
-                    ? `<button
-                        class="small-btn"
-                        title="Concluir"
-                        onclick="concluirTarefa(${x.id})">
-                        ✓
-                       </button>`
-
-                    : `<span class="badge badge-green">
-                        Concluída
-                       </span>`
-                }
-
-                <button
-                    class="small-btn"
-                    title="Editar"
-                    onclick="abrirModal('tarefa',${x.id})">
-                    ✎
-                </button>
-
-                <button
-                    class="small-btn"
-                    title="Excluir"
-                    onclick="excluirTarefa(${x.id})">
-                    ×
-                </button>
-
-            </div>
-
-        </div>
-
-    `).join("");
-
-}
-
+   ============================================================ */
 
 function salvarTarefa(){
 
     const titulo =
-        document.getElementById("tarefaTitulo").value.trim();
+        valor("tarefaTitulo");
 
     if(!titulo){
 
-        alert("Informe o título da tarefa.");
+        toast("Digite a tarefa.");
 
         return;
 
@@ -2248,237 +1536,54 @@ function salvarTarefa(){
 
     const registro = {
 
-        id:
-            editandoId || id(),
+        id: novoID(),
 
-        titulo:titulo,
-
-        data:
-            document.getElementById("tarefaData").value
-            || hoje(),
-
-        hora:
-            document.getElementById("tarefaHora").value,
+        titulo: titulo,
 
         prioridade:
-            document.getElementById("tarefaPrioridade").value,
+            valor("tarefaPrioridade"),
 
-        observacao:
-            document.getElementById("tarefaObs").value,
+        data:
+            valor("tarefaData"),
 
         status:
-            editandoId
-            ? (
-                dados.tarefas.find(
-                    x => x.id == editandoId
-                )?.status || "PENDENTE"
-              )
-            : "PENDENTE"
+            valor("tarefaStatus"),
+
+        descricao:
+            valor("tarefaDescricao"),
+
+        criadoEm:
+            new Date().toISOString()
 
     };
 
-    if(editandoId){
+    salvarRegistro(
+        "tarefas",
+        CONFIG.ABAS.TAREFAS,
+        registro
+    );
 
-        const index =
-            dados.tarefas.findIndex(
-                x => x.id == editandoId
-            );
-
-        if(index >= 0)
-            dados.tarefas[index] = registro;
-
-    }else{
-
-        dados.tarefas.push(registro);
-
-    }
-
-    salvar();
-
-    fecharModal();
-
-    renderInicio();
-
-    renderTarefas();
-
-    enviarGoogle("TAREFAS",registro);
-
-}
-
-
-function concluirTarefa(registroId){
-
-    const x =
-        dados.tarefas.find(
-            t => t.id == registroId
-        );
-
-    if(!x) return;
-
-    x.status = "CONCLUIDA";
-
-    salvar();
-
-    renderInicio();
-
-    renderTarefas();
-
-    enviarGoogle("TAREFAS",x);
-
-}
-
-
-function excluirTarefa(registroId){
-
-    if(!confirm("Excluir esta tarefa?"))
-        return;
-
-    dados.tarefas =
-        dados.tarefas.filter(
-            x => x.id != registroId
-        );
-
-    salvar();
-
-    renderInicio();
-
-    renderTarefas();
-
-    excluirGoogle("TAREFAS",registroId);
+    limparCampos([
+        "tarefaTitulo",
+        "tarefaData",
+        "tarefaDescricao"
+    ]);
 
 }
 
 
 /* ============================================================
    SERVIÇOS
-============================================================ */
-
-function renderServicos(){
-
-    buscarServicos();
-
-}
-
-
-function buscarServicos(){
-
-    const busca =
-        (
-            document.getElementById("buscaServico")?.value
-            || ""
-        ).toLowerCase();
-
-    const lista =
-        [...dados.servicos]
-        .filter(x => {
-
-            const texto = (
-
-                String(x.ugd||"")
-                + " "
-                + String(x.servico||"")
-                + " "
-                + String(x.os||"")
-                + " "
-                + String(x.observacao||"")
-
-            ).toLowerCase();
-
-            return texto.includes(busca);
-
-        })
-        .sort((a,b)=>
-            String(b.data||"")
-            .localeCompare(String(a.data||""))
-        );
-
-    const el =
-        document.getElementById("listaServicos");
-
-    if(!lista.length){
-
-        el.innerHTML =
-            `<div class="empty">
-                Nenhum serviço encontrado.
-            </div>`;
-
-        return;
-
-    }
-
-    el.innerHTML =
-        lista.map(x => `
-
-        <div class="item">
-
-            <div class="item-main">
-
-                <div class="item-title">
-
-                    ${escapar(x.ugd || "")}
-                    —
-                    ${escapar(x.servico || "")}
-
-                </div>
-
-                <div class="item-sub">
-
-                    ${formatarData(x.data)}
-
-                    ${x.hora ?
-                        " • "+escapar(x.hora) : ""}
-
-                    ${x.os ?
-                        " • OS "+escapar(x.os) : ""}
-
-                    ${
-                        x.observacao
-                        ? " • "+escapar(x.observacao)
-                        : ""
-                    }
-
-                </div>
-
-            </div>
-
-            <div class="item-actions">
-
-                <span class="badge badge-blue">
-                    Realizado
-                </span>
-
-                <button
-                    class="small-btn"
-                    onclick="abrirModal('servico',${x.id})">
-                    ✎
-                </button>
-
-                <button
-                    class="small-btn"
-                    onclick="excluirServico(${x.id})">
-                    ×
-                </button>
-
-            </div>
-
-        </div>
-
-    `).join("");
-
-}
-
+   ============================================================ */
 
 function salvarServico(){
 
-    const ugd =
-        document.getElementById("servicoUgd").value.trim();
+    const titulo =
+        valor("servicoTitulo");
 
-    const servico =
-        document.getElementById("servicoNome").value.trim();
+    if(!titulo){
 
-    if(!ugd || !servico){
-
-        alert("Informe a UGD e o serviço realizado.");
+        toast("Digite o serviço.");
 
         return;
 
@@ -2486,262 +1591,60 @@ function salvarServico(){
 
     const registro = {
 
-        id:
-            editandoId || id(),
+        id: novoID(),
 
-        ugd:ugd,
-
-        servico:servico,
+        ugd:
+            valor("servicoUgd"),
 
         os:
-            document.getElementById("servicoOs").value,
+            valor("servicoOS"),
 
-        observacao:
-            document.getElementById("servicoObs").value,
+        titulo: titulo,
+
+        status:
+            valor("servicoStatus"),
 
         data:
-            editandoId
-            ? (
-                dados.servicos.find(
-                    x => x.id == editandoId
-                )?.data || hoje()
-              )
-            : hoje(),
+            valor("servicoData"),
 
-        hora:
-            editandoId
-            ? (
-                dados.servicos.find(
-                    x => x.id == editandoId
-                )?.hora || horaAtual()
-              )
-            : horaAtual()
+        descricao:
+            valor("servicoDescricao"),
+
+        criadoEm:
+            new Date().toISOString()
 
     };
 
-    if(editandoId){
+    salvarRegistro(
+        "servicos",
+        CONFIG.ABAS.SERVICOS,
+        registro
+    );
 
-        const index =
-            dados.servicos.findIndex(
-                x => x.id == editandoId
-            );
-
-        if(index>=0)
-            dados.servicos[index]=registro;
-
-    }else{
-
-        dados.servicos.push(registro);
-
-    }
-
-    salvar();
-
-    fecharModal();
-
-    renderInicio();
-
-    renderServicos();
-
-    enviarGoogle("SERVICOS",registro);
-
-}
-
-
-function excluirServico(registroId){
-
-    if(!confirm("Excluir este serviço?"))
-        return;
-
-    dados.servicos =
-        dados.servicos.filter(
-            x => x.id != registroId
-        );
-
-    salvar();
-
-    renderInicio();
-
-    renderServicos();
-
-    excluirGoogle("SERVICOS",registroId);
+    limparCampos([
+        "servicoUgd",
+        "servicoOS",
+        "servicoTitulo",
+        "servicoData",
+        "servicoDescricao"
+    ]);
 
 }
 
 
 /* ============================================================
    MOVIMENTAÇÕES
-============================================================ */
-
-function renderMovimentacoes(){
-
-    buscarMovimentacoes();
-
-}
-
-
-function buscarMovimentacoes(){
-
-    const busca =
-        (
-            document.getElementById("buscaMov")?.value
-            || ""
-        ).toLowerCase();
-
-    const lista =
-        [...dados.movimentacoes]
-        .filter(x => {
-
-            const texto = (
-
-                String(x.origem||"")
-                + " "
-                + String(x.destino||"")
-                + " "
-                + String(x.peca||"")
-                + " "
-                + String(x.os||"")
-                + " "
-                + String(x.numeroSerie||"")
-                + " "
-                + String(x.observacao||"")
-
-            ).toLowerCase();
-
-            return texto.includes(busca);
-
-        })
-        .sort((a,b)=>
-            String(b.data||"")
-            .localeCompare(String(a.data||""))
-        );
-
-    const el =
-        document.getElementById("listaMovimentacoes");
-
-    if(!lista.length){
-
-        el.innerHTML =
-            `<div class="empty">
-                Nenhuma movimentação encontrada.
-            </div>`;
-
-        return;
-
-    }
-
-    el.innerHTML =
-        lista.map(x => `
-
-        <div class="mov-card">
-
-            <div class="mov-route">
-
-                <div class="ugd">
-                    ${escapar(x.origem || "-")}
-                </div>
-
-                <div class="arrow">→</div>
-
-                <div class="ugd">
-                    ${escapar(x.destino || "-")}
-                </div>
-
-            </div>
-
-            <div class="mov-info">
-
-                <div class="info-box">
-
-                    <small>PEÇA</small>
-
-                    <span>
-                        ${escapar(x.peca || "-")}
-                    </span>
-
-                </div>
-
-                <div class="info-box">
-
-                    <small>OS</small>
-
-                    <span>
-                        ${escapar(x.os || "-")}
-                    </span>
-
-                </div>
-
-                <div class="info-box">
-
-                    <small>Nº SÉRIE</small>
-
-                    <span>
-                        ${escapar(x.numeroSerie || "-")}
-                    </span>
-
-                </div>
-
-                <div class="info-box">
-
-                    <small>DATA</small>
-
-                    <span>
-                        ${formatarData(x.data)}
-                    </span>
-
-                </div>
-
-            </div>
-
-            ${
-                x.observacao
-                ? `<div class="item-sub"
-                    style="margin-top:10px">
-                    ${escapar(x.observacao)}
-                   </div>`
-                : ""
-            }
-
-            <div
-                class="item-actions"
-                style="margin-top:10px;justify-content:flex-end">
-
-                <button
-                    class="small-btn"
-                    onclick="abrirModal('movimentacao',${x.id})">
-                    ✎
-                </button>
-
-                <button
-                    class="small-btn"
-                    onclick="excluirMov(${x.id})">
-                    ×
-                </button>
-
-            </div>
-
-        </div>
-
-    `).join("");
-
-}
-
+   ============================================================ */
 
 function salvarMovimentacao(){
 
-    const origem =
-        document.getElementById("movOrigem").value.trim();
+    const descricao =
+        valor("movDescricao");
 
-    const destino =
-        document.getElementById("movDestino").value.trim();
+    if(!descricao){
 
-    const peca =
-        document.getElementById("movPeca").value.trim();
-
-    if(!origem || !destino || !peca){
-
-        alert(
-            "Informe origem, destino e peça."
+        toast(
+            "Descreva a movimentação."
         );
 
         return;
@@ -2750,203 +1653,48 @@ function salvarMovimentacao(){
 
     const registro = {
 
-        id:
-            editandoId || id(),
-
-        origem:origem,
-
-        destino:destino,
-
-        peca:peca,
-
-        os:
-            document.getElementById("movOs").value,
-
-        numeroSerie:
-            document.getElementById("movSerie").value,
-
-        observacao:
-            document.getElementById("movObs").value,
+        id: novoID(),
 
         data:
-            editandoId
-            ? (
-                dados.movimentacoes.find(
-                    x => x.id == editandoId
-                )?.data || hoje()
-              )
-            : hoje(),
+            valor("movData"),
 
-        hora:
-            editandoId
-            ? (
-                dados.movimentacoes.find(
-                    x => x.id == editandoId
-                )?.hora || horaAtual()
-              )
-            : horaAtual()
+        os:
+            valor("movOS"),
+
+        descricao: descricao,
+
+        criadoEm:
+            new Date().toISOString()
 
     };
 
-    if(editandoId){
-
-        const index =
-            dados.movimentacoes.findIndex(
-                x => x.id == editandoId
-            );
-
-        if(index>=0)
-            dados.movimentacoes[index]=registro;
-
-    }else{
-
-        dados.movimentacoes.push(registro);
-
-    }
-
-    salvar();
-
-    fecharModal();
-
-    renderInicio();
-
-    renderMovimentacoes();
-
-    enviarGoogle(
-        "MOVIMENTACOES",
+    salvarRegistro(
+        "movimentacoes",
+        CONFIG.ABAS.MOVIMENTACOES,
         registro
     );
 
-}
-
-
-function excluirMov(registroId){
-
-    if(!confirm("Excluir esta movimentação?"))
-        return;
-
-    dados.movimentacoes =
-        dados.movimentacoes.filter(
-            x => x.id != registroId
-        );
-
-    salvar();
-
-    renderInicio();
-
-    renderMovimentacoes();
-
-    excluirGoogle(
-        "MOVIMENTACOES",
-        registroId
-    );
+    limparCampos([
+        "movData",
+        "movOS",
+        "movDescricao"
+    ]);
 
 }
 
 
 /* ============================================================
    AGENDA
-============================================================ */
-
-function renderAgenda(){
-
-    const filtro =
-        document.getElementById("filtroAgendaData")?.value
-        || "";
-
-    let lista =
-        [...dados.agenda]
-        .sort((a,b)=>
-            String(a.data||"")
-            .localeCompare(String(b.data||""))
-            ||
-            String(a.hora||"")
-            .localeCompare(String(b.hora||""))
-        );
-
-    if(filtro){
-
-        lista =
-            lista.filter(
-                x => x.data === filtro
-            );
-
-    }
-
-    const el =
-        document.getElementById("listaAgenda");
-
-    if(!lista.length){
-
-        el.innerHTML =
-            `<div class="empty">
-                Nenhum compromisso encontrado.
-            </div>`;
-
-        return;
-
-    }
-
-    el.innerHTML =
-        lista.map(x => `
-
-        <div class="item">
-
-            <div class="item-main">
-
-                <div class="item-title">
-                    ${escapar(x.titulo)}
-                </div>
-
-                <div class="item-sub">
-
-                    ${formatarData(x.data)}
-
-                    ${x.hora ?
-                        " • "+escapar(x.hora) : ""}
-
-                    ${
-                        x.observacao
-                        ? " • "+escapar(x.observacao)
-                        : ""
-                    }
-
-                </div>
-
-            </div>
-
-            <div class="item-actions">
-
-                <button
-                    class="small-btn"
-                    onclick="abrirModal('agenda',${x.id})">
-                    ✎
-                </button>
-
-                <button
-                    class="small-btn"
-                    onclick="excluirAgenda(${x.id})">
-                    ×
-                </button>
-
-            </div>
-
-        </div>
-
-    `).join("");
-
-}
-
+   ============================================================ */
 
 function salvarAgenda(){
 
     const titulo =
-        document.getElementById("agendaTitulo")
-        .value.trim();
+        valor("agendaTitulo");
 
     if(!titulo){
 
-        alert("Informe o título.");
+        toast("Digite o título.");
 
         return;
 
@@ -2954,1436 +1702,1218 @@ function salvarAgenda(){
 
     const registro = {
 
-        id:
-            editandoId || id(),
-
-        titulo:titulo,
+        id: novoID(),
 
         data:
-            document.getElementById("agendaData").value
-            || hoje(),
+            valor("agendaData"),
 
         hora:
-            document.getElementById("agendaHora").value,
+            valor("agendaHora"),
 
-        observacao:
-            document.getElementById("agendaObs").value
+        titulo: titulo,
+
+        descricao:
+            valor("agendaDescricao"),
+
+        criadoEm:
+            new Date().toISOString()
 
     };
 
-    if(editandoId){
+    salvarRegistro(
+        "agenda",
+        CONFIG.ABAS.AGENDA,
+        registro
+    );
 
-        const index =
-            dados.agenda.findIndex(
-                x => x.id == editandoId
-            );
-
-        if(index>=0)
-            dados.agenda[index]=registro;
-
-    }else{
-
-        dados.agenda.push(registro);
-
-    }
-
-    salvar();
-
-    fecharModal();
-
-    renderAgenda();
-
-    enviarGoogle("AGENDA",registro);
+    limparCampos([
+        "agendaData",
+        "agendaHora",
+        "agendaTitulo",
+        "agendaDescricao"
+    ]);
 
 }
 
 
-function excluirAgenda(registroId){
+/* ============================================================
+   NOTAS
+   ============================================================ */
 
-    if(!confirm("Excluir este compromisso?"))
+function salvarNota(){
+
+    const titulo =
+        valor("notaTitulo");
+
+    const descricao =
+        valor("notaDescricao");
+
+    if(!titulo && !descricao){
+
+        toast("Digite alguma informação.");
+
         return;
 
-    dados.agenda =
-        dados.agenda.filter(
-            x => x.id != registroId
-        );
+    }
 
-    salvar();
+    const registro = {
 
-    renderAgenda();
+        id: novoID(),
 
-    excluirGoogle(
-        "AGENDA",
-        registroId
+        titulo: titulo,
+
+        descricao: descricao,
+
+        criadoEm:
+            new Date().toISOString()
+
+    };
+
+    salvarRegistro(
+        "notas",
+        CONFIG.ABAS.NOTAS,
+        registro
     );
+
+    limparCampos([
+        "notaTitulo",
+        "notaDescricao"
+    ]);
+
+}
+
+
+/* ============================================================
+   PROGRAMAÇÃO
+   ============================================================ */
+
+function salvarProgramacao(){
+
+    const descricao =
+        valor("progDescricao");
+
+    if(!descricao){
+
+        toast("Digite a atividade.");
+
+        return;
+
+    }
+
+    const registro = {
+
+        id: novoID(),
+
+        data:
+            valor("progData"),
+
+        ugd:
+            valor("progUgd"),
+
+        os:
+            valor("progOS"),
+
+        responsavel:
+            valor("progResponsavel"),
+
+        descricao: descricao,
+
+        criadoEm:
+            new Date().toISOString()
+
+    };
+
+    salvarRegistro(
+        "programacao",
+        CONFIG.ABAS.PROGRAMACAO,
+        registro
+    );
+
+    limparCampos([
+        "progData",
+        "progUgd",
+        "progOS",
+        "progResponsavel",
+        "progDescricao"
+    ]);
 
 }
 
 
 /* ============================================================
    LEMBRETES
-============================================================ */
-
-function renderLembretes(){
-
-    const lista =
-        [...dados.lembretes]
-        .sort((a,b)=>
-            String(a.data||"")
-            .localeCompare(String(b.data||""))
-        );
-
-    const el =
-        document.getElementById("listaLembretes");
-
-    if(!lista.length){
-
-        el.innerHTML =
-            `<div class="empty">
-                Nenhum lembrete cadastrado.
-            </div>`;
-
-        return;
-
-    }
-
-    el.innerHTML =
-        lista.map(x => `
-
-        <div class="item">
-
-            <div class="item-main">
-
-                <div class="item-title">
-                    ${escapar(x.titulo)}
-                </div>
-
-                <div class="item-sub">
-
-                    ${formatarData(x.data)}
-
-                    ${x.hora ?
-                        " • "+escapar(x.hora) : ""}
-
-                    ${
-                        x.observacao
-                        ? " • "+escapar(x.observacao)
-                        : ""
-                    }
-
-                </div>
-
-            </div>
-
-            <div class="item-actions">
-
-                ${
-                    x.status !== "CONCLUIDO"
-
-                    ? `<button
-                        class="small-btn"
-                        onclick="concluirLembrete(${x.id})">
-                        ✓
-                       </button>`
-
-                    : `<span class="badge badge-green">
-                        Concluído
-                       </span>`
-                }
-
-                <button
-                    class="small-btn"
-                    onclick="abrirModal('lembrete',${x.id})">
-                    ✎
-                </button>
-
-                <button
-                    class="small-btn"
-                    onclick="excluirLembrete(${x.id})">
-                    ×
-                </button>
-
-            </div>
-
-        </div>
-
-    `).join("");
-
-}
-
+   ============================================================ */
 
 function salvarLembrete(){
 
     const titulo =
-        document.getElementById("lembreteTitulo")
-        .value.trim();
+        valor("lembreteTitulo");
 
     if(!titulo){
 
-        alert("Informe o lembrete.");
+        toast("Digite o lembrete.");
 
         return;
 
     }
 
-    const antigo =
-        dados.lembretes.find(
-            x => x.id == editandoId
-        );
-
     const registro = {
 
-        id:
-            editandoId || id(),
+        id: novoID(),
 
-        titulo:titulo,
+        titulo: titulo,
 
         data:
-            document.getElementById("lembreteData").value
-            || hoje(),
+            valor("lembreteData"),
 
         hora:
-            document.getElementById("lembreteHora").value,
+            valor("lembreteHora"),
 
-        observacao:
-            document.getElementById("lembreteObs").value,
+        descricao:
+            valor("lembreteDescricao"),
 
-        status:
-            antigo?.status || "PENDENTE"
+        criadoEm:
+            new Date().toISOString()
 
     };
 
-    if(editandoId){
-
-        const index =
-            dados.lembretes.findIndex(
-                x => x.id == editandoId
-            );
-
-        if(index>=0)
-            dados.lembretes[index]=registro;
-
-    }else{
-
-        dados.lembretes.push(registro);
-
-    }
-
-    salvar();
-
-    fecharModal();
-
-    renderLembretes();
-
-    renderInicio();
-
-    enviarGoogle(
-        "LEMBRETES",
+    salvarRegistro(
+        "lembretes",
+        CONFIG.ABAS.LEMBRETES,
         registro
     );
 
-}
-
-
-function concluirLembrete(registroId){
-
-    const x =
-        dados.lembretes.find(
-            t => t.id == registroId
-        );
-
-    if(!x) return;
-
-    x.status = "CONCLUIDO";
-
-    salvar();
-
-    renderLembretes();
-
-    renderInicio();
-
-    enviarGoogle(
-        "LEMBRETES",
-        x
-    );
-
-}
-
-
-function excluirLembrete(registroId){
-
-    if(!confirm("Excluir este lembrete?"))
-        return;
-
-    dados.lembretes =
-        dados.lembretes.filter(
-            x => x.id != registroId
-        );
-
-    salvar();
-
-    renderLembretes();
-
-    renderInicio();
-
-    excluirGoogle(
-        "LEMBRETES",
-        registroId
-    );
-
-}
-
-
-/* ============================================================
-   PROGRAMAÇÃO SEMANAL
-============================================================ */
-
-function renderProgramacao(){
-
-    const dias = [
-        ["SEG","SEGUNDA"],
-        ["TER","TERÇA"],
-        ["QUA","QUARTA"],
-        ["QUI","QUINTA"],
-        ["SEX","SEXTA"],
-        ["SÁB","SÁBADO"]
-    ];
-
-    const el =
-        document.getElementById("weekGrid");
-
-    el.innerHTML =
-        dias.map(([sigla,nome]) => {
-
-            const itens =
-                dados.programacao.filter(
-                    x =>
-                        String(x.dia||"")
-                        .toUpperCase() === sigla
-                );
-
-            return `
-
-            <div class="day-column">
-
-                <div class="day-head">
-                    ${nome}
-                </div>
-
-                ${
-                    itens.length
-
-                    ? itens.map(x => `
-
-                        <div class="week-item">
-
-                            <strong>
-                                ${escapar(x.ugd || "")}
-                            </strong>
-
-                            ${escapar(x.servico || "")}
-
-                            ${
-                                x.os
-                                ? `<br>OS ${escapar(x.os)}`
-                                : ""
-                            }
-
-                            ${
-                                x.observacao
-                                ? `<br>
-                                   ${escapar(x.observacao)}`
-                                : ""
-                            }
-
-                            <div
-                                style="
-                                margin-top:7px;
-                                display:flex;
-                                justify-content:flex-end;
-                                gap:4px">
-
-                                <button
-                                    class="small-btn"
-                                    onclick="abrirModal(
-                                        'programacao',
-                                        ${x.id}
-                                    )">
-                                    ✎
-                                </button>
-
-                                <button
-                                    class="small-btn"
-                                    onclick="excluirProgramacao(${x.id})">
-                                    ×
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    `).join("")
-
-                    : `<div class="empty">
-                        Sem programação.
-                       </div>`
-                }
-
-            </div>
-
-            `;
-
-        }).join("");
-
-}
-
-
-function salvarProgramacao(){
-
-    const dia =
-        document.getElementById("progDia").value;
-
-    const ugd =
-        document.getElementById("progUgd").value.trim();
-
-    const servico =
-        document.getElementById("progServico").value.trim();
-
-    if(!dia || !ugd || !servico){
-
-        alert(
-            "Informe dia, UGD e serviço."
-        );
-
-        return;
-
-    }
-
-    const registro = {
-
-        id:
-            editandoId || id(),
-
-        dia:dia,
-
-        ugd:ugd,
-
-        servico:servico,
-
-        os:
-            document.getElementById("progOs").value,
-
-        observacao:
-            document.getElementById("progObs").value
-
-    };
-
-    if(editandoId){
-
-        const index =
-            dados.programacao.findIndex(
-                x => x.id == editandoId
-            );
-
-        if(index>=0)
-            dados.programacao[index]=registro;
-
-    }else{
-
-        dados.programacao.push(registro);
-
-    }
-
-    salvar();
-
-    fecharModal();
-
-    renderProgramacao();
-
-    enviarGoogle(
-        "PROGRAMACAO",
-        registro
-    );
-
-}
-
-
-function excluirProgramacao(registroId){
-
-    if(!confirm("Excluir esta programação?"))
-        return;
-
-    dados.programacao =
-        dados.programacao.filter(
-            x => x.id != registroId
-        );
-
-    salvar();
-
-    renderProgramacao();
-
-    excluirGoogle(
-        "PROGRAMACAO",
-        registroId
-    );
+    limparCampos([
+        "lembreteTitulo",
+        "lembreteData",
+        "lembreteHora",
+        "lembreteDescricao"
+    ]);
 
 }
 
 
 /* ============================================================
    BLOCO DE NOTAS
-============================================================ */
+   ============================================================ */
 
-function renderBloco(){
+function carregarBlocoLocal(){
 
-    document.getElementById("blocoTexto")
-        .value = dados.bloco || "";
+    const texto =
+        localStorage.getItem(
+            CONFIG.STORAGE.BLOCO
+        );
+
+    if(texto !== null){
+
+        document.getElementById(
+            "blocoTexto"
+        ).value = texto;
+
+    }
 
 }
 
 
-async function salvarBloco(){
+function salvarBlocoLocal(){
 
-    dados.bloco =
-        document.getElementById("blocoTexto").value;
+    const texto =
+        document.getElementById(
+            "blocoTexto"
+        ).value;
 
-    salvar();
-
-    await enviarBlocoGoogle(
-        dados.bloco
+    localStorage.setItem(
+        CONFIG.STORAGE.BLOCO,
+        texto
     );
 
 }
 
 
-/* ============================================================
-   PESQUISA GERAL
-============================================================ */
+function sincronizarBloco(){
 
-function renderPesquisa(){
+    const texto =
+        document.getElementById(
+            "blocoTexto"
+        ).value;
 
-    document.getElementById("resultadoPesquisa")
-        .innerHTML =
-        `<div class="empty">
-            Digite algo para pesquisar.
-        </div>`;
+    salvarBlocoLocal();
+
+    const registro = {
+
+        id:"BLOCO_PRINCIPAL",
+
+        texto:texto,
+
+        atualizadoEm:
+            new Date().toISOString()
+
+    };
+
+    adicionarFila(
+        "SALVAR",
+        CONFIG.ABAS.BLOCO,
+        registro
+    );
+
+    toast(
+        "Bloco salvo localmente."
+    );
 
 }
 
 
-function executarPesquisa(){
+function limparBloco(){
 
-    const termo =
-        document.getElementById("pesquisaGeral")
-        .value
-        .trim()
-        .toLowerCase();
+    if(
+        !confirm(
+            "Deseja limpar o bloco de notas?"
+        )
+    ) return;
+
+    document.getElementById(
+        "blocoTexto"
+    ).value = "";
+
+    salvarBlocoLocal();
+
+}
+
+
+/* ============================================================
+   RENDERIZAÇÃO
+   ============================================================ */
+
+function renderizarTudo(){
+
+    renderTarefas();
+
+    renderServicos();
+
+    renderMovimentacoes();
+
+    renderAgenda();
+
+    renderNotas();
+
+    renderProgramacao();
+
+    renderLembretes();
+
+    atualizarContadores();
+
+}
+
+
+/* ============================================================
+   TAREFAS - RENDER
+   ============================================================ */
+
+function renderTarefas(){
 
     const el =
-        document.getElementById("resultadoPesquisa");
+        document.getElementById(
+            "listaTarefas"
+        );
 
-    if(!termo){
-
-        el.innerHTML =
-            `<div class="empty">
-                Digite algo para pesquisar.
-            </div>`;
-
-        return;
-
-    }
-
-    const resultados = [];
-
-    dados.tarefas.forEach(x => {
-
-        const texto =
-            JSON.stringify(x).toLowerCase();
-
-        if(texto.includes(termo)){
-
-            resultados.push({
-
-                tipo:"Tarefa",
-
-                titulo:x.titulo,
-
-                detalhe:
-                    `${formatarData(x.data)}
-                     ${x.hora || ""}`,
-
-                acao:
-                    `abrirPagina('tarefas')`
-
-            });
-
-        }
-
-    });
-
-    dados.servicos.forEach(x => {
-
-        const texto =
-            JSON.stringify(x).toLowerCase();
-
-        if(texto.includes(termo)){
-
-            resultados.push({
-
-                tipo:"Serviço",
-
-                titulo:
-                    `${x.ugd || ""}
-                     — ${x.servico || ""}`,
-
-                detalhe:
-                    `OS ${x.os || "-"} •
-                     ${formatarData(x.data)}`,
-
-                acao:
-                    `abrirPagina('servicos')`
-
-            });
-
-        }
-
-    });
-
-    dados.movimentacoes.forEach(x => {
-
-        const texto =
-            JSON.stringify(x).toLowerCase();
-
-        if(texto.includes(termo)){
-
-            resultados.push({
-
-                tipo:"Movimentação",
-
-                titulo:
-                    `${x.origem || "-"}
-                     → ${x.destino || "-"}`,
-
-                detalhe:
-                    `${x.peca || ""}
-                     ${x.os ? " • OS "+x.os : ""}`,
-
-                acao:
-                    `abrirPagina('movimentacoes')`
-
-            });
-
-        }
-
-    });
-
-    dados.agenda.forEach(x => {
-
-        const texto =
-            JSON.stringify(x).toLowerCase();
-
-        if(texto.includes(termo)){
-
-            resultados.push({
-
-                tipo:"Agenda",
-
-                titulo:x.titulo,
-
-                detalhe:
-                    `${formatarData(x.data)}
-                     ${x.hora || ""}`,
-
-                acao:
-                    `abrirPagina('agenda')`
-
-            });
-
-        }
-
-    });
-
-    dados.lembretes.forEach(x => {
-
-        const texto =
-            JSON.stringify(x).toLowerCase();
-
-        if(texto.includes(termo)){
-
-            resultados.push({
-
-                tipo:"Lembrete",
-
-                titulo:x.titulo,
-
-                detalhe:
-                    `${formatarData(x.data)}
-                     ${x.hora || ""}`,
-
-                acao:
-                    `abrirPagina('lembretes')`
-
-            });
-
-        }
-
-    });
-
-    if(!resultados.length){
+    if(!dados.tarefas.length){
 
         el.innerHTML =
-            `<div class="empty">
-                Nenhum resultado encontrado.
-            </div>`;
+            "<div class='panel'>Nenhuma tarefa cadastrada.</div>";
 
         return;
 
     }
 
     el.innerHTML =
-        resultados.map(x => `
+        dados.tarefas
+        .slice()
+        .reverse()
+        .map(t => `
 
-        <div
-            class="item"
-            onclick="${x.acao}"
-            style="cursor:pointer">
+        <div class="item">
 
-            <div class="item-main">
+            <div class="item-header">
 
                 <div class="item-title">
-                    ${escapar(x.titulo)}
+                    ${esc(t.titulo)}
                 </div>
 
-                <div class="item-sub">
-                    ${escapar(x.detalhe)}
+                <strong>
+                    ${esc(t.status)}
+                </strong>
+
+            </div>
+
+            <div class="item-meta">
+                Prioridade: ${esc(t.prioridade || "-")}
+                ${t.data ? " • " + formatarData(t.data) : ""}
+            </div>
+
+            ${
+                t.descricao
+                ?
+                `<div class="item-text">${esc(t.descricao)}</div>`
+                :
+                ""
+            }
+
+            <div class="item-actions">
+
+                <button
+                    onclick="concluirTarefa('${t.id}')"
+                >
+                    Concluir
+                </button>
+
+                <button
+                    onclick="excluirRegistro(
+                        'tarefas',
+                        CONFIG.ABAS.TAREFAS,
+                        '${t.id}'
+                    )"
+                >
+                    Excluir
+                </button>
+
+            </div>
+
+        </div>
+
+        `)
+        .join("");
+
+}
+
+
+/* ============================================================
+   SERVIÇOS - RENDER
+   ============================================================ */
+
+function renderServicos(){
+
+    const el =
+        document.getElementById(
+            "listaServicos"
+        );
+
+    if(!dados.servicos.length){
+
+        el.innerHTML =
+            "<div class='panel'>Nenhum serviço cadastrado.</div>";
+
+        return;
+
+    }
+
+    el.innerHTML =
+        dados.servicos
+        .slice()
+        .reverse()
+        .map(s => `
+
+        <div class="item">
+
+            <div class="item-header">
+
+                <div class="item-title">
+
+                    ${esc(s.ugd || "UGD")}
+
+                    ${
+                        s.os
+                        ?
+                        " • OS " + esc(s.os)
+                        :
+                        ""
+                    }
+
                 </div>
 
+                <strong>
+                    ${esc(s.status)}
+                </strong>
+
             </div>
 
-            <span class="badge badge-blue">
-                ${x.tipo}
-            </span>
+            <div class="item-meta">
+                ${esc(s.titulo)}
+                ${s.data ? " • " + formatarData(s.data) : ""}
+            </div>
+
+            ${
+                s.descricao
+                ?
+                `<div class="item-text">${esc(s.descricao)}</div>`
+                :
+                ""
+            }
+
+            <div class="item-actions">
+
+                <button
+                    onclick="excluirRegistro(
+                        'servicos',
+                        CONFIG.ABAS.SERVICOS,
+                        '${s.id}'
+                    )"
+                >
+                    Excluir
+                </button>
+
+            </div>
 
         </div>
 
-    `).join("");
+        `)
+        .join("");
 
 }
 
 
 /* ============================================================
-   MODAL
-============================================================ */
+   MOVIMENTAÇÕES - RENDER
+   ============================================================ */
 
-function abrirModal(tipo, editarId=null){
+function renderMovimentacoes(){
 
-    editandoId = editarId;
-    editandoTipo = tipo;
+    const el =
+        document.getElementById(
+            "listaMovimentacoes"
+        );
 
-    const modal =
-        document.getElementById("modal");
+    if(!dados.movimentacoes.length){
 
-    const titulo =
-        document.getElementById("modalTitulo");
+        el.innerHTML =
+            "<div class='panel'>Nenhuma movimentação registrada.</div>";
 
-    const conteudo =
-        document.getElementById("modalConteudo");
-
-    const nome =
-        editarId ? "Editar" : "Novo";
-
-    let registro = null;
-
-    if(editarId){
-
-        const mapas = {
-
-            tarefa:dados.tarefas,
-
-            servico:dados.servicos,
-
-            movimentacao:dados.movimentacoes,
-
-            agenda:dados.agenda,
-
-            lembrete:dados.lembretes,
-
-            programacao:dados.programacao
-
-        };
-
-        registro =
-            mapas[tipo]?.find(
-                x => x.id == editarId
-            );
+        return;
 
     }
 
-    if(tipo==="tarefa"){
+    el.innerHTML =
+        dados.movimentacoes
+        .slice()
+        .reverse()
+        .map(m => `
 
-        titulo.textContent =
-            `${nome} tarefa`;
+        <div class="item">
 
-        conteudo.innerHTML = `
+            <div class="item-header">
 
-        <div class="form-grid">
+                <div class="item-title">
+                    ${m.data ? formatarData(m.data) : "Sem data"}
+                </div>
 
-            <div class="form-group full">
-
-                <label>Título</label>
-
-                <input
-                    class="input"
-                    id="tarefaTitulo"
-                    value="${escapar(registro?.titulo || "")}"
-                    placeholder="Ex.: Verificar UGD 25"
-                >
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Data</label>
-
-                <input
-                    type="date"
-                    class="input"
-                    id="tarefaData"
-                    value="${registro?.data || hoje()}"
-                >
+                ${
+                    m.os
+                    ?
+                    `<strong>OS ${esc(m.os)}</strong>`
+                    :
+                    ""
+                }
 
             </div>
 
-            <div class="form-group">
-
-                <label>Hora</label>
-
-                <input
-                    type="time"
-                    class="input"
-                    id="tarefaHora"
-                    value="${registro?.hora || ""}"
-                >
-
+            <div class="item-text">
+                ${esc(m.descricao)}
             </div>
 
-            <div class="form-group">
+            <div class="item-actions">
 
-                <label>Prioridade</label>
-
-                <select
-                    class="select"
-                    id="tarefaPrioridade">
-
-                    <option value="NORMAL"
-                        ${registro?.prioridade==="NORMAL"?"selected":""}>
-                        Normal
-                    </option>
-
-                    <option value="ALTA"
-                        ${registro?.prioridade==="ALTA"?"selected":""}>
-                        Alta
-                    </option>
-
-                    <option value="URGENTE"
-                        ${registro?.prioridade==="URGENTE"?"selected":""}>
-                        Urgente
-                    </option>
-
-                </select>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Observação</label>
-
-                <input
-                    class="input"
-                    id="tarefaObs"
-                    value="${escapar(registro?.observacao || "")}"
-                    placeholder="Detalhes"
+                <button
+                    onclick="excluirRegistro(
+                        'movimentacoes',
+                        CONFIG.ABAS.MOVIMENTACOES,
+                        '${m.id}'
+                    )"
                 >
+                    Excluir
+                </button>
 
             </div>
 
         </div>
 
-        <div class="modal-footer">
-
-            <button
-                class="btn"
-                onclick="fecharModal()">
-                Cancelar
-            </button>
-
-            <button
-                class="btn btn-primary"
-                onclick="salvarTarefa()">
-                Salvar
-            </button>
-
-        </div>
-
-        `;
-
-    }
-
-
-    if(tipo==="servico"){
-
-        titulo.textContent =
-            `${nome} serviço realizado`;
-
-        conteudo.innerHTML = `
-
-        <div class="form-grid">
-
-            <div class="form-group">
-
-                <label>UGD</label>
-
-                <input
-                    class="input"
-                    id="servicoUgd"
-                    value="${escapar(registro?.ugd || "")}"
-                    placeholder="Ex.: UGD25"
-                >
-
-            </div>
-
-            <div class="form-group">
-
-                <label>OS</label>
-
-                <input
-                    class="input"
-                    id="servicoOs"
-                    value="${escapar(registro?.os || "")}"
-                    placeholder="Número da OS"
-                >
-
-            </div>
-
-            <div class="form-group full">
-
-                <label>Serviço realizado</label>
-
-                <input
-                    class="input"
-                    id="servicoNome"
-                    value="${escapar(registro?.servico || "")}"
-                    placeholder="Ex.: Troca de filtro"
-                >
-
-            </div>
-
-            <div class="form-group full">
-
-                <label>Observação</label>
-
-                <textarea
-                    class="textarea"
-                    id="servicoObs"
-                    placeholder="Descreva o serviço realizado..."
-                >${escapar(registro?.observacao || "")}</textarea>
-
-            </div>
-
-        </div>
-
-        <div class="modal-footer">
-
-            <button
-                class="btn"
-                onclick="fecharModal()">
-                Cancelar
-            </button>
-
-            <button
-                class="btn btn-primary"
-                onclick="salvarServico()">
-                Salvar
-            </button>
-
-        </div>
-
-        `;
-
-    }
-
-
-    if(tipo==="movimentacao"){
-
-        titulo.textContent =
-            `${nome} movimentação`;
-
-        conteudo.innerHTML = `
-
-        <div class="form-grid">
-
-            <div class="form-group">
-
-                <label>De onde?</label>
-
-                <input
-                    class="input"
-                    id="movOrigem"
-                    value="${escapar(registro?.origem || "")}"
-                    placeholder="Ex.: UGD18"
-                >
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Para onde?</label>
-
-                <input
-                    class="input"
-                    id="movDestino"
-                    value="${escapar(registro?.destino || "")}"
-                    placeholder="Ex.: UGD22"
-                >
-
-            </div>
-
-            <div class="form-group full">
-
-                <label>Peça / componente</label>
-
-                <input
-                    class="input"
-                    id="movPeca"
-                    value="${escapar(registro?.peca || "")}"
-                    placeholder="Ex.: Módulo DEIF"
-                >
-
-            </div>
-
-            <div class="form-group">
-
-                <label>OS</label>
-
-                <input
-                    class="input"
-                    id="movOs"
-                    value="${escapar(registro?.os || "")}"
-                    placeholder="Opcional"
-                >
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Número de série</label>
-
-                <input
-                    class="input"
-                    id="movSerie"
-                    value="${escapar(registro?.numeroSerie || "")}"
-                    placeholder="Opcional"
-                >
-
-            </div>
-
-            <div class="form-group full">
-
-                <label>Observação</label>
-
-                <textarea
-                    class="textarea"
-                    id="movObs"
-                    placeholder="Ex.: Remanejado para reduzir FIX POWER."
-                >${escapar(registro?.observacao || "")}</textarea>
-
-            </div>
-
-        </div>
-
-        <div class="modal-footer">
-
-            <button
-                class="btn"
-                onclick="fecharModal()">
-                Cancelar
-            </button>
-
-            <button
-                class="btn btn-primary"
-                onclick="salvarMovimentacao()">
-                Salvar movimentação
-            </button>
-
-        </div>
-
-        `;
-
-    }
-
-
-    if(tipo==="agenda"){
-
-        titulo.textContent =
-            `${nome} compromisso`;
-
-        conteudo.innerHTML = `
-
-        <div class="form-grid">
-
-            <div class="form-group full">
-
-                <label>Título</label>
-
-                <input
-                    class="input"
-                    id="agendaTitulo"
-                    value="${escapar(registro?.titulo || "")}"
-                    placeholder="Ex.: Reunião com manutenção"
-                >
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Data</label>
-
-                <input
-                    type="date"
-                    class="input"
-                    id="agendaData"
-                    value="${registro?.data || hoje()}"
-                >
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Hora</label>
-
-                <input
-                    type="time"
-                    class="input"
-                    id="agendaHora"
-                    value="${registro?.hora || ""}"
-                >
-
-            </div>
-
-            <div class="form-group full">
-
-                <label>Observação</label>
-
-                <textarea
-                    class="textarea"
-                    id="agendaObs"
-                >${escapar(registro?.observacao || "")}</textarea>
-
-            </div>
-
-        </div>
-
-        <div class="modal-footer">
-
-            <button
-                class="btn"
-                onclick="fecharModal()">
-                Cancelar
-            </button>
-
-            <button
-                class="btn btn-primary"
-                onclick="salvarAgenda()">
-                Salvar
-            </button>
-
-        </div>
-
-        `;
-
-    }
-
-
-    if(tipo==="lembrete"){
-
-        titulo.textContent =
-            `${nome} lembrete`;
-
-        conteudo.innerHTML = `
-
-        <div class="form-grid">
-
-            <div class="form-group full">
-
-                <label>Lembrete</label>
-
-                <input
-                    class="input"
-                    id="lembreteTitulo"
-                    value="${escapar(registro?.titulo || "")}"
-                    placeholder="O que você precisa lembrar?"
-                >
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Data</label>
-
-                <input
-                    type="date"
-                    class="input"
-                    id="lembreteData"
-                    value="${registro?.data || hoje()}"
-                >
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Hora</label>
-
-                <input
-                    type="time"
-                    class="input"
-                    id="lembreteHora"
-                    value="${registro?.hora || ""}"
-                >
-
-            </div>
-
-            <div class="form-group full">
-
-                <label>Observação</label>
-
-                <textarea
-                    class="textarea"
-                    id="lembreteObs"
-                >${escapar(registro?.observacao || "")}</textarea>
-
-            </div>
-
-        </div>
-
-        <div class="modal-footer">
-
-            <button
-                class="btn"
-                onclick="fecharModal()">
-                Cancelar
-            </button>
-
-            <button
-                class="btn btn-primary"
-                onclick="salvarLembrete()">
-                Salvar
-            </button>
-
-        </div>
-
-        `;
-
-    }
-
-
-    if(tipo==="programacao"){
-
-        titulo.textContent =
-            `${nome} programação`;
-
-        conteudo.innerHTML = `
-
-        <div class="form-grid">
-
-            <div class="form-group">
-
-                <label>Dia</label>
-
-                <select
-                    class="select"
-                    id="progDia">
-
-                    <option value="SEG"
-                        ${registro?.dia==="SEG"?"selected":""}>
-                        Segunda-feira
-                    </option>
-
-                    <option value="TER"
-                        ${registro?.dia==="TER"?"selected":""}>
-                        Terça-feira
-                    </option>
-
-                    <option value="QUA"
-                        ${registro?.dia==="QUA"?"selected":""}>
-                        Quarta-feira
-                    </option>
-
-                    <option value="QUI"
-                        ${registro?.dia==="QUI"?"selected":""}>
-                        Quinta-feira
-                    </option>
-
-                    <option value="SEX"
-                        ${registro?.dia==="SEX"?"selected":""}>
-                        Sexta-feira
-                    </option>
-
-                    <option value="SÁB"
-                        ${registro?.dia==="SÁB"?"selected":""}>
-                        Sábado
-                    </option>
-
-                </select>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>UGD</label>
-
-                <input
-                    class="input"
-                    id="progUgd"
-                    value="${escapar(registro?.ugd || "")}"
-                    placeholder="Ex.: UGD25"
-                >
-
-            </div>
-
-            <div class="form-group full">
-
-                <label>Serviço</label>
-
-                <input
-                    class="input"
-                    id="progServico"
-                    value="${escapar(registro?.servico || "")}"
-                    placeholder="Serviço planejado"
-                >
-
-            </div>
-
-            <div class="form-group">
-
-                <label>OS</label>
-
-                <input
-                    class="input"
-                    id="progOs"
-                    value="${escapar(registro?.os || "")}"
-                    placeholder="Opcional"
-                >
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Observação</label>
-
-                <input
-                    class="input"
-                    id="progObs"
-                    value="${escapar(registro?.observacao || "")}"
-                    placeholder="Detalhes"
-                >
-
-            </div>
-
-        </div>
-
-        <div class="modal-footer">
-
-            <button
-                class="btn"
-                onclick="fecharModal()">
-                Cancelar
-            </button>
-
-            <button
-                class="btn btn-primary"
-                onclick="salvarProgramacao()">
-                Salvar
-            </button>
-
-        </div>
-
-        `;
-
-    }
-
-
-    modal.classList.add("show");
-
-}
-
-
-function fecharModal(){
-
-    document.getElementById("modal")
-        .classList.remove("show");
-
-    editandoId = null;
-
-    editandoTipo = null;
+        `)
+        .join("");
 
 }
 
 
 /* ============================================================
-   ATUALIZAÇÃO GERAL
-============================================================ */
+   AGENDA - RENDER
+   ============================================================ */
 
-function atualizarTudo(){
+function renderAgenda(){
 
-    renderInicio();
+    const el =
+        document.getElementById(
+            "listaAgenda"
+        );
 
-    if(paginaAtual==="tarefas")
-        renderTarefas();
+    if(!dados.agenda.length){
 
-    if(paginaAtual==="servicos")
-        renderServicos();
+        el.innerHTML =
+            "<div class='panel'>Nenhum compromisso.</div>";
 
-    if(paginaAtual==="movimentacoes")
-        renderMovimentacoes();
+        return;
 
-    if(paginaAtual==="agenda")
-        renderAgenda();
+    }
 
-    if(paginaAtual==="lembretes")
-        renderLembretes();
+    el.innerHTML =
+        dados.agenda
+        .slice()
+        .sort((a,b) =>
+            ((a.data || "") + (a.hora || ""))
+            .localeCompare(
+                (b.data || "") + (b.hora || "")
+            )
+        )
+        .map(a => `
 
-    if(paginaAtual==="programacao")
-        renderProgramacao();
+        <div class="item">
 
-    if(paginaAtual==="bloco")
-        renderBloco();
+            <div class="item-header">
+
+                <div class="item-title">
+                    ${esc(a.titulo)}
+                </div>
+
+                <strong>
+                    ${a.data ? formatarData(a.data) : ""}
+                    ${a.hora ? " " + esc(a.hora) : ""}
+                </strong>
+
+            </div>
+
+            ${
+                a.descricao
+                ?
+                `<div class="item-text">${esc(a.descricao)}</div>`
+                :
+                ""
+            }
+
+            <div class="item-actions">
+
+                <button
+                    onclick="excluirRegistro(
+                        'agenda',
+                        CONFIG.ABAS.AGENDA,
+                        '${a.id}'
+                    )"
+                >
+                    Excluir
+                </button>
+
+            </div>
+
+        </div>
+
+        `)
+        .join("");
 
 }
 
 
 /* ============================================================
-   FECHAR MODAL CLICANDO FORA
-============================================================ */
+   NOTAS - RENDER
+   ============================================================ */
 
-document.getElementById("modal")
-.addEventListener("click",function(e){
+function renderNotas(){
 
-    if(e.target === this)
-        fecharModal();
+    const el =
+        document.getElementById(
+            "listaNotas"
+        );
 
-});
+    if(!dados.notas.length){
+
+        el.innerHTML =
+            "<div class='panel'>Nenhuma nota.</div>";
+
+        return;
+
+    }
+
+    el.innerHTML =
+        dados.notas
+        .slice()
+        .reverse()
+        .map(n => `
+
+        <div class="item">
+
+            <div class="item-title">
+                ${esc(n.titulo || "Nota")}
+            </div>
+
+            <div class="item-text">
+                ${esc(n.descricao || "")}
+            </div>
+
+            <div class="item-actions">
+
+                <button
+                    onclick="excluirRegistro(
+                        'notas',
+                        CONFIG.ABAS.NOTAS,
+                        '${n.id}'
+                    )"
+                >
+                    Excluir
+                </button>
+
+            </div>
+
+        </div>
+
+        `)
+        .join("");
+
+}
 
 
 /* ============================================================
-   INICIALIZAÇÃO
-============================================================ */
+   PROGRAMAÇÃO - RENDER
+   ============================================================ */
 
-atualizarData();
+function renderProgramacao(){
 
-abrirPagina("inicio");
+    const el =
+        document.getElementById(
+            "listaProgramacao"
+        );
 
-carregarDadosGoogle();
+    if(!dados.programacao.length){
 
+        el.innerHTML =
+            "<div class='panel'>Nenhuma programação.</div>";
+
+        return;
+
+    }
+
+    el.innerHTML =
+        dados.programacao
+        .slice()
+        .reverse()
+        .map(p => `
+
+        <div class="item">
+
+            <div class="item-header">
+
+                <div class="item-title">
+
+                    ${p.ugd ? esc(p.ugd) : "Atividade"}
+
+                    ${
+                        p.os
+                        ?
+                        " • OS " + esc(p.os)
+                        :
+                        ""
+                    }
+
+                </div>
+
+                <strong>
+                    ${p.data ? formatarData(p.data) : ""}
+                </strong>
+
+            </div>
+
+            <div class="item-text">
+                ${esc(p.descricao)}
+            </div>
+
+            ${
+                p.responsavel
+                ?
+                `<div class="item-meta">
+                    Responsável: ${esc(p.responsavel)}
+                </div>`
+                :
+                ""
+            }
+
+            <div class="item-actions">
+
+                <button
+                    onclick="excluirRegistro(
+                        'programacao',
+                        CONFIG.ABAS.PROGRAMACAO,
+                        '${p.id}'
+                    )"
+                >
+                    Excluir
+                </button>
+
+            </div>
+
+        </div>
+
+        `)
+        .join("");
+
+}
+
+
+/* ============================================================
+   LEMBRETES - RENDER
+   ============================================================ */
+
+function renderLembretes(){
+
+    const el =
+        document.getElementById(
+            "listaLembretes"
+        );
+
+    if(!dados.lembretes.length){
+
+        el.innerHTML =
+            "<div class='panel'>Nenhum lembrete.</div>";
+
+        return;
+
+    }
+
+    el.innerHTML =
+        dados.lembretes
+        .slice()
+        .reverse()
+        .map(l => `
+
+        <div class="item">
+
+            <div class="item-header">
+
+                <div class="item-title">
+                    ${esc(l.titulo)}
+                </div>
+
+                <strong>
+                    ${l.data ? formatarData(l.data) : ""}
+                    ${l.hora ? " " + esc(l.hora) : ""}
+                </strong>
+
+            </div>
+
+            ${
+                l.descricao
+                ?
+                `<div class="item-text">${esc(l.descricao)}</div>`
+                :
+                ""
+            }
+
+            <div class="item-actions">
+
+                <button
+                    onclick="excluirRegistro(
+                        'lembretes',
+                        CONFIG.ABAS.LEMBRETES,
+                        '${l.id}'
+                    )"
+                >
+                    Excluir
+                </button>
+
+            </div>
+
+        </div>
+
+        `)
+        .join("");
+
+}
+
+
+/* ============================================================
+   CONCLUIR TAREFA
+   ============================================================ */
+
+function concluirTarefa(id){
+
+    const tarefa =
+        dados.tarefas.find(
+            x => x.id === id
+        );
+
+    if(!tarefa) return;
+
+    tarefa.status =
+        "Concluída";
+
+    tarefa.atualizadoEm =
+        new Date().toISOString();
+
+    salvarDadosLocal();
+
+    adicionarFila(
+        "SALVAR",
+        CONFIG.ABAS.TAREFAS,
+        tarefa
+    );
+
+    renderizarTudo();
+
+    toast(
+        "Tarefa concluída."
+    );
+
+}
+
+
+/* ============================================================
+   CONTADORES
+   ============================================================ */
+
+function atualizarContadores(){
+
+    const pendentes =
+        dados.tarefas.filter(
+            x => x.status !== "Concluída"
+        ).length;
+
+    document.getElementById(
+        "contadorTarefas"
+    ).textContent = pendentes;
+
+    document.getElementById(
+        "contadorServicos"
+    ).textContent =
+        dados.servicos.length;
+
+    document.getElementById(
+        "contadorMovimentacoes"
+    ).textContent =
+        dados.movimentacoes.length;
+
+    document.getElementById(
+        "contadorLembretes"
+    ).textContent =
+        dados.lembretes.length;
+
+    document.getElementById(
+        "resumoInicio"
+    ).innerHTML = `
+
+        <p>
+            Você possui
+            <strong>${pendentes}</strong>
+            tarefa(s) pendente(s).
+        </p>
+
+        <p style="margin-top:8px">
+            Existem
+            <strong>${dados.servicos.length}</strong>
+            serviço(s) registrados.
+        </p>
+
+        <p style="margin-top:8px">
+            Foram registradas
+            <strong>${dados.movimentacoes.length}</strong>
+            movimentação(ões).
+        </p>
+
+    `;
+
+}
+
+
+/* ============================================================
+   STATUS
+   ============================================================ */
+
+function atualizarStatus(tipo){
+
+    const dot =
+        document.getElementById(
+            "statusDot"
+        );
+
+    const texto =
+        document.getElementById(
+            "statusTexto"
+        );
+
+    dot.className =
+        "status-dot";
+
+    if(!navigator.onLine){
+
+        dot.classList.add(
+            "offline"
+        );
+
+        texto.textContent =
+            filaSync.length
+            ? `Offline • ${filaSync.length} pendente(s)`
+            : "Offline";
+
+        return;
+
+    }
+
+    if(filaSync.length){
+
+        dot.classList.add(
+            "pending"
+        );
+
+        texto.textContent =
+            `Pendente • ${filaSync.length}`;
+
+        if(tipo === "sync"){
+
+            dot.className =
+                "status-dot sync";
+
+            texto.textContent =
+                "Sincronizando...";
+
+        }
+
+        return;
+
+    }
+
+    dot.className =
+        "status-dot";
+
+    texto.textContent =
+        "Sincronizado";
+
+}
+
+
+/* ============================================================
+   INTERNET
+   ============================================================ */
+
+window.addEventListener(
+    "online",
+    function(){
+
+        atualizarStatus();
+
+        toast(
+            "Internet voltou. Sincronizando..."
+        );
+
+        processarFila();
+
+    }
+);
+
+
+window.addEventListener(
+    "offline",
+    function(){
+
+        atualizarStatus();
+
+        toast(
+            "Sem internet. Continuando localmente."
+        );
+
+    }
+);
+
+
+/* ============================================================
+   NAVEGAÇÃO
+   ============================================================ */
+
+function abrirPagina(nome){
+
+    document
+        .querySelectorAll(".page")
+        .forEach(
+            p => p.classList.remove("active")
+        );
+
+    document
+        .querySelectorAll(".menu button")
+        .forEach(
+            b => b.classList.remove("active")
+        );
+
+    const pagina =
+        document.getElementById(
+            "page-" + nome
+        );
+
+    const menu =
+        document.getElementById(
+            "menu-" + nome
+        );
+
+    if(pagina){
+
+        pagina.classList.add(
+            "active"
+        );
+
+    }
+
+    if(menu){
+
+        menu.classList.add(
+            "active"
+        );
+
+    }
+
+    document
+        .getElementById("sidebar")
+        .classList.remove("open");
+
+}
+
+
+/* ============================================================
+   MENU MOBILE
+   ============================================================ */
+
+function toggleMenu(){
+
+    document
+        .getElementById("sidebar")
+        .classList.toggle("open");
+
+}
+
+
+/* ============================================================
+   FUNÇÕES AUXILIARES
+   ============================================================ */
+
+function valor(id){
+
+    const el =
+        document.getElementById(id);
+
+    return el
+        ? el.value.trim()
+        : "";
+
+}
+
+
+function limparCampos(ids){
+
+    ids.forEach(
+        id => {
+
+            const el =
+                document.getElementById(id);
+
+            if(el){
+
+                el.value = "";
+
+            }
+
+        }
+    );
+
+}
+
+
+function limparFormulario(tipo){
+
+    const mapas = {
+
+        agenda:[
+            "agendaData",
+            "agendaHora",
+            "agendaTitulo",
+            "agendaDescricao"
+        ]
+
+    };
+
+    if(mapas[tipo]){
+
+        limparCampos(
+            mapas[tipo]
+        );
+
+    }
+
+}
+
+
+function formatarData(data){
+
+    if(!data) return "";
+
+    const partes =
+        data.split("-");
+
+    if(partes.length !== 3)
+        return data;
+
+    return (
+        partes[2] +
+        "/" +
+        partes[1] +
+        "/" +
+        partes[0]
+    );
+
+}
+
+
+function esc(texto){
+
+    if(texto === null ||
+       texto === undefined){
+
+        return "";
+
+    }
+
+    return String(texto)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+function toast(mensagem){
+
+    const el =
+        document.getElementById(
+            "toast"
+        );
+
+    el.textContent =
+        mensagem;
+
+    el.classList.add("show");
+
+    clearTimeout(
+        toast.timer
+    );
+
+    toast.timer =
+        setTimeout(
+            () => {
+                el.classList.remove("show");
+            },
+            2500
+        );
+
+}
 
 </script>
 
