@@ -1,137 +1,1850 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
+<title>Minha Agenda - UTE Maués</title>
+
+
+<style>
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+
+:root{
+
+  --bg:#07111f;
+  --bg2:#0b1728;
+  --card:#101f33;
+  --card2:#13263e;
+  --border:#233a55;
+  --text:#eef5ff;
+  --muted:#91a4ba;
+  --primary:#2389ff;
+  --primary2:#56a9ff;
+  --green:#20c997;
+  --yellow:#ffc107;
+  --red:#ff5d6c;
+  --orange:#ff922b;
+
+}
+
+
+body{
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  background:
+    radial-gradient(
+      circle at top left,
+      #12325a 0,
+      var(--bg) 38%,
+      #030914 100%
+    );
+
+  color:var(--text);
+
+  min-height:100vh;
+
+}
+
+
+/* ============================================================
+   APP
+============================================================ */
+
+.app{
+
+  min-height:100vh;
+
+  display:flex;
+
+}
+
+
+/* ============================================================
+   SIDEBAR
+============================================================ */
+
+.sidebar{
+
+  width:260px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #0c1b2e,
+      #07111f
+    );
+
+  border-right:
+    1px solid
+    var(--border);
+
+  padding:20px;
+
+  position:fixed;
+
+  left:0;
+  top:0;
+  bottom:0;
+
+  z-index:100;
+
+}
+
+
+.logo{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:12px;
+
+  margin-bottom:30px;
+
+}
+
+
+.logo-icon{
+
+  width:44px;
+  height:44px;
+
+  border-radius:14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--primary),
+      #1457c7
+    );
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  font-size:22px;
+
+  box-shadow:
+    0 10px 30px
+    rgba(35,137,255,.25);
+
+}
+
+
+.logo h1{
+
+  font-size:17px;
+
+}
+
+
+.logo span{
+
+  color:var(--muted);
+
+  font-size:11px;
+
+}
+
+
+.menu{
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:6px;
+
+}
+
+
+.menu button{
+
+  width:100%;
+
+  border:0;
+
+  background:transparent;
+
+  color:var(--muted);
+
+  padding:12px 14px;
+
+  border-radius:10px;
+
+  text-align:left;
+
+  cursor:pointer;
+
+  transition:.2s;
+
+  font-size:14px;
+
+}
+
+
+.menu button:hover{
+
+  background:#142941;
+
+  color:#fff;
+
+}
+
+
+.menu button.active{
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(35,137,255,.25),
+      rgba(35,137,255,.08)
+    );
+
+  color:#fff;
+
+  border-left:
+    3px solid
+    var(--primary);
+
+}
+
+
+/* ============================================================
+   MAIN
+============================================================ */
+
+.main{
+
+  margin-left:260px;
+
+  width:
+    calc(100% - 260px);
+
+  min-height:100vh;
+
+}
+
+
+/* ============================================================
+   HEADER
+============================================================ */
+
+.header{
+
+  height:70px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  padding:0 28px;
+
+  border-bottom:
+    1px solid
+    var(--border);
+
+  background:
+    rgba(7,17,31,.75);
+
+  backdrop-filter:
+    blur(15px);
+
+  position:sticky;
+
+  top:0;
+
+  z-index:50;
+
+}
+
+
+.header-left{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:12px;
+
+}
+
+
+.header h2{
+
+  font-size:20px;
+
+}
+
+
+.status-sync{
+
+  font-size:12px;
+
+  color:var(--green);
+
+  background:
+    rgba(32,201,151,.08);
+
+  border:
+    1px solid
+    rgba(32,201,151,.18);
+
+  padding:7px 10px;
+
+  border-radius:20px;
+
+}
+
+
+/* ============================================================
+   CONTENT
+============================================================ */
+
+.content{
+
+  padding:28px;
+
+  max-width:1500px;
+
+  margin:auto;
+
+}
+
+
+.page{
+
+  display:none;
+
+}
+
+
+.page.active{
+
+  display:block;
+
+}
+
+
+/* ============================================================
+   DASHBOARD
+============================================================ */
+
+.welcome{
+
+  margin-bottom:24px;
+
+}
+
+
+.welcome h1{
+
+  font-size:30px;
+
+  margin-bottom:8px;
+
+}
+
+
+.welcome p{
+
+  color:var(--muted);
+
+}
+
+
+.cards{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0,1fr)
+    );
+
+  gap:16px;
+
+  margin-bottom:24px;
+
+}
+
+
+.card{
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(19,38,62,.96),
+      rgba(10,25,43,.96)
+    );
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:16px;
+
+  padding:20px;
+
+  box-shadow:
+    0 15px 40px
+    rgba(0,0,0,.15);
+
+}
+
+
+.card-label{
+
+  color:var(--muted);
+
+  font-size:12px;
+
+  margin-bottom:12px;
+
+}
+
+
+.card-value{
+
+  font-size:30px;
+
+  font-weight:bold;
+
+}
+
+
+.card-icon{
+
+  font-size:24px;
+
+  margin-bottom:12px;
+
+}
+
+
+/* ============================================================
+   GRID
+============================================================ */
+
+.grid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0,1fr)
+    );
+
+  gap:18px;
+
+}
+
+
+.panel{
+
+  background:
+    rgba(13,31,51,.9);
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:16px;
+
+  padding:20px;
+
+}
+
+
+.panel h3{
+
+  margin-bottom:16px;
+
+}
+
+
+/* ============================================================
+   TOOLBAR
+============================================================ */
+
+.toolbar{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  gap:12px;
+
+  margin-bottom:18px;
+
+  flex-wrap:wrap;
+
+}
+
+
+.toolbar-left,
+.toolbar-right{
+
+  display:flex;
+
+  gap:8px;
+
+  flex-wrap:wrap;
+
+}
+
+
+/* ============================================================
+   BUTTON
+============================================================ */
+
+.btn{
+
+  border:0;
+
+  border-radius:9px;
+
+  padding:10px 15px;
+
+  cursor:pointer;
+
+  color:#fff;
+
+  background:
+    #1a304a;
+
+  transition:.2s;
+
+}
+
+
+.btn:hover{
+
+  transform:
+    translateY(-1px);
+
+  filter:
+    brightness(1.1);
+
+}
+
+
+.btn-primary{
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--primary),
+      #1765ce
+    );
+
+}
+
+
+.btn-danger{
+
+  background:
+    rgba(255,93,108,.15);
+
+  color:#ff8d98;
+
+}
+
+
+.btn-success{
+
+  background:
+    rgba(32,201,151,.15);
+
+  color:#4ce0b5;
+
+}
+
+
+/* ============================================================
+   TABLE
+============================================================ */
+
+.table-wrap{
+
+  overflow:auto;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:12px;
+
+}
+
+
+table{
+
+  width:100%;
+
+  border-collapse:collapse;
+
+  min-width:700px;
+
+}
+
+
+th{
+
+  background:
+    #10243b;
+
+  color:
+    #9eb2c8;
+
+  font-size:12px;
+
+  text-align:left;
+
+  padding:12px;
+
+}
+
+
+td{
+
+  padding:12px;
+
+  border-top:
+    1px solid
+    rgba(35,58,85,.6);
+
+  font-size:13px;
+
+}
+
+
+tr:hover td{
+
+  background:
+    rgba(35,137,255,.04);
+
+}
+
+
+/* ============================================================
+   EMPTY
+============================================================ */
+
+.empty{
+
+  text-align:center;
+
+  padding:40px 20px;
+
+  color:var(--muted);
+
+}
+
+
+/* ============================================================
+   FORM
+============================================================ */
+
+.form-grid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0,1fr)
+    );
+
+  gap:14px;
+
+}
+
+
+.form-group{
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:6px;
+
+}
+
+
+.form-group.full{
+
+  grid-column:
+    1 / -1;
+
+}
+
+
+label{
+
+  font-size:12px;
+
+  color:var(--muted);
+
+}
+
+
+input,
+select,
+textarea{
+
+  width:100%;
+
+  background:
+    #09192b;
+
+  border:
+    1px solid
+    var(--border);
+
+  color:#fff;
+
+  border-radius:9px;
+
+  padding:11px;
+
+  outline:none;
+
+}
+
+
+input:focus,
+select:focus,
+textarea:focus{
+
+  border-color:
+    var(--primary);
+
+}
+
+
+textarea{
+
+  min-height:110px;
+
+  resize:vertical;
+
+}
+
+
+/* ============================================================
+   MODAL
+============================================================ */
+
+.modal{
+
+  display:none;
+
+  position:fixed;
+
+  inset:0;
+
+  background:
+    rgba(0,0,0,.7);
+
+  backdrop-filter:
+    blur(5px);
+
+  align-items:center;
+
+  justify-content:center;
+
+  z-index:1000;
+
+  padding:20px;
+
+}
+
+
+.modal.show{
+
+  display:flex;
+
+}
+
+
+.modal-box{
+
+  width:100%;
+
+  max-width:650px;
+
+  max-height:90vh;
+
+  overflow:auto;
+
+  background:
+    linear-gradient(
+      145deg,
+      #12263e,
+      #09192b
+    );
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:18px;
+
+  padding:24px;
+
+  box-shadow:
+    0 30px 80px
+    rgba(0,0,0,.5);
+
+}
+
+
+.modal-header{
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  margin-bottom:20px;
+
+}
+
+
+.close{
+
+  background:none;
+
+  border:0;
+
+  color:#fff;
+
+  font-size:24px;
+
+  cursor:pointer;
+
+}
+
+
+/* ============================================================
+   TAG
+============================================================ */
+
+.tag{
+
+  display:inline-block;
+
+  padding:5px 8px;
+
+  border-radius:20px;
+
+  font-size:11px;
+
+  background:
+    rgba(35,137,255,.12);
+
+  color:
+    #69b2ff;
+
+}
+
+
+/* ============================================================
+   SEARCH
+============================================================ */
+
+.search-box{
+
+  display:flex;
+
+  gap:10px;
+
+  margin-bottom:18px;
+
+}
+
+
+.search-box input{
+
+  flex:1;
+
+}
+
+
+/* ============================================================
+   PROGRAMACAO
+============================================================ */
+
+.week-grid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(
+      6,
+      minmax(170px,1fr)
+    );
+
+  gap:12px;
+
+  overflow-x:auto;
+
+}
+
+
+.day{
+
+  background:
+    #0c1d31;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:12px;
+
+  padding:12px;
+
+  min-height:180px;
+
+}
+
+
+.day h4{
+
+  margin-bottom:12px;
+
+  color:
+    #73b6ff;
+
+}
+
+
+.day-item{
+
+  background:
+    #132a43;
+
+  border-radius:8px;
+
+  padding:9px;
+
+  margin-bottom:8px;
+
+  font-size:12px;
+
+}
+
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+.mobile-menu{
+
+  display:none;
+
+  background:none;
+
+  border:0;
+
+  color:#fff;
+
+  font-size:24px;
+
+}
+
+
+@media(max-width:1000px){
+
+  .sidebar{
+
+    transform:
+      translateX(-100%);
+
+    transition:.25s;
+
+  }
+
+
+  .sidebar.open{
+
+    transform:
+      translateX(0);
+
+  }
+
+
+  .main{
+
+    margin-left:0;
+
+    width:100%;
+
+  }
+
+
+  .mobile-menu{
+
+    display:block;
+
+  }
+
+
+  .cards{
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0,1fr)
+      );
+
+  }
+
+
+  .grid{
+
+    grid-template-columns:1fr;
+
+  }
+
+}
+
+
+@media(max-width:650px){
+
+  .content{
+
+    padding:16px;
+
+  }
+
+
+  .header{
+
+    padding:
+      0 16px;
+
+  }
+
+
+  .header h2{
+
+    font-size:16px;
+
+  }
+
+
+  .status-sync{
+
+    display:none;
+
+  }
+
+
+  .cards{
+
+    grid-template-columns:1fr 1fr;
+
+    gap:10px;
+
+  }
+
+
+  .card{
+
+    padding:15px;
+
+  }
+
+
+  .card-value{
+
+    font-size:24px;
+
+  }
+
+
+  .form-grid{
+
+    grid-template-columns:1fr;
+
+  }
+
+
+  .form-group.full{
+
+    grid-column:auto;
+
+  }
+
+
+  .welcome h1{
+
+    font-size:24px;
+
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+<!-- ========================================================
+     SIDEBAR
+========================================================= -->
+
+<aside
+  class="sidebar"
+  id="sidebar"
+>
+
+  <div class="logo">
+
+    <div class="logo-icon">
+      ⚡
+    </div>
+
+    <div>
+
+      <h1>Minha Agenda</h1>
+
+      <span>UTE Maués</span>
+
+    </div>
+
+  </div>
+
+
+  <nav class="menu">
+
+    <button
+      class="active"
+      onclick="abrirPagina('inicio',this)"
+    >
+      🏠 Início
+    </button>
+
+
+    <button
+      onclick="abrirPagina('agenda',this)"
+    >
+      📅 Agenda
+    </button>
+
+
+    <button
+      onclick="abrirPagina('tarefas',this)"
+    >
+      ✅ Tarefas
+    </button>
+
+
+    <button
+      onclick="abrirPagina('programacao',this)"
+    >
+      📋 Programação Semanal
+    </button>
+
+
+    <button
+      onclick="abrirPagina('lembretes',this)"
+    >
+      🔔 Lembretes
+    </button>
+
+
+    <button
+      onclick="abrirPagina('servicos',this)"
+    >
+      🔧 Serviços Realizados
+    </button>
+
+
+    <button
+      onclick="abrirPagina('movimentacoes',this)"
+    >
+      🔄 Movimentações
+    </button>
+
+
+    <button
+      onclick="abrirPagina('bloco',this)"
+    >
+      📝 Bloco de Notas
+    </button>
+
+
+    <button
+      onclick="abrirPagina('pesquisa',this)"
+    >
+      🔎 Pesquisa Geral
+    </button>
+
+  </nav>
+
+</aside>
+
+
+<!-- ========================================================
+     MAIN
+========================================================= -->
+
+<main class="main">
+
+
+<header class="header">
+
+  <div class="header-left">
+
+    <button
+      class="mobile-menu"
+      onclick="toggleMenu()"
+    >
+      ☰
+    </button>
+
+    <h2 id="tituloPagina">
+      Início
+    </h2>
+
+  </div>
+
+
+  <div
+    class="status-sync"
+    id="syncStatus"
+  >
+    ☁️ Sincronizado
+  </div>
+
+</header>
+
+
+<div class="content">
+
+
+<!-- ========================================================
+     INÍCIO
+========================================================= -->
+
+<section
+  id="inicio"
+  class="page active"
+>
+
+  <div class="welcome">
+
+    <h1>
+      Minha Agenda - UTE Maués
+    </h1>
+
+    <p>
+      Controle pessoal das suas atividades,
+      tarefas, serviços e movimentações.
+    </p>
+
+  </div>
+
+
+  <div class="cards">
+
+    <div class="card">
+
+      <div class="card-icon">
+        📅
+      </div>
+
+      <div class="card-label">
+        Agenda
+      </div>
+
+      <div
+        class="card-value"
+        id="totalAgenda"
+      >
+        0
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="card-icon">
+        ✅
+      </div>
+
+      <div class="card-label">
+        Tarefas pendentes
+      </div>
+
+      <div
+        class="card-value"
+        id="totalTarefas"
+      >
+        0
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="card-icon">
+        🔧
+      </div>
+
+      <div class="card-label">
+        Serviços
+      </div>
+
+      <div
+        class="card-value"
+        id="totalServicos"
+      >
+        0
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="card-icon">
+        🔄
+      </div>
+
+      <div class="card-label">
+        Movimentações
+      </div>
+
+      <div
+        class="card-value"
+        id="totalMov"
+      >
+        0
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="grid">
+
+    <div class="panel">
+
+      <h3>
+        📅 Próximas atividades
+      </h3>
+
+      <div id="inicioAgenda"></div>
+
+    </div>
+
+
+    <div class="panel">
+
+      <h3>
+        🔔 Lembretes
+      </h3>
+
+      <div id="inicioLembretes"></div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ========================================================
+     AGENDA
+========================================================= -->
+
+<section
+  id="agenda"
+  class="page"
+>
+
+  <div class="toolbar">
+
+    <h2>📅 Agenda</h2>
+
+    <button
+      class="btn btn-primary"
+      onclick="abrirModalAgenda()"
+    >
+      + Nova atividade
+    </button>
+
+  </div>
+
+
+  <div
+    class="panel"
+  >
+
+    <div
+      id="listaAgenda"
+    ></div>
+
+  </div>
+
+</section>
+
+
+<!-- ========================================================
+     TAREFAS
+========================================================= -->
+
+<section
+  id="tarefas"
+  class="page"
+>
+
+  <div class="toolbar">
+
+    <h2>✅ Tarefas</h2>
+
+    <button
+      class="btn btn-primary"
+      onclick="abrirModalTarefa()"
+    >
+      + Nova tarefa
+    </button>
+
+  </div>
+
+
+  <div
+    class="panel"
+  >
+
+    <div
+      id="listaTarefas"
+    ></div>
+
+  </div>
+
+</section>
+
+
+<!-- ========================================================
+     PROGRAMAÇÃO
+========================================================= -->
+
+<section
+  id="programacao"
+  class="page"
+>
+
+  <div class="toolbar">
+
+    <h2>
+      📋 Programação Semanal
+    </h2>
+
+    <button
+      class="btn btn-primary"
+      onclick="abrirModalProgramacao()"
+    >
+      + Programar
+    </button>
+
+  </div>
+
+
+  <div
+    id="programacaoSemana"
+    class="week-grid"
+  ></div>
+
+</section>
+
+
+<!-- ========================================================
+     LEMBRETES
+========================================================= -->
+
+<section
+  id="lembretes"
+  class="page"
+>
+
+  <div class="toolbar">
+
+    <h2>🔔 Lembretes</h2>
+
+    <button
+      class="btn btn-primary"
+      onclick="abrirModalLembrete()"
+    >
+      + Novo lembrete
+    </button>
+
+  </div>
+
+
+  <div
+    class="panel"
+  >
+
+    <div
+      id="listaLembretes"
+    ></div>
+
+  </div>
+
+</section>
+
+
+<!-- ========================================================
+     SERVIÇOS
+========================================================= -->
+
+<section
+  id="servicos"
+  class="page"
+>
+
+  <div class="toolbar">
+
+    <h2>
+      🔧 Serviços Realizados
+    </h2>
+
+    <button
+      class="btn btn-primary"
+      onclick="abrirModalServico()"
+    >
+      + Registrar serviço
+    </button>
+
+  </div>
+
+
+  <div
+    class="panel"
+  >
+
+    <div
+      id="listaServicos"
+    ></div>
+
+  </div>
+
+</section>
+
+
+<!-- ========================================================
+     MOVIMENTAÇÕES
+========================================================= -->
+
+<section
+  id="movimentacoes"
+  class="page"
+>
+
+  <div class="toolbar">
+
+    <h2>
+      🔄 Movimentações
+    </h2>
+
+    <button
+      class="btn btn-primary"
+      onclick="abrirModalMovimentacao()"
+    >
+      + Nova movimentação
+    </button>
+
+  </div>
+
+
+  <div class="panel">
+
+    <p
+      style="
+        color:var(--muted);
+        margin-bottom:18px;
+      "
+    >
+      Registre de forma simples as peças
+      movimentadas entre grupos geradores.
+    </p>
+
+
+    <div
+      id="listaMovimentacoes"
+    ></div>
+
+  </div>
+
+</section>
+
+
+<!-- ========================================================
+     BLOCO
+========================================================= -->
+
+<section
+  id="bloco"
+  class="page"
+>
+
+  <div class="toolbar">
+
+    <h2>
+      📝 Bloco de Notas
+    </h2>
+
+    <span
+      style="
+        color:var(--muted);
+        font-size:12px;
+      "
+    >
+      Salva automaticamente
+    </span>
+
+  </div>
+
+
+  <div class="panel">
+
+    <textarea
+      id="blocoTexto"
+      placeholder="Digite suas anotações aqui..."
+      style="
+        min-height:500px;
+        font-size:15px;
+        line-height:1.6;
+      "
+      oninput="blocoAlterado()"
+    ></textarea>
+
+  </div>
+
+</section>
+
+
+<!-- ========================================================
+     PESQUISA
+========================================================= -->
+
+<section
+  id="pesquisa"
+  class="page"
+>
+
+  <div class="toolbar">
+
+    <h2>
+      🔎 Pesquisa Geral
+    </h2>
+
+  </div>
+
+
+  <div class="panel">
+
+    <div class="search-box">
+
+      <input
+        id="campoPesquisa"
+        placeholder="Pesquisar em toda a agenda..."
+        oninput="pesquisar()"
+      >
+
+    </div>
+
+
+    <div
+      id="resultadoPesquisa"
+    ></div>
+
+  </div>
+
+</section>
+
+
+</div>
+
+</main>
+
+</div>
+
+
+<!-- ========================================================
+     MODAL
+========================================================= -->
+
+<div
+  id="modal"
+  class="modal"
+>
+
+  <div class="modal-box">
+
+    <div class="modal-header">
+
+      <h3 id="modalTitulo">
+        Novo registro
+      </h3>
+
+      <button
+        class="close"
+        onclick="fecharModal()"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div id="modalConteudo"></div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* ============================================================
+   CONFIGURAÇÃO
+============================================================ */
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbwnh_sGGgGxDybRlvRhv8afEmaOjPPYDKyQOZBorWMJHRP2pv1u_UDgnrz32zVQkoA2bw/exec";
+
+
+const CONFIG = {
+
+  ABA_TAREFAS:
+    "TAREFAS",
+
+  ABA_SERVICOS:
+    "SERVICOS",
+
+  ABA_MOVIMENTACOES:
+    "MOVIMENTACOES",
+
+  ABA_AGENDA:
+    "AGENDA",
+
+  ABA_LEMBRETES:
+    "LEMBRETES",
+
+  ABA_PROGRAMACAO:
+    "PROGRAMACAO",
+
+  ABA_BLOCO:
+    "BLOCO_NOTAS"
+
+};
+
+
+/* ============================================================
+   DADOS LOCAIS
+============================================================ */
+
+let dados =
+JSON.parse(
+  localStorage.getItem(
+    "minha_agenda_ute"
+  )
+) || {
+
+  tarefas:[],
+
+  movimentacoes:[],
+
+  servicos:[],
+
+  agenda:[],
+
+  lembretes:[],
+
+  programacao:[],
+
+  bloco:""
+
+};
+
+
+/* ============================================================
+   FILA DE SINCRONIZAÇÃO
+============================================================ */
+
 let filaSync =
-    JSON.parse(
-        localStorage.getItem(
-            "minha_agenda_fila_sync"
-        )
-    ) || [];
-
-let sincronizando = false;
-
-let timerLote = null;
+JSON.parse(
+  localStorage.getItem(
+    "minha_agenda_fila_sync"
+  )
+) || [];
 
 
-/* ============================================================
-   COLOCAR ALTERAÇÃO NA FILA
-============================================================ */
-
-function adicionarFila(tipo, registro){
-
-    /*
-     * Se o mesmo registro foi alterado
-     * várias vezes antes de sincronizar,
-     * mantém somente a última versão.
-     */
-
-    filaSync =
-        filaSync.filter(
-            item =>
-                !(
-                    item.acao === "upsert" &&
-                    item.tipo === tipo &&
-                    String(item.registro.id) ===
-                    String(registro.id)
-                )
-        );
+let sincronizando =
+false;
 
 
-    filaSync.push({
-
-        acao:"upsert",
-
-        tipo:tipo,
-
-        registro:
-            JSON.parse(
-                JSON.stringify(
-                    registro
-                )
-            )
-
-    });
+let timerLote =
+null;
 
 
-    salvarFila();
-
-    agendarLote();
-
-}
+let timerBloco =
+null;
 
 
 /* ============================================================
-   EXCLUSÃO
+   SALVAR LOCAL
 ============================================================ */
 
-function adicionarExclusaoFila(
-    tipo,
-    registroId
-){
+function salvar(){
 
-    /*
-     * Remove qualquer alteração
-     * anterior desse registro.
-     */
-
-    filaSync =
-        filaSync.filter(
-            item =>
-                !(
-                    item.tipo === tipo &&
-                    String(
-                        item.registro?.id ||
-                        item.id
-                    ) ===
-                    String(registroId)
-                )
-        );
-
-
-    filaSync.push({
-
-        acao:"delete",
-
-        tipo:tipo,
-
-        id:registroId
-
-    });
-
-
-    salvarFila();
-
-    agendarLote();
-
-}
-
-
-/* ============================================================
-   BLOCO DE NOTAS
-============================================================ */
-
-function adicionarBlocoFila(texto){
-
-    /*
-     * Mantém somente o último texto.
-     */
-
-    filaSync =
-        filaSync.filter(
-            item =>
-                item.acao !== "bloco"
-        );
-
-
-    filaSync.push({
-
-        acao:"bloco",
-
-        texto:texto
-
-    });
-
-
-    salvarFila();
-
-    agendarLote();
+  localStorage.setItem(
+    "minha_agenda_ute",
+    JSON.stringify(
+      dados
+    )
+  );
 
 }
 
@@ -142,45 +1855,256 @@ function adicionarBlocoFila(texto){
 
 function salvarFila(){
 
-    localStorage.setItem(
-        "minha_agenda_fila_sync",
-        JSON.stringify(
-            filaSync
-        )
-    );
+  localStorage.setItem(
+    "minha_agenda_fila_sync",
+    JSON.stringify(
+      filaSync
+    )
+  );
 
 }
 
 
 /* ============================================================
-   AGENDAR ENVIO
+   ID
+============================================================ */
+
+function novoId(){
+
+  return (
+    Date.now()
+    .toString(36)
+    +
+    Math.random()
+      .toString(36)
+      .substring(2,8)
+  );
+
+}
+
+
+/* ============================================================
+   STATUS
+============================================================ */
+
+function syncStatus(
+  texto,
+  tipo=""
+){
+
+  const el =
+    document.getElementById(
+      "syncStatus"
+    );
+
+
+  if(!el)
+    return;
+
+
+  el.textContent =
+    texto;
+
+
+  if(
+    tipo === "erro"
+  ){
+
+    el.style.color =
+      "#ff8d98";
+
+  }
+
+  else if(
+    tipo === "load"
+  ){
+
+    el.style.color =
+      "#ffc107";
+
+  }
+
+  else{
+
+    el.style.color =
+      "#20c997";
+
+  }
+
+}
+
+
+/* ============================================================
+   ADICIONAR UPSERT NA FILA
+============================================================ */
+
+function adicionarFila(
+  tipo,
+  registro
+){
+
+  /*
+   * Remove versões anteriores
+   * do mesmo registro.
+   */
+
+  filaSync =
+    filaSync.filter(
+      item => {
+
+        if(
+          item.acao ===
+          "upsert" &&
+          item.tipo ===
+          tipo &&
+          item.registro &&
+          String(
+            item.registro.id
+          ) ===
+          String(
+            registro.id
+          )
+        ){
+
+          return false;
+
+        }
+
+
+        return true;
+
+      }
+    );
+
+
+  /*
+   * Adiciona a última versão.
+   */
+
+  filaSync.push({
+
+    acao:"upsert",
+
+    tipo:tipo,
+
+    registro:
+      JSON.parse(
+        JSON.stringify(
+          registro
+        )
+      )
+
+  });
+
+
+  salvarFila();
+
+  agendarLote();
+
+}
+
+
+/* ============================================================
+   ADICIONAR DELETE
+============================================================ */
+
+function adicionarExclusaoFila(
+  tipo,
+  id
+){
+
+  filaSync =
+    filaSync.filter(
+      item => {
+
+        const itemId =
+          item.acao === "upsert"
+            ? item.registro?.id
+            : item.id;
+
+
+        return !(
+          item.tipo === tipo &&
+          String(itemId) ===
+          String(id)
+        );
+
+      }
+    );
+
+
+  filaSync.push({
+
+    acao:"delete",
+
+    tipo:tipo,
+
+    id:id
+
+  });
+
+
+  salvarFila();
+
+  agendarLote();
+
+}
+
+
+/* ============================================================
+   BLOCO NA FILA
+============================================================ */
+
+function adicionarBlocoFila(
+  texto
+){
+
+  filaSync =
+    filaSync.filter(
+      item =>
+        item.acao !==
+        "bloco"
+    );
+
+
+  filaSync.push({
+
+    acao:"bloco",
+
+    texto:
+      texto || ""
+
+  });
+
+
+  salvarFila();
+
+  agendarLote();
+
+}
+
+
+/* ============================================================
+   AGENDAR LOTE
 ============================================================ */
 
 function agendarLote(){
 
-    clearTimeout(
-        timerLote
+  clearTimeout(
+    timerLote
+  );
+
+
+  timerLote =
+    setTimeout(
+      enviarLote,
+      700
     );
 
 
-    /*
-     * Espera 800 ms.
-     *
-     * Assim, se o usuário cadastrar
-     * várias coisas rapidamente,
-     * tudo vai em uma única chamada.
-     */
-
-    timerLote =
-        setTimeout(
-            enviarLote,
-            800
-        );
-
-
-    syncStatus(
-        `⚡ Salvo • ${filaSync.length} pendente(s)`
-    );
+  syncStatus(
+    "⚡ Salvo • sincronizando..."
+  );
 
 }
 
@@ -191,212 +2115,1756 @@ function agendarLote(){
 
 async function enviarLote(){
 
-    if(
-        sincronizando
-    )
-        return;
+  if(
+    sincronizando
+  )
+    return;
 
 
-    if(
-        !filaSync.length
-    ){
-
-        syncStatus(
-            "☁️ Sincronizado"
-        );
-
-        return;
-
-    }
-
-
-    if(
-        !navigator.onLine
-    ){
-
-        syncStatus(
-            "📱 Salvo offline",
-            "erro"
-        );
-
-        return;
-
-    }
-
-
-    sincronizando =
-        true;
-
+  if(
+    !filaSync.length
+  ){
 
     syncStatus(
-        `☁️ Enviando ${filaSync.length}...`,
-        "load"
+      "☁️ Sincronizado"
     );
+
+    return;
+
+  }
+
+
+  if(
+    !navigator.onLine
+  ){
+
+    syncStatus(
+      "📱 Salvo offline",
+      "erro"
+    );
+
+    return;
+
+  }
+
+
+  sincronizando =
+    true;
+
+
+  const lote =
+    filaSync.slice();
+
+
+  syncStatus(
+    "☁️ Sincronizando...",
+    "load"
+  );
+
+
+  try{
+
+    const resposta =
+      await fetch(
+        API_URL,
+        {
+
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "text/plain;charset=utf-8"
+          },
+
+          body:
+            JSON.stringify({
+
+              action:
+                "batchSync",
+
+              operacoes:
+                lote
+
+            })
+
+        }
+      );
+
+
+    if(
+      !resposta.ok
+    ){
+
+      throw new Error(
+        "HTTP " +
+        resposta.status
+      );
+
+    }
+
+
+    const resultado =
+      await resposta.json();
+
+
+    if(
+      !resultado.ok
+    ){
+
+      throw new Error(
+        resultado.erro ||
+        "Erro na API"
+      );
+
+    }
 
 
     /*
-     * Copia a fila atual.
+     * Remove somente o lote
+     * que foi enviado.
      */
 
-    const lote =
-        filaSync.slice();
+    filaSync =
+      filaSync.slice(
+        lote.length
+      );
 
 
-    try{
-
-        const resposta =
-            await fetch(
-                API_URL,
-                {
-
-                    method:"POST",
-
-                    headers:{
-                        "Content-Type":
-                        "text/plain;charset=utf-8"
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            action:
-                                "batchSync",
-
-                            operacoes:
-                                lote
-
-                        })
-
-                }
-            );
+    salvarFila();
 
 
-        if(
-            !resposta.ok
-        ){
-
-            throw new Error(
-                "HTTP "+
-                resposta.status
-            );
-
-        }
+    syncStatus(
+      "☁️ Sincronizado"
+    );
 
 
-        const resultado =
-            await resposta.json();
+  }
+
+  catch(erro){
+
+    console.error(
+      "Erro sincronização:",
+      erro
+    );
 
 
-        if(
-            !resultado.ok
-        ){
-
-            throw new Error(
-                resultado.erro ||
-                "Erro Google"
-            );
-
-        }
+    syncStatus(
+      "⚠️ Aguardando sincronização",
+      "erro"
+    );
 
 
-        /*
-         * Só remove da fila
-         * aquilo que realmente
-         * foi enviado.
-         */
+    setTimeout(
+      enviarLote,
+      5000
+    );
 
-        filaSync =
-            filaSync.slice(
-                lote.length
-            );
+  }
 
+  finally{
 
-        salvarFila();
+    sincronizando =
+      false;
 
-
-        syncStatus(
-            "☁️ Sincronizado"
-        );
-
-
-    }catch(erro){
-
-        console.error(
-            erro
-        );
-
-
-        syncStatus(
-            "⚠️ Aguardando internet",
-            "erro"
-        );
-
-
-        /*
-         * Tenta novamente.
-         */
-
-        setTimeout(
-            enviarLote,
-            5000
-        );
-
-
-    }finally{
-
-        sincronizando =
-            false;
-
-    }
+  }
 
 }
 
 
 /* ============================================================
-   SUBSTITUIR enviarGoogle
+   COMPATIBILIDADE
 ============================================================ */
 
 function enviarGoogle(
+  tipo,
+  registro
+){
+
+  adicionarFila(
     tipo,
     registro
-){
-
-    adicionarFila(
-        tipo,
-        registro
-    );
+  );
 
 }
 
-
-/* ============================================================
-   SUBSTITUIR excluirGoogle
-============================================================ */
 
 function excluirGoogle(
-    tipo,
-    registroId
+  tipo,
+  id
 ){
 
-    adicionarExclusaoFila(
-        tipo,
-        registroId
+  adicionarExclusaoFila(
+    tipo,
+    id
+  );
+
+}
+
+
+function enviarBlocoGoogle(
+  texto
+){
+
+  adicionarBlocoFila(
+    texto
+  );
+
+}
+
+
+/* ============================================================
+   CARREGAR GOOGLE
+============================================================ */
+
+async function carregarDadosGoogle(){
+
+  if(
+    !navigator.onLine
+  ){
+
+    syncStatus(
+      "📱 Offline",
+      "erro"
+    );
+
+    return;
+
+  }
+
+
+  try{
+
+    syncStatus(
+      "☁️ Atualizando...",
+      "load"
+    );
+
+
+    const resposta =
+      await fetch(
+        API_URL +
+        "?action=getAll"
+      );
+
+
+    if(
+      !resposta.ok
+    ){
+
+      throw new Error(
+        "HTTP " +
+        resposta.status
+      );
+
+    }
+
+
+    const resultado =
+      await resposta.json();
+
+
+    if(
+      !resultado.ok
+    ){
+
+      throw new Error(
+        resultado.erro ||
+        "Erro"
+      );
+
+    }
+
+
+    /*
+     * Só substitui os dados locais
+     * quando não há alterações
+     * pendentes.
+     *
+     * Isso evita perder algo salvo
+     * enquanto o Google ainda não
+     * recebeu.
+     */
+
+    if(
+      filaSync.length === 0
+    ){
+
+      dados =
+        normalizarDados(
+          resultado.dados
+        );
+
+
+      salvar();
+
+      renderTudo();
+
+    }
+
+
+    syncStatus(
+      "☁️ Sincronizado"
+    );
+
+
+  }
+
+  catch(erro){
+
+    console.error(
+      erro
+    );
+
+
+    syncStatus(
+      "📱 Dados locais",
+      "erro"
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   NORMALIZAR
+============================================================ */
+
+function normalizarDados(
+  remoto
+){
+
+  return {
+
+    tarefas:
+      Array.isArray(
+        remoto?.tarefas
+      )
+        ? remoto.tarefas
+        : [],
+
+
+    movimentacoes:
+      Array.isArray(
+        remoto?.movimentacoes
+      )
+        ? remoto.movimentacoes
+        : [],
+
+
+    servicos:
+      Array.isArray(
+        remoto?.servicos
+      )
+        ? remoto.servicos
+        : [],
+
+
+    agenda:
+      Array.isArray(
+        remoto?.agenda
+      )
+        ? remoto.agenda
+        : [],
+
+
+    lembretes:
+      Array.isArray(
+        remoto?.lembretes
+      )
+        ? remoto.lembretes
+        : [],
+
+
+    programacao:
+      Array.isArray(
+        remoto?.programacao
+      )
+        ? remoto.programacao
+        : [],
+
+
+    bloco:
+      remoto?.bloco || ""
+
+  };
+
+}
+
+
+/* ============================================================
+   ABRIR PÁGINA
+============================================================ */
+
+function abrirPagina(
+  pagina,
+  botao
+){
+
+  document
+    .querySelectorAll(
+      ".page"
+    )
+    .forEach(
+      el =>
+        el.classList.remove(
+          "active"
+        )
+    );
+
+
+  const alvo =
+    document.getElementById(
+      pagina
+    );
+
+
+  if(alvo)
+    alvo.classList.add(
+      "active"
+    );
+
+
+  document
+    .querySelectorAll(
+      ".menu button"
+    )
+    .forEach(
+      el =>
+        el.classList.remove(
+          "active"
+        )
+    );
+
+
+  if(botao){
+
+    botao.classList.add(
+      "active"
+    );
+
+  }
+
+
+  const nomes = {
+
+    inicio:"Início",
+
+    agenda:"Agenda",
+
+    tarefas:"Tarefas",
+
+    programacao:
+      "Programação Semanal",
+
+    lembretes:
+      "Lembretes",
+
+    servicos:
+      "Serviços Realizados",
+
+    movimentacoes:
+      "Movimentações",
+
+    bloco:
+      "Bloco de Notas",
+
+    pesquisa:
+      "Pesquisa Geral"
+
+  };
+
+
+  document
+    .getElementById(
+      "tituloPagina"
+    )
+    .textContent =
+      nomes[pagina] ||
+      pagina;
+
+
+  document
+    .getElementById(
+      "sidebar"
+    )
+    .classList.remove(
+      "open"
+    );
+
+
+  renderTudo();
+
+}
+
+
+/* ============================================================
+   MENU MOBILE
+============================================================ */
+
+function toggleMenu(){
+
+  document
+    .getElementById(
+      "sidebar"
+    )
+    .classList.toggle(
+      "open"
     );
 
 }
 
 
 /* ============================================================
-   SUBSTITUIR enviarBlocoGoogle
+   MODAL
 ============================================================ */
 
-function enviarBlocoGoogle(
-    texto
+function abrirModal(
+  titulo,
+  conteudo
 ){
 
-    adicionarBlocoFila(
-        texto
+  document
+    .getElementById(
+      "modalTitulo"
+    )
+    .textContent =
+      titulo;
+
+
+  document
+    .getElementById(
+      "modalConteudo"
+    )
+    .innerHTML =
+      conteudo;
+
+
+  document
+    .getElementById(
+      "modal"
+    )
+    .classList.add(
+      "show"
     );
+
+}
+
+
+function fecharModal(){
+
+  document
+    .getElementById(
+      "modal"
+    )
+    .classList.remove(
+      "show"
+    );
+
+}
+
+
+document
+  .getElementById(
+    "modal"
+  )
+  .addEventListener(
+    "click",
+    function(e){
+
+      if(
+        e.target === this
+      ){
+
+        fecharModal();
+
+      }
+
+    }
+  );
+
+
+/* ============================================================
+   AGENDA
+============================================================ */
+
+function abrirModalAgenda(){
+
+  abrirModal(
+
+    "📅 Nova atividade",
+
+    `
+
+    <div class="form-grid">
+
+      <div class="form-group">
+
+        <label>Data</label>
+
+        <input
+          type="date"
+          id="agendaData"
+          value="${hoje()}"
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>Hora</label>
+
+        <input
+          type="time"
+          id="agendaHora"
+        >
+
+      </div>
+
+
+      <div class="form-group full">
+
+        <label>Atividade</label>
+
+        <input
+          id="agendaTitulo"
+          placeholder="Ex.: Reunião, inspeção, acompanhamento..."
+        >
+
+      </div>
+
+
+      <div class="form-group full">
+
+        <label>Observação</label>
+
+        <textarea
+          id="agendaObs"
+          placeholder="Detalhes..."
+        ></textarea>
+
+      </div>
+
+    </div>
+
+
+    <br>
+
+    <button
+      class="btn btn-primary"
+      onclick="salvarAgenda()"
+    >
+      Salvar
+    </button>
+
+    `
+
+  );
+
+}
+
+
+function salvarAgenda(){
+
+  const registro = {
+
+    id:novoId(),
+
+    data:
+      valor("agendaData"),
+
+    hora:
+      valor("agendaHora"),
+
+    titulo:
+      valor("agendaTitulo"),
+
+    observacao:
+      valor("agendaObs"),
+
+    criadoEm:
+      new Date().toISOString()
+
+  };
+
+
+  if(
+    !registro.titulo.trim()
+  ){
+
+    alert(
+      "Informe a atividade."
+    );
+
+    return;
+
+  }
+
+
+  dados.agenda.unshift(
+    registro
+  );
+
+
+  salvar();
+
+  fecharModal();
+
+  renderTudo();
+
+  enviarGoogle(
+    "AGENDA",
+    registro
+  );
+
+}
+
+
+/* ============================================================
+   TAREFA
+============================================================ */
+
+function abrirModalTarefa(){
+
+  abrirModal(
+
+    "✅ Nova tarefa",
+
+    `
+
+    <div class="form-grid">
+
+      <div class="form-group full">
+
+        <label>Tarefa</label>
+
+        <input
+          id="tarefaTitulo"
+          placeholder="Digite a tarefa..."
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>Prioridade</label>
+
+        <select id="tarefaPrioridade">
+
+          <option>Normal</option>
+
+          <option>Alta</option>
+
+          <option>Urgente</option>
+
+        </select>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>Prazo</label>
+
+        <input
+          type="date"
+          id="tarefaPrazo"
+        >
+
+      </div>
+
+
+      <div class="form-group full">
+
+        <label>Observação</label>
+
+        <textarea
+          id="tarefaObs"
+        ></textarea>
+
+      </div>
+
+    </div>
+
+
+    <br>
+
+    <button
+      class="btn btn-primary"
+      onclick="salvarTarefa()"
+    >
+      Salvar
+    </button>
+
+    `
+
+  );
+
+}
+
+
+function salvarTarefa(){
+
+  const registro = {
+
+    id:novoId(),
+
+    titulo:
+      valor("tarefaTitulo"),
+
+    prioridade:
+      valor("tarefaPrioridade"),
+
+    prazo:
+      valor("tarefaPrazo"),
+
+    observacao:
+      valor("tarefaObs"),
+
+    concluida:false,
+
+    criadoEm:
+      new Date().toISOString()
+
+  };
+
+
+  if(
+    !registro.titulo.trim()
+  ){
+
+    alert(
+      "Informe a tarefa."
+    );
+
+    return;
+
+  }
+
+
+  dados.tarefas.unshift(
+    registro
+  );
+
+
+  salvar();
+
+  fecharModal();
+
+  renderTudo();
+
+  enviarGoogle(
+    "TAREFAS",
+    registro
+  );
+
+}
+
+
+/* ============================================================
+   CONCLUIR TAREFA
+============================================================ */
+
+function concluirTarefa(
+  id
+){
+
+  const item =
+    dados.tarefas.find(
+      x =>
+        String(x.id) ===
+        String(id)
+    );
+
+
+  if(!item)
+    return;
+
+
+  item.concluida =
+    !item.concluida;
+
+
+  salvar();
+
+  renderTudo();
+
+  enviarGoogle(
+    "TAREFAS",
+    item
+  );
+
+}
+
+
+/* ============================================================
+   AGENDA DELETE
+============================================================ */
+
+function excluirAgenda(
+  id
+){
+
+  const item =
+    dados.agenda.find(
+      x =>
+        String(x.id) ===
+        String(id)
+    );
+
+
+  if(!item)
+    return;
+
+
+  if(
+    !confirm(
+      "Excluir esta atividade?"
+    )
+  )
+    return;
+
+
+  dados.agenda =
+    dados.agenda.filter(
+      x =>
+        String(x.id) !==
+        String(id)
+    );
+
+
+  salvar();
+
+  renderTudo();
+
+  excluirGoogle(
+    "AGENDA",
+    id
+  );
+
+}
+
+
+/* ============================================================
+   TAREFA DELETE
+============================================================ */
+
+function excluirTarefa(
+  id
+){
+
+  if(
+    !confirm(
+      "Excluir esta tarefa?"
+    )
+  )
+    return;
+
+
+  dados.tarefas =
+    dados.tarefas.filter(
+      x =>
+        String(x.id) !==
+        String(id)
+    );
+
+
+  salvar();
+
+  renderTudo();
+
+  excluirGoogle(
+    "TAREFAS",
+    id
+  );
+
+}
+
+
+/* ============================================================
+   SERVIÇO
+============================================================ */
+
+function abrirModalServico(){
+
+  abrirModal(
+
+    "🔧 Registrar serviço",
+
+    `
+
+    <div class="form-grid">
+
+      <div class="form-group">
+
+        <label>Data</label>
+
+        <input
+          type="date"
+          id="servData"
+          value="${hoje()}"
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>UGD</label>
+
+        <input
+          id="servUGD"
+          placeholder="Ex.: UGD25"
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>OS</label>
+
+        <input
+          id="servOS"
+          placeholder="Ex.: 269601"
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>Horímetro</label>
+
+        <input
+          id="servHRM"
+          placeholder="Ex.: 33.607"
+        >
+
+      </div>
+
+
+      <div class="form-group full">
+
+        <label>Serviço realizado</label>
+
+        <input
+          id="servTitulo"
+          placeholder="Descreva o serviço..."
+        >
+
+      </div>
+
+
+      <div class="form-group full">
+
+        <label>Observação</label>
+
+        <textarea
+          id="servObs"
+        ></textarea>
+
+      </div>
+
+    </div>
+
+
+    <br>
+
+    <button
+      class="btn btn-primary"
+      onclick="salvarServico()"
+    >
+      Salvar serviço
+    </button>
+
+    `
+
+  );
+
+}
+
+
+function salvarServico(){
+
+  const registro = {
+
+    id:novoId(),
+
+    data:
+      valor("servData"),
+
+    ugd:
+      valor("servUGD"),
+
+    os:
+      valor("servOS"),
+
+    hrm:
+      valor("servHRM"),
+
+    titulo:
+      valor("servTitulo"),
+
+    observacao:
+      valor("servObs"),
+
+    criadoEm:
+      new Date().toISOString()
+
+  };
+
+
+  if(
+    !registro.titulo &&
+    !registro.ugd
+  ){
+
+    alert(
+      "Informe o serviço ou a UGD."
+    );
+
+    return;
+
+  }
+
+
+  dados.servicos.unshift(
+    registro
+  );
+
+
+  salvar();
+
+  fecharModal();
+
+  renderTudo();
+
+  enviarGoogle(
+    "SERVICOS",
+    registro
+  );
+
+}
+
+
+/* ============================================================
+   DELETE SERVIÇO
+============================================================ */
+
+function excluirServico(
+  id
+){
+
+  if(
+    !confirm(
+      "Excluir este serviço?"
+    )
+  )
+    return;
+
+
+  dados.servicos =
+    dados.servicos.filter(
+      x =>
+        String(x.id) !==
+        String(id)
+    );
+
+
+  salvar();
+
+  renderTudo();
+
+  excluirGoogle(
+    "SERVICOS",
+    id
+  );
+
+}
+
+
+/* ============================================================
+   MOVIMENTAÇÃO
+============================================================ */
+
+function abrirModalMovimentacao(){
+
+  abrirModal(
+
+    "🔄 Nova movimentação",
+
+    `
+
+    <div class="form-grid">
+
+      <div class="form-group">
+
+        <label>Data</label>
+
+        <input
+          type="date"
+          id="movData"
+          value="${hoje()}"
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>OS</label>
+
+        <input
+          id="movOS"
+          placeholder="Opcional"
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>De qual UGD?</label>
+
+        <input
+          id="movOrigem"
+          placeholder="Ex.: UGD18"
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>Para qual UGD?</label>
+
+        <input
+          id="movDestino"
+          placeholder="Ex.: UGD22"
+        >
+
+      </div>
+
+
+      <div class="form-group full">
+
+        <label>Peça / componente</label>
+
+        <input
+          id="movPeca"
+          placeholder="Ex.: Módulo DEIF, bomba, sensor..."
+        >
+
+      </div>
+
+
+      <div class="form-group full">
+
+        <label>Número de série</label>
+
+        <input
+          id="movNS"
+          placeholder="Opcional"
+        >
+
+      </div>
+
+
+      <div class="form-group full">
+
+        <label>Observação</label>
+
+        <textarea
+          id="movObs"
+          placeholder="Ex.: Remanejado para reduzir máquina FIX POWER..."
+        ></textarea>
+
+      </div>
+
+    </div>
+
+
+    <br>
+
+    <button
+      class="btn btn-primary"
+      onclick="salvarMovimentacao()"
+    >
+      Registrar movimentação
+    </button>
+
+    `
+
+  );
+
+}
+
+
+function salvarMovimentacao(){
+
+  const registro = {
+
+    id:novoId(),
+
+    data:
+      valor("movData"),
+
+    os:
+      valor("movOS"),
+
+    origem:
+      valor("movOrigem"),
+
+    destino:
+      valor("movDestino"),
+
+    peca:
+      valor("movPeca"),
+
+    ns:
+      valor("movNS"),
+
+    observacao:
+      valor("movObs"),
+
+    criadoEm:
+      new Date().toISOString()
+
+  };
+
+
+  if(
+    !registro.peca &&
+    !registro.observacao
+  ){
+
+    alert(
+      "Informe a peça ou uma observação."
+    );
+
+    return;
+
+  }
+
+
+  dados.movimentacoes.unshift(
+    registro
+  );
+
+
+  salvar();
+
+  fecharModal();
+
+  renderTudo();
+
+  enviarGoogle(
+    "MOVIMENTACOES",
+    registro
+  );
+
+}
+
+
+/* ============================================================
+   DELETE MOVIMENTAÇÃO
+============================================================ */
+
+function excluirMovimentacao(
+  id
+){
+
+  if(
+    !confirm(
+      "Excluir esta movimentação?"
+    )
+  )
+    return;
+
+
+  dados.movimentacoes =
+    dados.movimentacoes.filter(
+      x =>
+        String(x.id) !==
+        String(id)
+    );
+
+
+  salvar();
+
+  renderTudo();
+
+  excluirGoogle(
+    "MOVIMENTACOES",
+    id
+  );
+
+}
+
+
+/* ============================================================
+   LEMBRETE
+============================================================ */
+
+function abrirModalLembrete(){
+
+  abrirModal(
+
+    "🔔 Novo lembrete",
+
+    `
+
+    <div class="form-grid">
+
+      <div class="form-group full">
+
+        <label>Lembrete</label>
+
+        <input
+          id="lemTitulo"
+          placeholder="Ex.: Verificar material..."
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>Data</label>
+
+        <input
+          type="date"
+          id="lemData"
+          value="${hoje()}"
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>Hora</label>
+
+        <input
+          type="time"
+          id="lemHora"
+        >
+
+      </div>
+
+
+      <div class="form-group full">
+
+        <label>Observação</label>
+
+        <textarea
+          id="lemObs"
+        ></textarea>
+
+      </div>
+
+    </div>
+
+
+    <br>
+
+    <button
+      class="btn btn-primary"
+      onclick="salvarLembrete()"
+    >
+      Salvar lembrete
+    </button>
+
+    `
+
+  );
+
+}
+
+
+function salvarLembrete(){
+
+  const registro = {
+
+    id:novoId(),
+
+    titulo:
+      valor("lemTitulo"),
+
+    data:
+      valor("lemData"),
+
+    hora:
+      valor("lemHora"),
+
+    observacao:
+      valor("lemObs"),
+
+    concluido:false,
+
+    criadoEm:
+      new Date().toISOString()
+
+  };
+
+
+  if(
+    !registro.titulo
+  ){
+
+    alert(
+      "Informe o lembrete."
+    );
+
+    return;
+
+  }
+
+
+  dados.lembretes.unshift(
+    registro
+  );
+
+
+  salvar();
+
+  fecharModal();
+
+  renderTudo();
+
+  enviarGoogle(
+    "LEMBRETES",
+    registro
+  );
+
+}
+
+
+/* ============================================================
+   DELETE LEMBRETE
+============================================================ */
+
+function excluirLembrete(
+  id
+){
+
+  if(
+    !confirm(
+      "Excluir este lembrete?"
+    )
+  )
+    return;
+
+
+  dados.lembretes =
+    dados.lembretes.filter(
+      x =>
+        String(x.id) !==
+        String(id)
+    );
+
+
+  salvar();
+
+  renderTudo();
+
+  excluirGoogle(
+    "LEMBRETES",
+    id
+  );
+
+}
+
+
+/* ============================================================
+   PROGRAMACAO
+============================================================ */
+
+function abrirModalProgramacao(){
+
+  abrirModal(
+
+    "📋 Programar atividade",
+
+    `
+
+    <div class="form-grid">
+
+      <div class="form-group">
+
+        <label>Dia</label>
+
+        <select id="progDia">
+
+          <option>Segunda-feira</option>
+
+          <option>Terça-feira</option>
+
+          <option>Quarta-feira</option>
+
+          <option>Quinta-feira</option>
+
+          <option>Sexta-feira</option>
+
+          <option>Sábado</option>
+
+        </select>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>UGD</label>
+
+        <input
+          id="progUGD"
+          placeholder="Ex.: UGD25"
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>OS</label>
+
+        <input
+          id="progOS"
+          placeholder="Opcional"
+        >
+
+      </div>
+
+
+      <div class="form-group full">
+
+        <label>Atividade</label>
+
+        <input
+          id="progTitulo"
+          placeholder="Ex.: Inspeção, manutenção..."
+        >
+
+      </div>
+
+
+      <div class="form-group full">
+
+        <label>Observação</label>
+
+        <textarea
+          id="progObs"
+        ></textarea>
+
+      </div>
+
+    </div>
+
+
+    <br>
+
+    <button
+      class="btn btn-primary"
+      onclick="salvarProgramacao()"
+    >
+      Programar
+    </button>
+
+    `
+
+  );
+
+}
+
+
+function salvarProgramacao(){
+
+  const registro = {
+
+    id:novoId(),
+
+    dia:
+      valor("progDia"),
+
+    ugd:
+      valor("progUGD"),
+
+    os:
+      valor("progOS"),
+
+    titulo:
+      valor("progTitulo"),
+
+    observacao:
+      valor("progObs"),
+
+    criadoEm:
+      new Date().toISOString()
+
+  };
+
+
+  if(
+    !registro.titulo &&
+    !registro.ugd
+  ){
+
+    alert(
+      "Informe a atividade ou a UGD."
+    );
+
+    return;
+
+  }
+
+
+  dados.programacao.push(
+    registro
+  );
+
+
+  salvar();
+
+  fecharModal();
+
+  renderTudo();
+
+  enviarGoogle(
+    "PROGRAMACAO",
+    registro
+  );
+
+}
+
+
+/* ============================================================
+   DELETE PROGRAMACAO
+============================================================ */
+
+function excluirProgramacao(
+  id
+){
+
+  dados.programacao =
+    dados.programacao.filter(
+      x =>
+        String(x.id) !==
+        String(id)
+    );
+
+
+  salvar();
+
+  renderTudo();
+
+  excluirGoogle(
+    "PROGRAMACAO",
+    id
+  );
 
 }
 
@@ -405,33 +3873,1276 @@ function enviarBlocoGoogle(
    BLOCO DE NOTAS
 ============================================================ */
 
-function salvarBloco(){
+function blocoAlterado(){
 
-    dados.bloco =
-        document.getElementById(
-            "blocoTexto"
-        ).value;
-
-
-    salvar();
+  dados.bloco =
+    document.getElementById(
+      "blocoTexto"
+    ).value;
 
 
-    /*
-     * Tela atualiza imediatamente.
-     */
+  salvar();
 
-    syncStatus(
-        "⚡ Bloco salvo"
+
+  clearTimeout(
+    timerBloco
+  );
+
+
+  timerBloco =
+    setTimeout(
+      function(){
+
+        enviarBlocoGoogle(
+          dados.bloco
+        );
+
+      },
+      1200
     );
 
 
-    /*
-     * Google recebe em segundo plano.
-     */
+  syncStatus(
+    "⚡ Bloco salvo localmente..."
+  );
 
-    enviarBlocoGoogle(
-        dados.bloco
+}
+
+
+/* ============================================================
+   PESQUISA
+============================================================ */
+
+function pesquisar(){
+
+  const termo =
+    document
+      .getElementById(
+        "campoPesquisa"
+      )
+      .value
+      .toLowerCase()
+      .trim();
+
+
+  const resultado =
+    document
+      .getElementById(
+        "resultadoPesquisa"
+      );
+
+
+  if(!termo){
+
+    resultado.innerHTML = `
+
+      <div class="empty">
+
+        🔎 Digite algo para pesquisar.
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  const grupos = [
+
+    {
+      nome:"Agenda",
+      dados:dados.agenda
+    },
+
+    {
+      nome:"Tarefas",
+      dados:dados.tarefas
+    },
+
+    {
+      nome:"Serviços",
+      dados:dados.servicos
+    },
+
+    {
+      nome:"Movimentações",
+      dados:dados.movimentacoes
+    },
+
+    {
+      nome:"Lembretes",
+      dados:dados.lembretes
+    },
+
+    {
+      nome:"Programação",
+      dados:dados.programacao
+    }
+
+  ];
+
+
+  let html = "";
+
+
+  grupos.forEach(
+    grupo => {
+
+      grupo.dados.forEach(
+        item => {
+
+          const texto =
+            Object
+              .values(item)
+              .join(" ")
+              .toLowerCase();
+
+
+          if(
+            texto.includes(
+              termo
+            )
+          ){
+
+            html += `
+
+              <div
+                class="day-item"
+                style="margin-bottom:10px;"
+              >
+
+                <strong>
+                  ${escapeHtml(
+                    grupo.nome
+                  )}
+                </strong>
+
+                <br>
+
+                ${escapeHtml(
+                  Object
+                    .values(item)
+                    .filter(x =>
+                      x !== "" &&
+                      x !== null &&
+                      x !== undefined
+                    )
+                    .join(" • ")
+                )}
+
+              </div>
+
+            `;
+
+          }
+
+        }
+      );
+
+    }
+  );
+
+
+  if(!html){
+
+    html = `
+
+      <div class="empty">
+
+        Nenhum resultado encontrado.
+
+      </div>
+
+    `;
+
+  }
+
+
+  resultado.innerHTML =
+    html;
+
+}
+
+
+/* ============================================================
+   RENDER TUDO
+============================================================ */
+
+function renderTudo(){
+
+  renderDashboard();
+
+  renderAgenda();
+
+  renderTarefas();
+
+  renderServicos();
+
+  renderMovimentacoes();
+
+  renderLembretes();
+
+  renderProgramacao();
+
+  renderBloco();
+
+}
+
+
+/* ============================================================
+   DASHBOARD
+============================================================ */
+
+function renderDashboard(){
+
+  document
+    .getElementById(
+      "totalAgenda"
+    )
+    .textContent =
+      dados.agenda.length;
+
+
+  document
+    .getElementById(
+      "totalTarefas"
+    )
+    .textContent =
+      dados.tarefas.filter(
+        x =>
+          !x.concluida
+      ).length;
+
+
+  document
+    .getElementById(
+      "totalServicos"
+    )
+    .textContent =
+      dados.servicos.length;
+
+
+  document
+    .getElementById(
+      "totalMov"
+    )
+    .textContent =
+      dados.movimentacoes.length;
+
+
+  const agenda =
+    [...dados.agenda]
+      .sort(
+        (a,b) =>
+          String(a.data || "")
+            .localeCompare(
+              String(b.data || "")
+            )
+      )
+      .slice(
+        0,
+        5
+      );
+
+
+  document
+    .getElementById(
+      "inicioAgenda"
+    )
+    .innerHTML =
+      agenda.length
+        ? agenda.map(
+            item => `
+
+              <div
+                class="day-item"
+              >
+
+                <strong>
+                  ${escapeHtml(
+                    item.titulo ||
+                    "Atividade"
+                  )}
+                </strong>
+
+                <br>
+
+                <span
+                  style="
+                    color:var(--muted);
+                  "
+                >
+                  ${escapeHtml(
+                    item.data || ""
+                  )}
+
+                  ${
+                    item.hora
+                      ? " • " +
+                        escapeHtml(
+                          item.hora
+                        )
+                      : ""
+                  }
+
+                </span>
+
+              </div>
+
+            `
+          ).join("")
+        : emptyHtml(
+            "Nenhuma atividade."
+          );
+
+
+  document
+    .getElementById(
+      "inicioLembretes"
+    )
+    .innerHTML =
+      dados.lembretes
+        .filter(
+          x =>
+            !x.concluido
+        )
+        .slice(
+          0,
+          5
+        )
+        .map(
+          item => `
+
+            <div class="day-item">
+
+              <strong>
+                ${escapeHtml(
+                  item.titulo
+                )}
+              </strong>
+
+              <br>
+
+              <span
+                style="
+                  color:var(--muted);
+                "
+              >
+                ${escapeHtml(
+                  item.data || ""
+                )}
+
+                ${
+                  item.hora
+                    ? " • " +
+                      escapeHtml(
+                        item.hora
+                      )
+                    : ""
+                }
+
+              </span>
+
+            </div>
+
+          `
+        )
+        .join("") ||
+      emptyHtml(
+        "Nenhum lembrete."
+      );
+
+}
+
+
+/* ============================================================
+   RENDER AGENDA
+============================================================ */
+
+function renderAgenda(){
+
+  const el =
+    document.getElementById(
+      "listaAgenda"
     );
+
+
+  const lista =
+    [...dados.agenda]
+      .sort(
+        (a,b) =>
+          String(a.data || "")
+            .localeCompare(
+              String(b.data || "")
+            )
+      );
+
+
+  if(
+    !lista.length
+  ){
+
+    el.innerHTML =
+      emptyHtml(
+        "Nenhuma atividade cadastrada."
+      );
+
+    return;
+
+  }
+
+
+  el.innerHTML = `
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>Data</th>
+
+            <th>Hora</th>
+
+            <th>Atividade</th>
+
+            <th>Observação</th>
+
+            <th></th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          ${
+            lista.map(
+              item => `
+
+                <tr>
+
+                  <td>
+                    ${escapeHtml(
+                      item.data || ""
+                    )}
+                  </td>
+
+                  <td>
+                    ${escapeHtml(
+                      item.hora || ""
+                    )}
+                  </td>
+
+                  <td>
+                    <strong>
+                      ${escapeHtml(
+                        item.titulo || ""
+                      )}
+                    </strong>
+                  </td>
+
+                  <td>
+                    ${escapeHtml(
+                      item.observacao || ""
+                    )}
+                  </td>
+
+                  <td>
+
+                    <button
+                      class="btn btn-danger"
+                      onclick="excluirAgenda('${item.id}')"
+                    >
+                      Excluir
+                    </button>
+
+                  </td>
+
+                </tr>
+
+              `
+            ).join("")
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  `;
+
+}
+
+
+/* ============================================================
+   RENDER TAREFAS
+============================================================ */
+
+function renderTarefas(){
+
+  const el =
+    document.getElementById(
+      "listaTarefas"
+    );
+
+
+  if(
+    !dados.tarefas.length
+  ){
+
+    el.innerHTML =
+      emptyHtml(
+        "Nenhuma tarefa."
+      );
+
+    return;
+
+  }
+
+
+  el.innerHTML = `
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>Status</th>
+
+            <th>Tarefa</th>
+
+            <th>Prioridade</th>
+
+            <th>Prazo</th>
+
+            <th></th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          ${
+            dados.tarefas.map(
+              item => `
+
+                <tr>
+
+                  <td>
+
+                    <button
+                      class="btn ${
+                        item.concluida
+                          ? "btn-success"
+                          : ""
+                      }"
+                      onclick="concluirTarefa('${item.id}')"
+                    >
+
+                      ${
+                        item.concluida
+                          ? "✓ Concluída"
+                          : "○ Pendente"
+                      }
+
+                    </button>
+
+                  </td>
+
+                  <td>
+
+                    <strong
+                      style="${
+                        item.concluida
+                          ? "text-decoration:line-through;color:var(--muted);"
+                          : ""
+                      }"
+                    >
+
+                      ${escapeHtml(
+                        item.titulo || ""
+                      )}
+
+                    </strong>
+
+                  </td>
+
+                  <td>
+
+                    <span class="tag">
+
+                      ${escapeHtml(
+                        item.prioridade || ""
+                      )}
+
+                    </span>
+
+                  </td>
+
+                  <td>
+                    ${escapeHtml(
+                      item.prazo || ""
+                    )}
+                  </td>
+
+                  <td>
+
+                    <button
+                      class="btn btn-danger"
+                      onclick="excluirTarefa('${item.id}')"
+                    >
+                      Excluir
+                    </button>
+
+                  </td>
+
+                </tr>
+
+              `
+            ).join("")
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  `;
+
+}
+
+
+/* ============================================================
+   SERVIÇOS
+============================================================ */
+
+function renderServicos(){
+
+  const el =
+    document.getElementById(
+      "listaServicos"
+    );
+
+
+  if(
+    !dados.servicos.length
+  ){
+
+    el.innerHTML =
+      emptyHtml(
+        "Nenhum serviço registrado."
+      );
+
+    return;
+
+  }
+
+
+  el.innerHTML = `
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>Data</th>
+
+            <th>UGD</th>
+
+            <th>OS</th>
+
+            <th>HRM</th>
+
+            <th>Serviço</th>
+
+            <th></th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          ${
+            dados.servicos.map(
+              item => `
+
+                <tr>
+
+                  <td>
+                    ${escapeHtml(
+                      item.data || ""
+                    )}
+                  </td>
+
+                  <td>
+                    <strong>
+                      ${escapeHtml(
+                        item.ugd || ""
+                      )}
+                    </strong>
+                  </td>
+
+                  <td>
+                    ${escapeHtml(
+                      item.os || ""
+                    )}
+                  </td>
+
+                  <td>
+                    ${escapeHtml(
+                      item.hrm || ""
+                    )}
+                  </td>
+
+                  <td>
+
+                    ${escapeHtml(
+                      item.titulo || ""
+                    )}
+
+                    ${
+                      item.observacao
+                        ? `<br><small style="color:var(--muted)">${escapeHtml(item.observacao)}</small>`
+                        : ""
+                    }
+
+                  </td>
+
+                  <td>
+
+                    <button
+                      class="btn btn-danger"
+                      onclick="excluirServico('${item.id}')"
+                    >
+                      Excluir
+                    </button>
+
+                  </td>
+
+                </tr>
+
+              `
+            ).join("")
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  `;
+
+}
+
+
+/* ============================================================
+   MOVIMENTAÇÕES
+============================================================ */
+
+function renderMovimentacoes(){
+
+  const el =
+    document.getElementById(
+      "listaMovimentacoes"
+    );
+
+
+  if(
+    !dados.movimentacoes.length
+  ){
+
+    el.innerHTML =
+      emptyHtml(
+        "Nenhuma movimentação registrada."
+      );
+
+    return;
+
+  }
+
+
+  el.innerHTML = `
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>Data</th>
+
+            <th>Peça</th>
+
+            <th>Origem</th>
+
+            <th>Destino</th>
+
+            <th>OS</th>
+
+            <th>NS</th>
+
+            <th>Observação</th>
+
+            <th></th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          ${
+            dados.movimentacoes.map(
+              item => `
+
+                <tr>
+
+                  <td>
+                    ${escapeHtml(
+                      item.data || ""
+                    )}
+                  </td>
+
+                  <td>
+
+                    <strong>
+                      ${escapeHtml(
+                        item.peca || ""
+                      )}
+                    </strong>
+
+                  </td>
+
+                  <td>
+                    ${escapeHtml(
+                      item.origem || ""
+                    )}
+                  </td>
+
+                  <td>
+                    ${escapeHtml(
+                      item.destino || ""
+                    )}
+                  </td>
+
+                  <td>
+                    ${escapeHtml(
+                      item.os || ""
+                    )}
+                  </td>
+
+                  <td>
+                    ${escapeHtml(
+                      item.ns || ""
+                    )}
+                  </td>
+
+                  <td>
+                    ${escapeHtml(
+                      item.observacao || ""
+                    )}
+                  </td>
+
+                  <td>
+
+                    <button
+                      class="btn btn-danger"
+                      onclick="excluirMovimentacao('${item.id}')"
+                    >
+                      Excluir
+                    </button>
+
+                  </td>
+
+                </tr>
+
+              `
+            ).join("")
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  `;
+
+}
+
+
+/* ============================================================
+   LEMBRETES
+============================================================ */
+
+function renderLembretes(){
+
+  const el =
+    document.getElementById(
+      "listaLembretes"
+    );
+
+
+  if(
+    !dados.lembretes.length
+  ){
+
+    el.innerHTML =
+      emptyHtml(
+        "Nenhum lembrete."
+      );
+
+    return;
+
+  }
+
+
+  el.innerHTML = `
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>Data</th>
+
+            <th>Hora</th>
+
+            <th>Lembrete</th>
+
+            <th>Observação</th>
+
+            <th></th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          ${
+            dados.lembretes.map(
+              item => `
+
+                <tr>
+
+                  <td>
+                    ${escapeHtml(
+                      item.data || ""
+                    )}
+                  </td>
+
+                  <td>
+                    ${escapeHtml(
+                      item.hora || ""
+                    )}
+                  </td>
+
+                  <td>
+
+                    <strong>
+                      ${escapeHtml(
+                        item.titulo || ""
+                      )}
+                    </strong>
+
+                  </td>
+
+                  <td>
+                    ${escapeHtml(
+                      item.observacao || ""
+                    )}
+                  </td>
+
+                  <td>
+
+                    <button
+                      class="btn btn-danger"
+                      onclick="excluirLembrete('${item.id}')"
+                    >
+                      Excluir
+                    </button>
+
+                  </td>
+
+                </tr>
+
+              `
+            ).join("")
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  `;
+
+}
+
+
+/* ============================================================
+   PROGRAMAÇÃO
+============================================================ */
+
+function renderProgramacao(){
+
+  const el =
+    document.getElementById(
+      "programacaoSemana"
+    );
+
+
+  const dias = [
+
+    "Segunda-feira",
+
+    "Terça-feira",
+
+    "Quarta-feira",
+
+    "Quinta-feira",
+
+    "Sexta-feira",
+
+    "Sábado"
+
+  ];
+
+
+  el.innerHTML =
+    dias.map(
+      dia => {
+
+        const itens =
+          dados.programacao
+            .filter(
+              x =>
+                x.dia === dia
+            );
+
+
+        return `
+
+          <div class="day">
+
+            <h4>
+              ${dia}
+            </h4>
+
+
+            ${
+              itens.length
+                ? itens.map(
+                    item => `
+
+                      <div class="day-item">
+
+                        <strong>
+                          ${
+                            escapeHtml(
+                              item.ugd ||
+                              item.titulo ||
+                              "Atividade"
+                            )
+                          }
+                        </strong>
+
+                        <br>
+
+                        ${
+                          item.titulo &&
+                          item.ugd
+                            ? escapeHtml(
+                                item.titulo
+                              )
+                            : ""
+                        }
+
+                        ${
+                          item.os
+                            ? `<br><span style="color:var(--muted)">OS ${escapeHtml(item.os)}</span>`
+                            : ""
+                        }
+
+                        <br>
+
+                        <button
+                          class="btn btn-danger"
+                          style="margin-top:7px;padding:5px 8px;font-size:10px;"
+                          onclick="excluirProgramacao('${item.id}')"
+                        >
+                          Excluir
+                        </button>
+
+                      </div>
+
+                    `
+                  ).join("")
+                : `<div style="color:var(--muted);font-size:12px;">Nenhuma atividade</div>`
+            }
+
+          </div>
+
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+/* ============================================================
+   BLOCO
+============================================================ */
+
+function renderBloco(){
+
+  const el =
+    document.getElementById(
+      "blocoTexto"
+    );
+
+
+  if(
+    el &&
+    document.activeElement !== el
+  ){
+
+    el.value =
+      dados.bloco || "";
+
+  }
+
+}
+
+
+/* ============================================================
+   UTILITÁRIOS
+============================================================ */
+
+function valor(id){
+
+  const el =
+    document.getElementById(
+      id
+    );
+
+
+  return el
+    ? el.value
+    : "";
+
+}
+
+
+function hoje(){
+
+  const d =
+    new Date();
+
+
+  const ano =
+    d.getFullYear();
+
+
+  const mes =
+    String(
+      d.getMonth()+1
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  const dia =
+    String(
+      d.getDate()
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  return (
+    ano +
+    "-" +
+    mes +
+    "-" +
+    dia
+  );
+
+}
+
+
+function escapeHtml(
+  valor
+){
+
+  return String(
+    valor ?? ""
+  )
+  .replace(
+    /&/g,
+    "&amp;"
+  )
+  .replace(
+    /</g,
+    "&lt;"
+  )
+  .replace(
+    />/g,
+    "&gt;"
+  )
+  .replace(
+    /"/g,
+    "&quot;"
+  )
+  .replace(
+    /'/g,
+    "&#039;"
+  );
+
+}
+
+
+function emptyHtml(
+  texto
+){
+
+  return `
+
+    <div class="empty">
+
+      ${escapeHtml(
+        texto
+      )}
+
+    </div>
+
+  `;
 
 }
 
@@ -441,29 +5152,33 @@ function salvarBloco(){
 ============================================================ */
 
 window.addEventListener(
-    "online",
-    function(){
+  "online",
+  function(){
 
-        syncStatus(
-            "☁️ Conectado"
-        );
+    syncStatus(
+      "☁️ Conectado"
+    );
 
-        enviarLote();
 
-    }
+    setTimeout(
+      enviarLote,
+      300
+    );
+
+  }
 );
 
 
 window.addEventListener(
-    "offline",
-    function(){
+  "offline",
+  function(){
 
-        syncStatus(
-            "📱 Offline",
-            "erro"
-        );
+    syncStatus(
+      "📱 Offline • salvo localmente",
+      "erro"
+    );
 
-    }
+  }
 );
 
 
@@ -472,18 +5187,66 @@ window.addEventListener(
 ============================================================ */
 
 setInterval(
-    function(){
+  function(){
 
-        if(
-            navigator.onLine &&
-            !sincronizando &&
-            filaSync.length
-        ){
+    if(
+      navigator.onLine &&
+      !sincronizando &&
+      filaSync.length
+    ){
 
-            enviarLote();
+      enviarLote();
 
-        }
+    }
 
-    },
-    10000
+  },
+  10000
 );
+
+
+/* ============================================================
+   INICIALIZAÇÃO
+============================================================ */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    /*
+     * Primeiro mostra os dados locais.
+     */
+
+    renderTudo();
+
+
+    /*
+     * Depois busca o Google.
+     */
+
+    carregarDadosGoogle();
+
+
+    /*
+     * Se já existem alterações
+     * pendentes, envia.
+     */
+
+    if(
+      filaSync.length
+    ){
+
+      setTimeout(
+        enviarLote,
+        1200
+      );
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+
+</html>
