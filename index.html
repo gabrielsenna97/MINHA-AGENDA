@@ -1348,16 +1348,26 @@ const API_URL =
    antes de desistir e avisar o usuário (em ms).
 */
 const TIMEOUT_GET_MS = 20000;
-const TIMEOUT_POST_MS = 15000;
+const TIMEOUT_POST_MS = 20000;
+const TIMEOUT_VERSAO_MS = 8000;
 
 /*
-   Intervalo mínimo entre atualizações automáticas
-   completas (getAll), para não recarregar tudo
-   toda vez que o usuário troca de página.
+   Intervalo mínimo entre checagens de versão,
+   só para não disparar chamadas em excesso
+   (ex.: usuário trocando de aba rapidamente).
 */
-const INTERVALO_MIN_ATUALIZACAO_MS = 60000;
+const INTERVALO_MIN_CHECAGEM_MS = 5000;
 
-let ultimaAtualizacaoCompleta = 0;
+let ultimaChecagemVersao = 0;
+
+/*
+   Última versão dos dados que sabemos ter
+   sincronizado com sucesso.
+*/
+const VERSAO_KEY = "minha_agenda_ute_versao";
+
+let versaoConhecida =
+    localStorage.getItem(VERSAO_KEY) || "";
 
 
 /* ============================================================
@@ -1404,12 +1414,11 @@ let timerSincronizacao = null;
 let timerRetry = null;
 
 /*
-   Quantos itens da fila podem ser enviados
-   ao mesmo tempo (em paralelo).
-   Itens com a MESMA chave nunca são paralelizados
-   entre si (ver processarFilaSincronizacao).
+   Quantos itens no máximo mandamos em uma única
+   requisição de lote (para o payload não ficar
+   gigante caso a fila acumule muita coisa).
 */
-const CONCORRENCIA_SYNC = 4;
+const TAMANHO_MAX_LOTE = 50;
 
 
 /* ============================================================
@@ -1613,10 +1622,17 @@ function iniciarSincronizacao(){
 
 /* ============================================================
    PROCESSAR FILA
-   Agora envia vários itens em paralelo (respeitando
-   a ordem apenas entre itens com a MESMA chave),
-   em vez de um de cada vez. Isso reduz bastante o
-   tempo total quando há várias alterações pendentes.
+
+   Envia TODOS os itens pendentes (até TAMANHO_MAX_LOTE)
+   em UMA ÚNICA requisição HTTP (action: "syncBatch").
+
+   Por quê não em paralelo? Porque o Apps Script usa
+   LockService.getScriptLock() no servidor, que serializa
+   qualquer requisição de escrita de qualquer forma.
+   Mandar vários POSTs paralelos só faz eles brigarem
+   pelo mesmo lock e esperarem uns pelos outros — o
+   único jeito de ganhar velocidade de verdade é reduzir
+   o NÚMERO de requisições, não paralelizá-las.
 ============================================================ */
 
 async function processarFilaSincronizacao(){
@@ -1645,8 +1661,6 @@ async function processarFilaSincronizacao(){
 
     sincronizando = true;
 
-    let houveErro = false;
-
     try{
 
         while(
@@ -1654,90 +1668,87 @@ async function processarFilaSincronizacao(){
             navigator.onLine
         ){
 
-            /*
-               Pega um lote de itens para processar
-               em paralelo, mas nunca dois itens
-               com a mesma chave ao mesmo tempo.
-            */
-
-            const chavesNoLote = new Set();
-            const lote = [];
-
-            for(const item of filaSincronizacao){
-
-                if(lote.length >= CONCORRENCIA_SYNC)
-                    break;
-
-                if(chavesNoLote.has(item.chave))
-                    continue;
-
-                chavesNoLote.add(item.chave);
-
-                lote.push(item);
-
-            }
+            const lote =
+                filaSincronizacao.slice(
+                    0,
+                    TAMANHO_MAX_LOTE
+                );
 
             syncStatus(
                 `☁️ Salvando ${filaSincronizacao.length}...`,
                 "load"
             );
 
-            const resultados =
-                await Promise.all(
-                    lote.map(
-                        item =>
-                            enviarItemFila(item)
-                            .then(
-                                resultado => ({item,resultado,erro:null})
-                            )
-                            .catch(
-                                erro => ({item,resultado:null,erro})
-                            )
-                    )
+            const resposta =
+                await enviarLoteAPI(lote);
+
+            if(!resposta || !resposta.ok){
+
+                throw new Error(
+                    resposta?.erro ||
+                    "Erro ao sincronizar lote"
                 );
-
-            for(const {item,resultado,erro} of resultados){
-
-                if(erro || !resultado || !resultado.ok){
-
-                    houveErro = true;
-
-                    continue;
-
-                }
-
-                /*
-                   Remove da fila somente se o item
-                   ainda for exatamente o mesmo
-                   (não foi substituído por uma
-                   edição mais recente enquanto
-                   a requisição estava em andamento).
-                */
-
-                const indiceAtual =
-                    filaSincronizacao.findIndex(
-                        x =>
-                            x.chave === item.chave &&
-                            x.criadoEm === item.criadoEm
-                    );
-
-                if(indiceAtual >= 0){
-
-                    filaSincronizacao.splice(
-                        indiceAtual,
-                        1
-                    );
-
-                }
 
             }
 
+            /*
+               resposta.resultados vem na MESMA ordem
+               do lote enviado. Removemos da fila
+               somente os que o servidor confirmou.
+               Qualquer item que falhou individualmente
+               fica na fila para tentar de novo depois.
+            */
+
+            const porChave = {};
+
+            (resposta.resultados || []).forEach(
+                r => { porChave[r.chave] = r; }
+            );
+
+            let algumFalhouIndividualmente = false;
+
+            filaSincronizacao =
+                filaSincronizacao.filter(
+                    item => {
+
+                        const r =
+                            porChave[item.chave];
+
+                        /*
+                           Item não fazia parte deste
+                           lote (fila cresceu durante
+                           o envio) → mantém.
+                        */
+                        if(!r)
+                            return true;
+
+                        if(r.ok)
+                            return false;
+
+                        algumFalhouIndividualmente = true;
+
+                        return true;
+
+                    }
+                );
+
             salvarFila();
 
-            if(houveErro){
+            if(resposta.versao){
+
+                versaoConhecida = resposta.versao;
+
+                localStorage.setItem(
+                    VERSAO_KEY,
+                    versaoConhecida
+                );
+
+            }
+
+            if(algumFalhouIndividualmente){
 
                 throw new Error(
-                    "Uma ou mais operações falharam"
+                    "Uma ou mais operações do lote falharam"
                 );
 
             }
@@ -1758,7 +1769,9 @@ async function processarFilaSincronizacao(){
         );
 
         syncStatus(
-            "⚠️ Aguardando conexão",
+            erro?.name === "AbortError"
+                ? "⚠️ Google demorou demais"
+                : "⚠️ Aguardando conexão",
             "erro"
         );
 
@@ -1785,43 +1798,35 @@ async function processarFilaSincronizacao(){
 
 
 /* ============================================================
-   ENVIAR UM ITEM DA FILA (usado em paralelo)
+   API - ENVIAR LOTE
 ============================================================ */
 
-async function enviarItemFila(item){
+async function enviarLoteAPI(lote){
 
-    if(item.action === "upsert"){
+    const operacoes =
+        lote.map(item => ({
 
-        return await enviarRegistroAPI(
-            item.tipo,
-            item.registro
-        );
+            chave:item.chave,
 
-    }
+            action:item.action,
 
-    if(item.action === "delete"){
+            tipo:item.tipo,
 
-        return await excluirRegistroAPI(
-            item.tipo,
-            item.id
-        );
+            id:item.id,
 
-    }
+            registro:item.registro,
 
-    if(item.action === "saveBloco"){
+            texto:item.texto
 
-        return await enviarBlocoAPI(
-            item.texto
-        );
+        }));
 
-    }
+    return await postGoogle({
 
-    /*
-       Operação desconhecida.
-       Remove para não travar a fila.
-    */
+        action:"syncBatch",
 
-    return { ok:true };
+        operacoes:operacoes
+
+    });
 
 }
 
@@ -2010,27 +2015,90 @@ async function carregarDadosGoogle(forcar=false){
     }
 
     /*
-       Evita recarregar TUDO do Google toda vez
-       que o app abre ou troca de página, se já
-       atualizamos recentemente. "forcar=true"
-       (botão de atualizar manual) ignora isso.
+       Debounce simples: não checa a versão com
+       mais frequência do que INTERVALO_MIN_CHECAGEM_MS,
+       para não disparar chamadas em excesso.
+       "forcar=true" (botão de atualizar manual) ignora isso.
     */
 
     const agora = Date.now();
 
     if(
         !forcar &&
-        (agora - ultimaAtualizacaoCompleta) <
-        INTERVALO_MIN_ATUALIZACAO_MS
+        (agora - ultimaChecagemVersao) <
+        INTERVALO_MIN_CHECAGEM_MS
     ){
 
-        syncStatus(
-            filaSincronizacao.length
-                ? `☁️ ${filaSincronizacao.length} pendente(s)`
-                : "☁️ Sincronizado"
-        );
-
         return;
+
+    }
+
+    ultimaChecagemVersao = agora;
+
+    /*
+       PASSO 1: pergunta ao Google qual é a versão
+       atual dos dados. Essa chamada é baratíssima
+       (o servidor só lê uma propriedade, não
+       abre nenhuma planilha), então é bem mais
+       rápida que um getAll completo.
+
+       Se a versão não mudou desde a última vez que
+       sincronizamos com sucesso, não precisamos
+       baixar tudo de novo — só isso já resolve a
+       maior parte da demora ao abrir o app.
+    */
+
+    if(!forcar){
+
+        try{
+
+            const respVersao =
+                await fetchComTimeout(
+                    API_URL+"?action=getVersion",
+                    { cache:"no-store" },
+                    TIMEOUT_VERSAO_MS
+                );
+
+            if(respVersao.ok){
+
+                const dadosVersao =
+                    await respVersao.json();
+
+                if(
+                    dadosVersao.ok &&
+                    dadosVersao.versao &&
+                    dadosVersao.versao === versaoConhecida &&
+                    !filaSincronizacao.length
+                ){
+
+                    /*
+                       Nada mudou. Não precisa baixar
+                       nada. Só confirma pro usuário.
+                    */
+
+                    syncStatus("☁️ Sincronizado");
+
+                    return;
+
+                }
+
+            }
+
+        }catch(erroVersao){
+
+            /*
+               Se a checagem de versão falhar,
+               não é grave — seguimos direto para
+               o getAll completo abaixo, que é o
+               comportamento antigo (mais seguro).
+            */
+
+            console.warn(
+                "Checagem de versão falhou, seguindo com getAll:",
+                erroVersao
+            );
+
+        }
 
     }
 
@@ -2278,8 +2346,17 @@ async function carregarDadosGoogle(forcar=false){
 
         atualizarTudo();
 
-        ultimaAtualizacaoCompleta =
-            Date.now();
+        if(resultado.versao){
+
+            versaoConhecida =
+                resultado.versao;
+
+            localStorage.setItem(
+                VERSAO_KEY,
+                versaoConhecida
+            );
+
+        }
 
         syncStatus(
             filaSincronizacao.length
