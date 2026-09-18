@@ -1535,13 +1535,12 @@ function iniciarSincronizacao(){
         );
 
         return;
-
     }
 
     /*
-       Pequeno debounce.
-       Se o usuário salvar várias coisas rapidamente,
-       agrupamos antes de começar.
+       Debounce curto para agrupar alterações.
+       A interface continua salvando localmente
+       imediatamente.
     */
 
     clearTimeout(timerSincronizacao);
@@ -1549,15 +1548,15 @@ function iniciarSincronizacao(){
     timerSincronizacao =
         setTimeout(
             processarFilaSincronizacao,
-            250
+            100
         );
 
 }
 
 
 /* ============================================================
-   PROCESSAR FILA
-============================================================ */
+   PROCESSAR FILA - SINCRONIZAÇÃO RÁPIDA
+   ============================================================ */
 
 async function processarFilaSincronizacao(){
 
@@ -1572,7 +1571,6 @@ async function processarFilaSincronizacao(){
         );
 
         return;
-
     }
 
     if(!filaSincronizacao.length){
@@ -1580,100 +1578,130 @@ async function processarFilaSincronizacao(){
         syncStatus("☁️ Sincronizado");
 
         return;
-
     }
 
     sincronizando = true;
 
     try{
 
+        /*
+           Envia até 4 operações simultaneamente.
+           Como a fila já elimina alterações repetidas
+           do mesmo registro, as operações são independentes.
+        */
+
+        const LIMITE_CONCORRENCIA = 4;
+
         while(
             filaSincronizacao.length &&
             navigator.onLine
         ){
 
-            const item =
-                filaSincronizacao[0];
+            const lote =
+                filaSincronizacao.slice(
+                    0,
+                    LIMITE_CONCORRENCIA
+                );
 
             syncStatus(
                 `☁️ Salvando ${filaSincronizacao.length}...`,
                 "load"
             );
 
-            let resultado;
+            const resultados =
+                await Promise.all(
+                    lote.map(async item => {
 
-            if(item.action === "upsert"){
+                        let resultado;
 
-                resultado =
-                    await enviarRegistroAPI(
-                        item.tipo,
-                        item.registro
+                        if(item.action === "upsert"){
+
+                            resultado =
+                                await enviarRegistroAPI(
+                                    item.tipo,
+                                    item.registro
+                                );
+
+                        }
+
+                        else if(item.action === "delete"){
+
+                            resultado =
+                                await excluirRegistroAPI(
+                                    item.tipo,
+                                    item.id
+                                );
+
+                        }
+
+                        else if(item.action === "saveBloco"){
+
+                            resultado =
+                                await enviarBlocoAPI(
+                                    item.texto
+                                );
+
+                        }
+
+                        else{
+
+                            resultado = {
+                                ok:true
+                            };
+
+                        }
+
+                        if(
+                            !resultado ||
+                            !resultado.ok
+                        ){
+
+                            throw new Error(
+                                resultado?.erro ||
+                                "Erro ao sincronizar"
+                            );
+
+                        }
+
+                        return {
+                            item:item,
+                            ok:true
+                        };
+
+                    })
+                );
+
+            /*
+               Remove somente os itens que foram realmente
+               enviados com sucesso.
+
+               Se o mesmo registro tiver sido alterado novamente
+               durante o envio, a nova operação permanece na fila.
+            */
+
+            resultados.forEach(resultado => {
+
+                const indice =
+                    filaSincronizacao.findIndex(
+                        atual =>
+                            atual.chave ===
+                            resultado.item.chave &&
+                            atual.criadoEm ===
+                            resultado.item.criadoEm
                     );
 
-            }
+                if(indice >= 0){
 
-            else if(item.action === "delete"){
-
-                resultado =
-                    await excluirRegistroAPI(
-                        item.tipo,
-                        item.id
+                    filaSincronizacao.splice(
+                        indice,
+                        1
                     );
-
-            }
-
-            else if(item.action === "saveBloco"){
-
-                resultado =
-                    await enviarBlocoAPI(
-                        item.texto
-                    );
-
-            }
-
-            else{
-
-                /*
-                   Operação desconhecida.
-                   Remove para não travar a fila.
-                */
-
-                resultado = {
-                    ok:true
-                };
-
-            }
-
-            if(resultado && resultado.ok){
-
-                /*
-                   Remove somente o item que acabou
-                   de ser sincronizado.
-                */
-
-                const atual =
-                    filaSincronizacao[0];
-
-                if(
-                    atual &&
-                    atual.chave === item.chave &&
-                    atual.criadoEm === item.criadoEm
-                ){
-
-                    filaSincronizacao.shift();
-
-                    salvarFila();
 
                 }
 
-            }else{
+            });
 
-                throw new Error(
-                    resultado?.erro ||
-                    "Erro ao sincronizar"
-                );
-
-            }
+            salvarFila();
 
         }
 
@@ -1696,8 +1724,8 @@ async function processarFilaSincronizacao(){
         );
 
         /*
-           Não remove da fila.
-           Assim a informação continua salva localmente.
+           Nenhum item é removido quando ocorre erro.
+           Assim os dados continuam protegidos no armazenamento local.
         */
 
         clearTimeout(timerRetry);
@@ -1715,7 +1743,6 @@ async function processarFilaSincronizacao(){
     }
 
 }
-
 
 /* ============================================================
    POST GENÉRICO
@@ -5608,21 +5635,6 @@ setTimeout(
     },
     300
 );
-
-
-/*
-   Se já houver fila pendente,
-   também tenta processar.
-*/
-
-if(filaSincronizacao.length){
-
-    setTimeout(
-        iniciarSincronizacao,
-        1000
-    );
-
-}
 
 </script>
 
