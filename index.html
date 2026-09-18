@@ -183,8 +183,6 @@ body:before{
     border:1px solid rgba(32,216,137,.2);
     border-radius:20px;
     background:rgba(32,216,137,.05);
-    cursor:pointer;
-    user-select:none;
 }
 
 .btn{
@@ -890,7 +888,7 @@ body:before{
 
         <div class="top-actions">
 
-            <div class="sync-status" id="syncStatus" title="Clique para atualizar agora" onclick="atualizarDoGoogle()">
+            <div class="sync-status" id="syncStatus">
                 ☁️ Sincronizando...
             </div>
 
@@ -1343,22 +1341,6 @@ body:before{
 const API_URL =
 "https://script.google.com/macros/s/AKfycbwnh_sGGgGxDybRlvRhv8afEmaOjPPYDKyQOZBorWMJHRP2pv1u_UDgnrz32zVQkoA2bw/exec";
 
-/*
-   Tempo máximo de espera por uma resposta do Google
-   antes de desistir e avisar o usuário (em ms).
-*/
-const TIMEOUT_GET_MS = 20000;
-const TIMEOUT_POST_MS = 15000;
-
-/*
-   Intervalo mínimo entre atualizações automáticas
-   completas (getAll), para não recarregar tudo
-   toda vez que o usuário troca de página.
-*/
-const INTERVALO_MIN_ATUALIZACAO_MS = 60000;
-
-let ultimaAtualizacaoCompleta = 0;
-
 
 /* ============================================================
    BANCO LOCAL
@@ -1402,14 +1384,6 @@ let filaSincronizacao =
 let sincronizando = false;
 let timerSincronizacao = null;
 let timerRetry = null;
-
-/*
-   Quantos itens da fila podem ser enviados
-   ao mesmo tempo (em paralelo).
-   Itens com a MESMA chave nunca são paralelizados
-   entre si (ver processarFilaSincronizacao).
-*/
-const CONCORRENCIA_SYNC = 4;
 
 
 /* ============================================================
@@ -1548,36 +1522,6 @@ function syncStatus(texto,tipo="ok"){
 
 
 /* ============================================================
-   FETCH COM TIMEOUT
-   Evita que a tela fique "Atualizando..." para sempre
-   se o Apps Script travar ou demorar demais.
-============================================================ */
-
-function fetchComTimeout(url,opcoes={},timeoutMs=15000){
-
-    const controlador = new AbortController();
-
-    const timer =
-        setTimeout(
-            () => controlador.abort(),
-            timeoutMs
-        );
-
-    return fetch(
-        url,
-        {
-            ...opcoes,
-            signal:controlador.signal
-        }
-    )
-    .finally(
-        () => clearTimeout(timer)
-    );
-
-}
-
-
-/* ============================================================
    INICIAR SINCRONIZAÇÃO
 ============================================================ */
 
@@ -1613,10 +1557,6 @@ function iniciarSincronizacao(){
 
 /* ============================================================
    PROCESSAR FILA
-   Agora envia vários itens em paralelo (respeitando
-   a ordem apenas entre itens com a MESMA chave),
-   em vez de um de cada vez. Isso reduz bastante o
-   tempo total quando há várias alterações pendentes.
 ============================================================ */
 
 async function processarFilaSincronizacao(){
@@ -1645,8 +1585,6 @@ async function processarFilaSincronizacao(){
 
     sincronizando = true;
 
-    let houveErro = false;
-
     try{
 
         while(
@@ -1654,90 +1592,85 @@ async function processarFilaSincronizacao(){
             navigator.onLine
         ){
 
-            /*
-               Pega um lote de itens para processar
-               em paralelo, mas nunca dois itens
-               com a mesma chave ao mesmo tempo.
-            */
-
-            const chavesNoLote = new Set();
-            const lote = [];
-
-            for(const item of filaSincronizacao){
-
-                if(lote.length >= CONCORRENCIA_SYNC)
-                    break;
-
-                if(chavesNoLote.has(item.chave))
-                    continue;
-
-                chavesNoLote.add(item.chave);
-
-                lote.push(item);
-
-            }
+            const item =
+                filaSincronizacao[0];
 
             syncStatus(
                 `☁️ Salvando ${filaSincronizacao.length}...`,
                 "load"
             );
 
-            const resultados =
-                await Promise.all(
-                    lote.map(
-                        item =>
-                            enviarItemFila(item)
-                            .then(
-                                resultado => ({item,resultado,erro:null})
-                            )
-                            .catch(
-                                erro => ({item,resultado:null,erro})
-                            )
-                    )
-                );
+            let resultado;
 
-            for(const {item,resultado,erro} of resultados){
+            if(item.action === "upsert"){
 
-                if(erro || !resultado || !resultado.ok){
-
-                    houveErro = true;
-
-                    continue;
-
-                }
-
-                /*
-                   Remove da fila somente se o item
-                   ainda for exatamente o mesmo
-                   (não foi substituído por uma
-                   edição mais recente enquanto
-                   a requisição estava em andamento).
-                */
-
-                const indiceAtual =
-                    filaSincronizacao.findIndex(
-                        x =>
-                            x.chave === item.chave &&
-                            x.criadoEm === item.criadoEm
+                resultado =
+                    await enviarRegistroAPI(
+                        item.tipo,
+                        item.registro
                     );
-
-                if(indiceAtual >= 0){
-
-                    filaSincronizacao.splice(
-                        indiceAtual,
-                        1
-                    );
-
-                }
 
             }
 
-            salvarFila();
+            else if(item.action === "delete"){
 
-            if(houveErro){
+                resultado =
+                    await excluirRegistroAPI(
+                        item.tipo,
+                        item.id
+                    );
+
+            }
+
+            else if(item.action === "saveBloco"){
+
+                resultado =
+                    await enviarBlocoAPI(
+                        item.texto
+                    );
+
+            }
+
+            else{
+
+                /*
+                   Operação desconhecida.
+                   Remove para não travar a fila.
+                */
+
+                resultado = {
+                    ok:true
+                };
+
+            }
+
+            if(resultado && resultado.ok){
+
+                /*
+                   Remove somente o item que acabou
+                   de ser sincronizado.
+                */
+
+                const atual =
+                    filaSincronizacao[0];
+
+                if(
+                    atual &&
+                    atual.chave === item.chave &&
+                    atual.criadoEm === item.criadoEm
+                ){
+
+                    filaSincronizacao.shift();
+
+                    salvarFila();
+
+                }
+
+            }else{
 
                 throw new Error(
-                    "Uma ou mais operações falharam"
+                    resultado?.erro ||
+                    "Erro ao sincronizar"
                 );
 
             }
@@ -1785,55 +1718,13 @@ async function processarFilaSincronizacao(){
 
 
 /* ============================================================
-   ENVIAR UM ITEM DA FILA (usado em paralelo)
-============================================================ */
-
-async function enviarItemFila(item){
-
-    if(item.action === "upsert"){
-
-        return await enviarRegistroAPI(
-            item.tipo,
-            item.registro
-        );
-
-    }
-
-    if(item.action === "delete"){
-
-        return await excluirRegistroAPI(
-            item.tipo,
-            item.id
-        );
-
-    }
-
-    if(item.action === "saveBloco"){
-
-        return await enviarBlocoAPI(
-            item.texto
-        );
-
-    }
-
-    /*
-       Operação desconhecida.
-       Remove para não travar a fila.
-    */
-
-    return { ok:true };
-
-}
-
-
-/* ============================================================
    POST GENÉRICO
 ============================================================ */
 
 async function postGoogle(payload){
 
     const resposta =
-        await fetchComTimeout(
+        await fetch(
             API_URL,
             {
                 method:"POST",
@@ -1844,8 +1735,7 @@ async function postGoogle(payload){
                 },
 
                 body:JSON.stringify(payload)
-            },
-            TIMEOUT_POST_MS
+            }
         );
 
     if(!resposta.ok){
@@ -1996,38 +1886,13 @@ function enviarBlocoGoogle(texto){
    SOMENTE NO INÍCIO / ATUALIZAÇÃO MANUAL
 ============================================================ */
 
-async function carregarDadosGoogle(forcar=false){
+async function carregarDadosGoogle(){
 
     if(!navigator.onLine){
 
         syncStatus(
             "📱 Offline",
             "load"
-        );
-
-        return;
-
-    }
-
-    /*
-       Evita recarregar TUDO do Google toda vez
-       que o app abre ou troca de página, se já
-       atualizamos recentemente. "forcar=true"
-       (botão de atualizar manual) ignora isso.
-    */
-
-    const agora = Date.now();
-
-    if(
-        !forcar &&
-        (agora - ultimaAtualizacaoCompleta) <
-        INTERVALO_MIN_ATUALIZACAO_MS
-    ){
-
-        syncStatus(
-            filaSincronizacao.length
-                ? `☁️ ${filaSincronizacao.length} pendente(s)`
-                : "☁️ Sincronizado"
         );
 
         return;
@@ -2042,12 +1907,11 @@ async function carregarDadosGoogle(forcar=false){
     try{
 
         const resposta =
-            await fetchComTimeout(
+            await fetch(
                 API_URL+"?action=getAll",
                 {
                     cache:"no-store"
-                },
-                TIMEOUT_GET_MS
+                }
             );
 
         if(!resposta.ok){
@@ -2278,9 +2142,6 @@ async function carregarDadosGoogle(forcar=false){
 
         atualizarTudo();
 
-        ultimaAtualizacaoCompleta =
-            Date.now();
-
         syncStatus(
             filaSincronizacao.length
                 ? `☁️ ${filaSincronizacao.length} pendente(s)`
@@ -2307,21 +2168,10 @@ async function carregarDadosGoogle(forcar=false){
             erro
         );
 
-        if(erro.name === "AbortError"){
-
-            syncStatus(
-                "⚠️ Google demorou demais",
-                "erro"
-            );
-
-        }else{
-
-            syncStatus(
-                "⚠️ Dados locais",
-                "erro"
-            );
-
-        }
+        syncStatus(
+            "⚠️ Dados locais",
+            "erro"
+        );
 
         atualizarTudo();
 
@@ -2332,7 +2182,6 @@ async function carregarDadosGoogle(forcar=false){
 
 /* ============================================================
    ATUALIZAÇÃO MANUAL
-   (clique no status de sincronização no topo)
 ============================================================ */
 
 async function atualizarDoGoogle(){
@@ -2348,7 +2197,7 @@ async function atualizarDoGoogle(){
 
     }
 
-    await carregarDadosGoogle(true);
+    await carregarDadosGoogle();
 
 }
 
@@ -2377,7 +2226,7 @@ window.addEventListener(
         */
 
         setTimeout(
-            () => carregarDadosGoogle(true),
+            carregarDadosGoogle,
             800
         );
 
@@ -2644,9 +2493,6 @@ function abrirPagina(nome){
 
     if(nome==="bloco")
         renderBloco();
-
-    if(nome==="pesquisa")
-        renderPesquisa();
 
 }
 
