@@ -664,6 +664,38 @@ body:before{
     margin-bottom:4px;
 }
 
+
+/* ================= RELATÓRIO PROGRAMAÇÃO ================= */
+
+.relatorio-modal-box{
+    width:min(850px,100%);
+}
+
+.relatorio-textarea{
+    width:100%;
+    min-height:420px;
+    background:#08111d;
+    border:1px solid rgba(255,255,255,.1);
+    color:#f4f7fb;
+    border-radius:12px;
+    padding:14px;
+    resize:vertical;
+    outline:none;
+    font-family:Arial,Helvetica,sans-serif;
+    font-size:13px;
+    line-height:1.55;
+}
+
+.relatorio-textarea:focus{
+    border-color:rgba(0,217,255,.45);
+}
+
+.relatorio-ajuda{
+    color:var(--muted);
+    font-size:11px;
+    margin-bottom:10px;
+}
+
 /* ================= NOTAS ================= */
 
 .note-area{
@@ -1136,9 +1168,17 @@ body:before{
                     <p>Organize serviços e atividades por dia.</p>
                 </div>
 
-                <button class="btn btn-primary" onclick="abrirModal('programacao')">
-                    + Programar
-                </button>
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
+
+                    <button class="btn" onclick="abrirRelatorioProgramacao()">
+                        📋 Relatório WhatsApp
+                    </button>
+
+                    <button class="btn btn-primary" onclick="abrirModal('programacao')">
+                        + Programar
+                    </button>
+
+                </div>
 
             </div>
 
@@ -1311,6 +1351,33 @@ body:before{
     </div>
 
 </main>
+
+
+<!-- ================= MODAL RELATÓRIO ================= -->
+
+<div class="modal" id="modalRelatorioProgramacao">
+
+    <div class="modal-box relatorio-modal-box">
+
+        <div class="modal-head">
+            <div>
+                <h3>📋 Relatório da Programação Semanal</h3>
+                <div class="relatorio-ajuda">Texto pronto para copiar e enviar no WhatsApp da diretoria.</div>
+            </div>
+
+            <button class="close" onclick="fecharRelatorioProgramacao()">×</button>
+        </div>
+
+        <textarea id="relatorioProgramacaoTexto" class="relatorio-textarea" spellcheck="false"></textarea>
+
+        <div class="modal-footer">
+            <button class="btn" onclick="fecharRelatorioProgramacao()">Fechar</button>
+            <button class="btn btn-primary" onclick="copiarRelatorioProgramacao()">📋 Copiar relatório</button>
+        </div>
+
+    </div>
+
+</div>
 
 <!-- ================= MODAL ================= -->
 
@@ -4739,6 +4806,130 @@ function executarPesquisa(){
 }
 
 
+
+/* ============================================================
+   RELATÓRIO DA PROGRAMAÇÃO SEMANAL – WHATSAPP
+============================================================ */
+
+function obterSegundaFeiraRelatorio(dataBase = new Date()){
+    const data = new Date(dataBase);
+    data.setHours(0,0,0,0);
+    const diaSemana = data.getDay();
+    const deslocamento = diaSemana === 0 ? 1 : 1 - diaSemana;
+    data.setDate(data.getDate() + deslocamento);
+    return data;
+}
+
+function formatarDataRelatorio(data){
+    return String(data.getDate()).padStart(2,"0") + "/" +
+           String(data.getMonth()+1).padStart(2,"0") + "/" +
+           data.getFullYear();
+}
+
+function normalizarDiaProgramacao(valor){
+    return String(valor || "")
+        .trim()
+        .toUpperCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+}
+
+function abrirRelatorioProgramacao(){
+    const segunda = obterSegundaFeiraRelatorio();
+    const dias = [
+        {sigla:"SEG", nome:"SEGUNDA-FEIRA", offset:0},
+        {sigla:"TER", nome:"TERÇA-FEIRA", offset:1},
+        {sigla:"QUA", nome:"QUARTA-FEIRA", offset:2},
+        {sigla:"QUI", nome:"QUINTA-FEIRA", offset:3},
+        {sigla:"SEX", nome:"SEXTA-FEIRA", offset:4},
+        {sigla:"SAB", nome:"SÁBADO", offset:5}
+    ];
+
+    let total = 0;
+    const dataInicio = new Date(segunda);
+    const dataFim = new Date(segunda);
+    dataFim.setDate(dataFim.getDate() + 5);
+
+    let texto =
+        "📋 *PROGRAMAÇÃO SEMANAL – UTE MAUÉS*\n" +
+        "📅 *Período:* " + formatarDataRelatorio(dataInicio) +
+        " a " + formatarDataRelatorio(dataFim) + "\n\n";
+
+    dias.forEach(dia => {
+        const itens = dados.programacao.filter(item => {
+            const valor = normalizarDiaProgramacao(item.dia);
+            return valor === dia.sigla ||
+                   (dia.sigla === "SAB" && valor === "SABADO");
+        });
+
+        if(!itens.length) return;
+
+        total += itens.length;
+
+        const dataDia = new Date(segunda);
+        dataDia.setDate(dataDia.getDate() + dia.offset);
+
+        texto += "*" + dia.nome + " – " + formatarDataRelatorio(dataDia) + "*\n";
+
+        itens.forEach((item,index) => {
+            const ugd = String(item.ugd || "").trim();
+            const servico = String(item.servico || "").trim();
+            const os = String(item.os || "").trim();
+            const observacao = String(item.observacao || "").trim();
+
+            texto += (index + 1) + ". *" + (ugd || "UGD não informada") + "*";
+            if(servico) texto += " – " + servico;
+            texto += "\n";
+            if(os) texto += "   OS: " + os + "\n";
+            if(observacao) texto += "   Obs.: " + observacao + "\n";
+            texto += "\n";
+        });
+    });
+
+    if(!total){
+        texto += "Não há atividades cadastradas na Programação Semanal para este período.\n\n";
+    }
+
+    texto +=
+        "📌 *TOTAL PROGRAMADO: " + total + " ATIVIDADE" +
+        (total === 1 ? "" : "S") + "*\n\n" +
+        "*Observação:* A programação poderá ser ajustada conforme as condições operacionais da UTE, disponibilidade das equipes, prioridades de manutenção e necessidades identificadas durante a execução.";
+
+    document.getElementById("relatorioProgramacaoTexto").value = texto;
+    document.getElementById("modalRelatorioProgramacao").classList.add("show");
+
+    setTimeout(() => {
+        const area = document.getElementById("relatorioProgramacaoTexto");
+        area.focus();
+        area.setSelectionRange(0,0);
+    },50);
+}
+
+function fecharRelatorioProgramacao(){
+    document.getElementById("modalRelatorioProgramacao").classList.remove("show");
+}
+
+async function copiarRelatorioProgramacao(){
+    const area = document.getElementById("relatorioProgramacaoTexto");
+    const texto = area.value;
+
+    try{
+        if(navigator.clipboard && window.isSecureContext){
+            await navigator.clipboard.writeText(texto);
+        }else{
+            area.focus();
+            area.select();
+            document.execCommand("copy");
+            area.setSelectionRange(0,0);
+        }
+        alert("Relatório copiado com sucesso.\n\nAgora é só colar no WhatsApp da diretoria.");
+    }catch(erro){
+        area.focus();
+        area.select();
+        alert("Não foi possível copiar automaticamente. O texto está selecionado; pressione Ctrl+C e cole no WhatsApp.");
+    }
+}
+
 /* ============================================================
    MODAL
 ============================================================ */
@@ -5559,6 +5750,14 @@ document.getElementById(
 
     }
 );
+
+document.getElementById("modalRelatorioProgramacao")
+.addEventListener("click", function(e){
+
+    if(e.target === this)
+        fecharRelatorioProgramacao();
+
+});
 
 
 /* ============================================================
