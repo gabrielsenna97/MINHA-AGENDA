@@ -4834,6 +4834,23 @@ function normalizarDiaProgramacao(valor){
         .replace(/[\u0300-\u036f]/g, "");
 }
 
+function formatarIdentificacaoUGD(valor){
+    const original = String(valor || "").trim();
+
+    if(!original){
+        return "UGD - NÃO INFORMADA";
+    }
+
+    // Aceita UGD25, UGD 25, UGD-25, UGD - 25 ou somente 25.
+    const numero = original.match(/(?:UGD\s*[-–—]?\s*)?(\d{1,3})/i);
+
+    if(numero){
+        return "UGD - " + String(parseInt(numero[1],10)).padStart(2,"0");
+    }
+
+    return original.toUpperCase();
+}
+
 function abrirRelatorioProgramacao(){
     const segunda = obterSegundaFeiraRelatorio();
     const dias = [
@@ -4852,8 +4869,10 @@ function abrirRelatorioProgramacao(){
 
     let texto =
         "📋 *PROGRAMAÇÃO SEMANAL – UTE MAUÉS*\n" +
+        "━━━━━━━━━━━━━━━━━━━━\n" +
         "📅 *Período:* " + formatarDataRelatorio(dataInicio) +
-        " a " + formatarDataRelatorio(dataFim) + "\n\n";
+        " a " + formatarDataRelatorio(dataFim) + "\n" +
+        "📌 *Planejamento das atividades de manutenção e acompanhamento operacional*\n\n";
 
     dias.forEach(dia => {
         const itens = dados.programacao.filter(item => {
@@ -4869,31 +4888,44 @@ function abrirRelatorioProgramacao(){
         const dataDia = new Date(segunda);
         dataDia.setDate(dataDia.getDate() + dia.offset);
 
-        texto += "*" + dia.nome + " – " + formatarDataRelatorio(dataDia) + "*\n";
+        texto +=
+            "🔹 *" + dia.nome + " – " + formatarDataRelatorio(dataDia) + "*\n" +
+            "   Total de atividades: " + itens.length + "\n\n";
 
         itens.forEach((item,index) => {
-            const ugd = String(item.ugd || "").trim();
+            const ugd = formatarIdentificacaoUGD(item.ugd);
             const servico = String(item.servico || "").trim();
             const os = String(item.os || "").trim();
             const observacao = String(item.observacao || "").trim();
 
-            texto += (index + 1) + ". *" + (ugd || "UGD não informada") + "*";
-            if(servico) texto += " – " + servico;
-            texto += "\n";
-            if(os) texto += "   OS: " + os + "\n";
-            if(observacao) texto += "   Obs.: " + observacao + "\n";
+            texto += "   *" + String(index + 1).padStart(2,"0") + ". " + ugd + "*\n";
+
+            if(servico){
+                texto += "      🔧 *Serviço:* " + servico + "\n";
+            }
+
+            if(os){
+                texto += "      📄 *OS:* " + os + "\n";
+            }
+
+            if(observacao){
+                texto += "      📝 *Observação:* " + observacao + "\n";
+            }
+
             texto += "\n";
         });
+
+        texto += "────────────────────\n\n";
     });
 
     if(!total){
-        texto += "Não há atividades cadastradas na Programação Semanal para este período.\n\n";
+        texto += "ℹ️ *Nenhuma atividade programada para esta semana.*\n\n";
     }
 
     texto +=
-        "📌 *TOTAL PROGRAMADO: " + total + " ATIVIDADE" +
-        (total === 1 ? "" : "S") + "*\n\n" +
-        "*Observação:* A programação poderá ser ajustada conforme as condições operacionais da UTE, disponibilidade das equipes, prioridades de manutenção e necessidades identificadas durante a execução.";
+        "📊 *RESUMO DA SEMANA*\n" +
+        "• Total de atividades programadas: *" + total + "*\n\n" +
+        "⚠️ *Observação:* A programação poderá ser ajustada conforme as condições operacionais da UTE, disponibilidade das equipes, prioridades de manutenção e necessidades identificadas durante a execução.";
 
     document.getElementById("relatorioProgramacaoTexto").value = texto;
     document.getElementById("modalRelatorioProgramacao").classList.add("show");
