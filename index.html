@@ -1171,7 +1171,15 @@ body:before{
                 <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
 
                     <button class="btn" onclick="abrirRelatorioProgramacao()">
-                        📋 Relatório WhatsApp
+                        📋 WhatsApp
+                    </button>
+
+                    <button class="btn" onclick="gerarPlanilhaProgramacao()">
+                        📊 Planilha Excel
+                    </button>
+
+                    <button class="btn" onclick="gerarPDFProgramacao()">
+                        📄 PDF
                     </button>
 
                     <button class="btn btn-primary" onclick="abrirModal('programacao')">
@@ -4849,6 +4857,267 @@ function formatarIdentificacaoUGD(valor){
     }
 
     return original.toUpperCase();
+}
+
+
+/* ============================================================
+   PLANILHA / PDF DA PROGRAMAÇÃO SEMANAL
+============================================================ */
+
+function obterDadosProgramacaoSemana(){
+    const segunda = obterSegundaFeiraRelatorio();
+
+    const dias = [
+        {sigla:"SEG", nome:"SEGUNDA-FEIRA", offset:0},
+        {sigla:"TER", nome:"TERÇA-FEIRA", offset:1},
+        {sigla:"QUA", nome:"QUARTA-FEIRA", offset:2},
+        {sigla:"QUI", nome:"QUINTA-FEIRA", offset:3},
+        {sigla:"SEX", nome:"SEXTA-FEIRA", offset:4},
+        {sigla:"SAB", nome:"SÁBADO", offset:5}
+    ];
+
+    return dias.map(dia => {
+        const data = new Date(segunda);
+        data.setDate(data.getDate() + dia.offset);
+
+        const itens = dados.programacao.filter(item => {
+            const valor = normalizarDiaProgramacao(item.dia);
+            return valor === dia.sigla ||
+                   (dia.sigla === "SAB" && valor === "SABADO");
+        });
+
+        return {
+            ...dia,
+            data,
+            itens
+        };
+    });
+}
+
+function escaparHtmlRelatorio(valor){
+    return String(valor ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+function obterEstruturaRelatorioProgramacao(){
+    const dias = obterDadosProgramacaoSemana();
+    const total = dias.reduce((soma,dia) => soma + dia.itens.length, 0);
+    const dataInicio = dias[0].data;
+    const dataFim = dias[dias.length - 1].data;
+
+    return {
+        dias,
+        total,
+        dataInicio,
+        dataFim
+    };
+}
+
+function gerarPlanilhaProgramacao(){
+    const relatorio = obterEstruturaRelatorioProgramacao();
+    const {dias,total,dataInicio,dataFim} = relatorio;
+
+    let html = `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+    body{font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff;margin:25px;}
+    .titulo{text-align:center;font-size:20px;font-weight:bold;margin-bottom:4px;}
+    .subtitulo{text-align:center;font-size:14px;margin-bottom:20px;}
+    .dia{font-size:15px;font-weight:bold;background:#d9eaf7;padding:9px;border:1px solid #8ea9bd;margin-top:18px;}
+    table{width:100%;border-collapse:collapse;margin-bottom:12px;}
+    th{background:#1f4e78;color:#fff;padding:8px;border:1px solid #777;text-align:left;font-size:11px;}
+    td{padding:8px;border:1px solid #999;vertical-align:top;font-size:11px;}
+    .numero{width:6%;text-align:center;}
+    .ugd{width:16%;font-weight:bold;}
+    .os{width:15%;}
+    .obs{width:30%;}
+    .sem{padding:10px;text-align:center;border:1px solid #bbb;color:#666;font-style:italic;}
+    .resumo{margin-top:20px;border:1px solid #999;padding:12px;}
+    .resumo h3{margin:0 0 8px;font-size:14px;}
+    .resumo p{margin:5px 0;font-size:11px;}
+    .aviso{margin-top:12px;font-size:10px;line-height:1.45;}
+</style>
+</head>
+<body>
+<div class="titulo">UTE MAUÉS – PROGRAMAÇÃO SEMANAL</div>
+<div class="subtitulo">Período: ${formatarDataRelatorio(dataInicio)} a ${formatarDataRelatorio(dataFim)}</div>
+`;
+
+    dias.forEach(dia => {
+        html += `<div class="dia">${dia.nome} – ${formatarDataRelatorio(dia.data)}</div>`;
+
+        if(!dia.itens.length){
+            html += `<div class="sem">Sem programação cadastrada para este dia.</div>`;
+            return;
+        }
+
+        html += `
+<table>
+<thead>
+<tr>
+    <th class="numero">Nº</th>
+    <th class="ugd">UGD</th>
+    <th>O QUE SERÁ FEITO</th>
+    <th class="os">OS</th>
+    <th class="obs">OBSERVAÇÃO</th>
+</tr>
+</thead>
+<tbody>
+`;
+
+        dia.itens.forEach((item,index) => {
+            html += `
+<tr>
+    <td class="numero">${index + 1}</td>
+    <td class="ugd">${escaparHtmlRelatorio(formatarIdentificacaoUGD(item.ugd))}</td>
+    <td>${escaparHtmlRelatorio(item.servico || "")}</td>
+    <td class="os">${escaparHtmlRelatorio(item.os || "")}</td>
+    <td class="obs">${escaparHtmlRelatorio(item.observacao || "")}</td>
+</tr>
+`;
+        });
+
+        html += `
+</tbody>
+</table>
+<div style="font-size:10px;margin-bottom:8px;"><b>Total do dia:</b> ${dia.itens.length} atividade(s)</div>
+`;
+    });
+
+    html += `
+<div class="resumo">
+    <h3>RESUMO DA SEMANA</h3>
+    <p><b>Total de atividades programadas: ${total}</b></p>
+    ${dias.map(dia => `<p>${dia.nome}: ${dia.itens.length} atividade(s)</p>`).join("")}
+    <div class="aviso"><b>⚠️ Observação:</b> A programação poderá ser ajustada conforme as condições operacionais da UTE, disponibilidade das equipes, prioridades de manutenção e necessidades identificadas durante a execução.</div>
+</div>
+</body>
+</html>
+`;
+
+    const blob = new Blob(["\ufeff", html], {type:"application/vnd.ms-excel;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "Programacao_Semanal_UTE_Maues_" + formatarDataRelatorio(dataInicio).replace(/\//g,"-") + ".xls";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+    alert("Planilha da programação semanal gerada com sucesso.\n\nEla foi organizada por dia, com UGD, serviço, OS, observação e resumo da semana.");
+}
+
+function gerarPDFProgramacao(){
+    const relatorio = obterEstruturaRelatorioProgramacao();
+    const {dias,total,dataInicio,dataFim} = relatorio;
+
+    let html = `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Programação Semanal – UTE Maués</title>
+<style>
+    @page{size:A4 portrait;margin:12mm;}
+    *{box-sizing:border-box;}
+    body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:0;background:#fff;font-size:10px;}
+    .titulo{text-align:center;font-size:18px;font-weight:bold;margin-bottom:4px;}
+    .subtitulo{text-align:center;font-size:11px;margin-bottom:15px;}
+    .dia{font-size:13px;font-weight:bold;background:#e7eef5;border:1px solid #888;padding:7px;margin-top:12px;break-after:avoid;}
+    table{width:100%;border-collapse:collapse;margin-bottom:5px;break-inside:auto;}
+    thead{display:table-header-group;}
+    tr{break-inside:avoid;}
+    th{background:#1f4e78;color:#fff;padding:6px;border:1px solid #777;text-align:left;font-size:9px;}
+    td{padding:6px;border:1px solid #999;vertical-align:top;font-size:9px;}
+    .numero{width:6%;text-align:center;}
+    .ugd{width:16%;font-weight:bold;}
+    .os{width:15%;}
+    .obs{width:28%;}
+    .sem{padding:7px;border:1px solid #aaa;color:#666;font-style:italic;}
+    .total-dia{font-size:9px;margin-bottom:6px;}
+    .resumo{margin-top:15px;border:1px solid #777;padding:10px;break-inside:avoid;}
+    .resumo h3{margin:0 0 7px;font-size:12px;}
+    .resumo p{margin:3px 0;font-size:9px;}
+    .aviso{margin-top:8px;font-size:8.5px;line-height:1.4;}
+    .rodape{margin-top:12px;text-align:center;color:#666;font-size:8px;}
+    @media print{button{display:none!important;}}
+</style>
+</head>
+<body>
+<div class="titulo">UTE MAUÉS – PROGRAMAÇÃO SEMANAL</div>
+<div class="subtitulo">Período: ${formatarDataRelatorio(dataInicio)} a ${formatarDataRelatorio(dataFim)}</div>
+`;
+
+    dias.forEach(dia => {
+        html += `<div class="dia">${dia.nome} – ${formatarDataRelatorio(dia.data)}</div>`;
+
+        if(!dia.itens.length){
+            html += `<div class="sem">Sem programação cadastrada para este dia.</div>`;
+            return;
+        }
+
+        html += `
+<table>
+<thead><tr>
+<th class="numero">Nº</th>
+<th class="ugd">UGD</th>
+<th>O QUE SERÁ FEITO</th>
+<th class="os">OS</th>
+<th class="obs">OBSERVAÇÃO</th>
+</tr></thead>
+<tbody>
+`;
+
+        dia.itens.forEach((item,index) => {
+            html += `<tr>
+<td class="numero">${index + 1}</td>
+<td class="ugd">${escaparHtmlRelatorio(formatarIdentificacaoUGD(item.ugd))}</td>
+<td>${escaparHtmlRelatorio(item.servico || "")}</td>
+<td class="os">${escaparHtmlRelatorio(item.os || "")}</td>
+<td class="obs">${escaparHtmlRelatorio(item.observacao || "")}</td>
+</tr>`;
+        });
+
+        html += `</tbody></table><div class="total-dia"><b>Total do dia:</b> ${dia.itens.length} atividade(s)</div>`;
+    });
+
+    html += `
+<div class="resumo">
+    <h3>RESUMO DA SEMANA</h3>
+    <p><b>Total de atividades programadas: ${total}</b></p>
+    ${dias.map(dia => `<p>${dia.nome}: ${dia.itens.length} atividade(s)</p>`).join("")}
+    <div class="aviso"><b>⚠️ Observação:</b> A programação poderá ser ajustada conforme as condições operacionais da UTE, disponibilidade das equipes, prioridades de manutenção e necessidades identificadas durante a execução.</div>
+</div>
+<div class="rodape">Documento gerado pela Minha Agenda – UTE Maués</div>
+</body>
+</html>
+`;
+
+    const janela = window.open("", "_blank");
+
+    if(!janela){
+        alert("O navegador bloqueou a janela do PDF. Permita pop-ups para este site e tente novamente.");
+        return;
+    }
+
+    janela.document.open();
+    janela.document.write(html);
+    janela.document.close();
+
+    janela.onload = function(){
+        setTimeout(() => {
+            janela.focus();
+            janela.print();
+        }, 300);
+    };
 }
 
 function abrirRelatorioProgramacao(){
