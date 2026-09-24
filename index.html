@@ -705,87 +705,49 @@ body:before{
 
 
 /* ================= RELATÓRIO DIÁRIO ================= */
-
-.diario-grid{
+.daily-row{
     display:grid;
-    grid-template-columns:1fr;
-    gap:18px;
+    grid-template-columns:150px 1fr auto;
+    gap:10px;
+    align-items:start;
+    padding:12px;
+    background:rgba(255,255,255,.025);
+    border:1px solid var(--border);
+    border-radius:12px;
+    margin-bottom:9px;
 }
-
-.diario-toolbar{
+.daily-row.programacao-row{
+    grid-template-columns:130px 1fr 190px auto;
+}
+.daily-row .textarea{
+    min-height:72px;
+}
+.daily-actions{
     display:flex;
     gap:8px;
     flex-wrap:wrap;
-    margin-top:18px;
 }
-
-.diario-row{
-    display:grid;
-    grid-template-columns:130px 1fr auto;
-    gap:8px;
-    align-items:start;
-    margin-bottom:9px;
-}
-
-.diario-row-programacao{
-    display:grid;
-    grid-template-columns:120px 1fr 180px auto;
-    gap:8px;
-    align-items:start;
-    margin-bottom:9px;
-}
-
-.diario-lista{
-    margin-top:12px;
-}
-
-.diario-item{
-    background:rgba(255,255,255,.025);
-    border:1px solid var(--border);
-    border-radius:11px;
-    padding:10px;
-    margin-bottom:8px;
-}
-
-.diario-item-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:8px;
-    margin-bottom:6px;
-}
-
-.diario-item-head strong{
-    font-size:12px;
-}
-
-.diario-preview{
-    min-height:360px;
-    font-family:Arial,Helvetica,sans-serif;
-    line-height:1.55;
-    white-space:pre-wrap;
-}
-
-.diario-section-title{
+.daily-section-title{
     display:flex;
     justify-content:space-between;
     align-items:center;
     gap:10px;
-    margin-bottom:10px;
+    margin-bottom:12px;
 }
-
-.diario-section-title h3{
-    font-size:15px;
+.daily-section-title h3{font-size:15px;}
+.daily-section-title span{color:var(--muted);font-size:11px;}
+.daily-report-preview{
+    min-height:280px;
+    font-family:Arial,Helvetica,sans-serif;
+    white-space:pre-wrap;
 }
-
-.diario-section-title span{
+.daily-help{
     color:var(--muted);
-    font-size:10px;
+    font-size:11px;
+    margin-top:6px;
 }
-
-@media(max-width:700px){
-    .diario-row,
-    .diario-row-programacao{
+@media(max-width:800px){
+    .daily-row,.daily-row.programacao-row{
         grid-template-columns:1fr;
     }
 }
@@ -928,12 +890,12 @@ body:before{
             <span class="menu-icon">🗓</span> Programação Semanal
         </button>
 
-        <button onclick="abrirPagina('lembretes')" id="menu-lembretes">
-            <span class="menu-icon">🔔</span> Lembretes
+        <button onclick="abrirPagina('relatorio-diario')" id="menu-relatorio-diario">
+            <span class="menu-icon">📋</span> Relatório Diário
         </button>
 
-        <button onclick="abrirPagina('diario')" id="menu-diario">
-            <span class="menu-icon">📋</span> Relatório Diário
+        <button onclick="abrirPagina('lembretes')" id="menu-lembretes">
+            <span class="menu-icon">🔔</span> Lembretes
         </button>
 
         <div class="menu-title">REGISTROS</div>
@@ -1239,95 +1201,60 @@ body:before{
 
         <!-- ================= RELATÓRIO DIÁRIO ================= -->
 
-        <section class="page" id="page-diario">
+        <section class="page" id="page-relatorio-diario">
 
             <div class="page-header">
-
                 <div>
                     <h2>Relatório Diário</h2>
-                    <p>Preencha diariamente as ocorrências e a programação do dia.</p>
+                    <p>Preencha diariamente as ocorrências e a programação realizada/prevista para o dia.</p>
                 </div>
-
-                <button class="btn" onclick="limparRelatorioDiario()">
-                    Limpar
-                </button>
-
             </div>
 
-            <div class="diario-grid">
-
-                <div class="panel">
-
-                    <div class="form-grid">
-
-                        <div class="form-group">
-                            <label>Data</label>
-                            <input class="input" type="date" id="diarioData">
-                        </div>
-
+            <div class="panel" style="margin-bottom:18px">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Data</label>
+                        <input class="input" type="date" id="diarioData">
                     </div>
-
                 </div>
+            </div>
 
-                <div class="panel">
-
-                    <div class="diario-section-title">
-                        <div>
-                            <h3>Ocorrências</h3>
-                            <span>Registre o que aconteceu durante a operação.</span>
-                        </div>
-
-                        <button class="btn btn-primary" onclick="adicionarOcorrenciaDiaria()">
-                            + Ocorrência
-                        </button>
+            <div class="panel" style="margin-bottom:18px">
+                <div class="daily-section-title">
+                    <div>
+                        <h3>Ocorrências</h3>
+                        <span>Registre o que aconteceu durante o dia.</span>
                     </div>
-
-                    <div id="diarioOcorrencias"></div>
-
+                    <button class="btn" onclick="adicionarOcorrenciaDiaria()">+ Ocorrência</button>
                 </div>
+                <div id="diarioOcorrencias"></div>
+            </div>
 
-                <div class="panel">
-
-                    <div class="diario-section-title">
-                        <div>
-                            <h3>Programação do dia</h3>
-                            <span>Informe manualmente o que será realizado no dia.</span>
-                        </div>
-
-                        <button class="btn btn-primary" onclick="adicionarProgramacaoDiaria()">
-                            + Programação
-                        </button>
+            <div class="panel" style="margin-bottom:18px">
+                <div class="daily-section-title">
+                    <div>
+                        <h3>Programação do dia</h3>
+                        <span>Informe a atividade e quem será o executante.</span>
                     </div>
-
-                    <div id="diarioProgramacao"></div>
-
+                    <button class="btn" onclick="adicionarProgramacaoDiaria()">+ Programação</button>
                 </div>
+                <div id="diarioProgramacao"></div>
+            </div>
 
-                <div class="panel">
-
-                    <div class="diario-section-title">
-                        <div>
-                            <h3>Relatório para WhatsApp</h3>
-                            <span>Texto pronto para copiar e enviar.</span>
-                        </div>
+            <div class="panel">
+                <div class="daily-section-title">
+                    <div>
+                        <h3>Relatório para WhatsApp</h3>
+                        <span>Texto pronto para copiar e enviar.</span>
                     </div>
-
-                    <textarea class="textarea diario-preview" id="diarioPreview" readonly></textarea>
-
-                    <div class="diario-toolbar">
-                        <button class="btn btn-primary" onclick="gerarRelatorioDiario()">
-                            🔄 Gerar relatório
-                        </button>
-                        <button class="btn" onclick="copiarRelatorioDiario()">
-                            📋 Copiar WhatsApp
-                        </button>
-                        <button class="btn" onclick="gerarPdfDiario()">
-                            📄 Gerar PDF
-                        </button>
+                    <div class="daily-actions">
+                        <button class="btn btn-primary" onclick="gerarRelatorioDiario()">🔄 Gerar relatório</button>
+                        <button class="btn" onclick="copiarRelatorioDiario()">📋 Copiar WhatsApp</button>
+                        <button class="btn" onclick="gerarPdfDiario()">📄 Gerar PDF</button>
                     </div>
-
                 </div>
-
+                <textarea class="textarea daily-report-preview" id="diarioPreview" placeholder="O relatório aparecerá aqui..."></textarea>
+                <div class="daily-help">Exemplo de executante: <b>Joel Alves (Mecânico)</b>. O campo é opcional.</div>
             </div>
 
         </section>
@@ -2586,7 +2513,7 @@ const titulos = {
     agenda:"Agenda",
     tarefas:"Tarefas",
     programacao:"Programação Semanal",
-    diario:"Relatório Diário",
+    "relatorio-diario":"Relatório Diário",
     lembretes:"Lembretes",
     servicos:"Serviços Realizados",
     movimentacoes:"Movimentações",
@@ -2677,6 +2604,9 @@ function abrirPagina(nome){
 
     if(nome==="programacao")
         renderProgramacao();
+
+    if(nome==="relatorio-diario")
+        iniciarRelatorioDiario();
 
     if(nome==="bloco")
         renderBloco();
@@ -5698,220 +5628,92 @@ function fecharModal(){
 }
 
 
-
 /* ============================================================
-   RELATÓRIO DIÁRIO
-   INDEPENDENTE DA PROGRAMAÇÃO SEMANAL
+   RELATÓRIO DIÁRIO - INDEPENDENTE DA PROGRAMAÇÃO SEMANAL
 ============================================================ */
 
-let diarioOcorrencias = [];
-let diarioProgramacao = [];
-let diarioInicializado = false;
-
-function normalizarUGDDiario(valor){
-
-    let v = String(valor || "").trim().toUpperCase();
-
-    v = v.replace(/UGD/g, "").replace(/[^0-9]/g, "");
-
-    if(!v)
-        return "";
-
-    return "UGD " + v.padStart(2,"0");
-
+function dataHojeBR(data){
+    if(!data) return "";
+    const partes = String(data).split("-");
+    if(partes.length !== 3) return data;
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
 }
 
-function inicializarRelatorioDiario(){
+function normalizarUGDDiario(valor){
+    let v = String(valor || "").trim().toUpperCase();
+    v = v.replace(/UGD/g, "").replace(/[-_]/g, " ").trim();
+    v = v.replace(/\s+/g, " ");
+    if(!v) return "";
+    const numero = v.match(/\d+/);
+    if(numero) return `UGD ${String(parseInt(numero[0],10)).padStart(2,"0")}`;
+    return `UGD ${v}`;
+}
 
-    if(!diarioInicializado){
+function iniciarRelatorioDiario(){
+    const data = document.getElementById("diarioData");
+    if(!data.value) data.value = hoje();
 
-        const campoData = document.getElementById("diarioData");
-
-        if(campoData)
-            campoData.value = hoje();
-
-        diarioOcorrencias = [];
-        diarioProgramacao = [];
-
+    if(!document.getElementById("diarioOcorrencias").children.length){
         adicionarOcorrenciaDiaria();
-        adicionarProgramacaoDiaria();
-
-        diarioInicializado = true;
-
-        gerarRelatorioDiario();
-
     }
 
+    if(!document.getElementById("diarioProgramacao").children.length){
+        adicionarProgramacaoDiaria();
+    }
+
+    gerarRelatorioDiario();
 }
 
 function adicionarOcorrenciaDiaria(){
-
-    diarioOcorrencias.push({
-        id:id(),
-        ugd:"",
-        descricao:""
-    });
-
-    renderOcorrenciasDiarias();
-
-}
-
-function removerOcorrenciaDiaria(registroId){
-
-    diarioOcorrencias = diarioOcorrencias.filter(x => x.id !== registroId);
-
-    renderOcorrenciasDiarias();
-    gerarRelatorioDiario();
-
-}
-
-function atualizarOcorrenciaDiaria(registroId,campo,valor){
-
-    const item = diarioOcorrencias.find(x => x.id === registroId);
-
-    if(!item)
-        return;
-
-    item[campo] = valor;
-
-    gerarRelatorioDiario();
-
-}
-
-function renderOcorrenciasDiarias(){
-
-    const el = document.getElementById("diarioOcorrencias");
-
-    if(!el)
-        return;
-
-    if(!diarioOcorrencias.length){
-
-        el.innerHTML = `<div class="empty">Nenhuma ocorrência adicionada.</div>`;
-        return;
-
-    }
-
-    el.innerHTML = diarioOcorrencias.map(item => `
-        <div class="diario-row">
-            <input
-                class="input"
-                placeholder="UGD 12"
-                value="${escapar(item.ugd)}"
-                oninput="atualizarOcorrenciaDiaria(${item.id},'ugd',this.value)"
-            >
-            <textarea
-                class="textarea"
-                style="min-height:70px"
-                placeholder="Descreva a ocorrência..."
-                oninput="atualizarOcorrenciaDiaria(${item.id},'descricao',this.value)"
-            >${escapar(item.descricao)}</textarea>
-            <button
-                class="small-btn"
-                title="Excluir"
-                onclick="removerOcorrenciaDiaria(${item.id})">
-                ×
-            </button>
-        </div>
-    `).join("");
-
+    const container = document.getElementById("diarioOcorrencias");
+    const row = document.createElement("div");
+    row.className = "daily-row";
+    row.innerHTML = `
+        <input class="input diario-oc-ugd" placeholder="UGD 12">
+        <textarea class="textarea diario-oc-desc" placeholder="Descreva a ocorrência..."></textarea>
+        <button class="small-btn" title="Remover" onclick="this.parentElement.remove(); gerarRelatorioDiario();">×</button>
+    `;
+    container.appendChild(row);
 }
 
 function adicionarProgramacaoDiaria(){
-
-    diarioProgramacao.push({
-        id:id(),
-        ugd:"",
-        servico:"",
-        executante:""
-    });
-
-    renderProgramacaoDiaria();
-
+    const container = document.getElementById("diarioProgramacao");
+    const row = document.createElement("div");
+    row.className = "daily-row programacao-row";
+    row.innerHTML = `
+        <input class="input diario-prog-ugd" placeholder="UGD 46">
+        <textarea class="textarea diario-prog-servico" placeholder="Atividade / serviço que será realizado..."></textarea>
+        <input class="input diario-prog-executante" placeholder="Joel Alves (Mecânico)">
+        <button class="small-btn" title="Remover" onclick="this.parentElement.remove(); gerarRelatorioDiario();">×</button>
+    `;
+    container.appendChild(row);
 }
 
-function removerProgramacaoDiaria(registroId){
+function coletarRelatorioDiario(){
+    const ocorrencias = [...document.querySelectorAll("#diarioOcorrencias .daily-row")]
+        .map(row => ({
+            ugd: normalizarUGDDiario(row.querySelector(".diario-oc-ugd")?.value),
+            descricao: String(row.querySelector(".diario-oc-desc")?.value || "").trim()
+        }))
+        .filter(x => x.ugd || x.descricao);
 
-    diarioProgramacao = diarioProgramacao.filter(x => x.id !== registroId);
+    const programacao = [...document.querySelectorAll("#diarioProgramacao .daily-row")]
+        .map(row => ({
+            ugd: normalizarUGDDiario(row.querySelector(".diario-prog-ugd")?.value),
+            servico: String(row.querySelector(".diario-prog-servico")?.value || "").trim(),
+            executante: String(row.querySelector(".diario-prog-executante")?.value || "").trim()
+        }))
+        .filter(x => x.ugd || x.servico || x.executante);
 
-    renderProgramacaoDiaria();
-    gerarRelatorioDiario();
-
-}
-
-function atualizarProgramacaoDiaria(registroId,campo,valor){
-
-    const item = diarioProgramacao.find(x => x.id === registroId);
-
-    if(!item)
-        return;
-
-    item[campo] = valor;
-
-    gerarRelatorioDiario();
-
-}
-
-function renderProgramacaoDiaria(){
-
-    const el = document.getElementById("diarioProgramacao");
-
-    if(!el)
-        return;
-
-    if(!diarioProgramacao.length){
-
-        el.innerHTML = `<div class="empty">Nenhuma programação adicionada.</div>`;
-        return;
-
-    }
-
-    el.innerHTML = diarioProgramacao.map(item => `
-        <div class="diario-row-programacao">
-
-            <input
-                class="input"
-                placeholder="UGD 46"
-                value="${escapar(item.ugd)}"
-                oninput="atualizarProgramacaoDiaria(${item.id},'ugd',this.value)"
-            >
-
-            <textarea
-                class="textarea"
-                style="min-height:70px"
-                placeholder="Serviço / atividade..."
-                oninput="atualizarProgramacaoDiaria(${item.id},'servico',this.value)"
-            >${escapar(item.servico)}</textarea>
-
-            <input
-                class="input"
-                placeholder="Executante (opcional)"
-                value="${escapar(item.executante)}"
-                oninput="atualizarProgramacaoDiaria(${item.id},'executante',this.value)"
-            >
-
-            <button
-                class="small-btn"
-                title="Excluir"
-                onclick="removerProgramacaoDiaria(${item.id})">
-                ×
-            </button>
-
-        </div>
-    `).join("");
-
-}
-
-function formatarDataDiario(){
-
-    const campo = document.getElementById("diarioData");
-
-    return campo ? formatarData(campo.value) : formatarData(hoje());
-
+    return {
+        data: document.getElementById("diarioData")?.value || hoje(),
+        ocorrencias,
+        programacao
+    };
 }
 
 function gerarRelatorioDiario(){
-
+    const dadosDiario = coletarRelatorioDiario();
     const linhas = [];
 
     linhas.push("Bom dia, Sra.,");
@@ -5919,216 +5721,120 @@ function gerarRelatorioDiario(){
     linhas.push("*_Ocorrências_*");
     linhas.push("");
 
-    const ocorrenciasValidas = diarioOcorrencias.filter(x =>
-        String(x.ugd || "").trim() || String(x.descricao || "").trim()
-    );
-
-    if(!ocorrenciasValidas.length){
-
-        linhas.push("Sem ocorrência registrada.");
-
-    }else{
-
-        ocorrenciasValidas.forEach((item,index) => {
-
-            const ugd = normalizarUGDDiario(item.ugd) || "UGD";
-            const descricao = String(item.descricao || "").trim();
-
-            linhas.push(`* ${ugd}`);
-            if(descricao)
-                linhas.push(descricao);
-
-            if(index < ocorrenciasValidas.length - 1)
-                linhas.push("");
-
+    if(dadosDiario.ocorrencias.length){
+        dadosDiario.ocorrencias.forEach(item => {
+            if(item.ugd) linhas.push(`* ${item.ugd}`);
+            if(item.descricao) linhas.push(item.descricao);
+            linhas.push("");
         });
-
+    }else{
+        linhas.push("Sem ocorrência.");
+        linhas.push("");
     }
 
-    linhas.push("");
     linhas.push("*_Programação do dia_*");
     linhas.push("");
 
-    const programacoesValidas = diarioProgramacao.filter(x =>
-        String(x.ugd || "").trim() ||
-        String(x.servico || "").trim() ||
-        String(x.executante || "").trim()
-    );
-
-    if(!programacoesValidas.length){
-
-        linhas.push("Sem programação para o dia.");
-
-    }else{
-
-        programacoesValidas.forEach((item,index) => {
-
-            const ugd = normalizarUGDDiario(item.ugd) || "UGD";
-            const servico = String(item.servico || "").trim();
-            const executante = String(item.executante || "").trim();
-
-            linhas.push(`* ${ugd}`);
-
-            if(servico)
-                linhas.push(servico);
-
-            if(executante)
-                linhas.push(`Executante: ${executante}`);
-
-            if(index < programacoesValidas.length - 1)
-                linhas.push("");
-
+    if(dadosDiario.programacao.length){
+        dadosDiario.programacao.forEach(item => {
+            if(item.ugd) linhas.push(`* ${item.ugd}`);
+            if(item.servico) linhas.push(item.servico);
+            if(item.executante) linhas.push(`Executante: ${item.executante}`);
+            linhas.push("");
         });
-
+    }else{
+        linhas.push("Sem programação para o dia.");
     }
 
-    const texto = linhas.join("\n");
-
-    const preview = document.getElementById("diarioPreview");
-
-    if(preview)
-        preview.value = texto;
-
+    const texto = linhas.join("\n").replace(/\n{3,}/g,"\n\n").trim();
+    document.getElementById("diarioPreview").value = texto;
     return texto;
-
 }
 
 async function copiarRelatorioDiario(){
-
     const texto = gerarRelatorioDiario();
-
     try{
-
         await navigator.clipboard.writeText(texto);
         alert("Relatório copiado. Agora é só colar no WhatsApp.");
-
     }catch(e){
-
-        const area = document.getElementById("diarioPreview");
-
-        if(area){
-            area.removeAttribute("readonly");
-            area.select();
-            document.execCommand("copy");
-            area.setAttribute("readonly",true);
-        }
-
+        const campo = document.getElementById("diarioPreview");
+        campo.focus();
+        campo.select();
+        document.execCommand("copy");
         alert("Relatório copiado. Agora é só colar no WhatsApp.");
-
     }
-
-}
-
-function limparRelatorioDiario(){
-
-    if(!confirm("Limpar o relatório diário atual?"))
-        return;
-
-    diarioOcorrencias = [];
-    diarioProgramacao = [];
-
-    const campoData = document.getElementById("diarioData");
-
-    if(campoData)
-        campoData.value = hoje();
-
-    adicionarOcorrenciaDiaria();
-    adicionarProgramacaoDiaria();
-
-    gerarRelatorioDiario();
-
 }
 
 function gerarPdfDiario(){
+    const d = coletarRelatorioDiario();
+    const dataTexto = dataHojeBR(d.data);
+    const linhas = [];
 
-    const texto = gerarRelatorioDiario();
-    const data = formatarDataDiario();
+    linhas.push("RELATÓRIO DIÁRIO – UTE MAUÉS");
+    linhas.push(`Data: ${dataTexto}`);
+    linhas.push("");
+    linhas.push("OCORRÊNCIAS");
+    linhas.push("");
 
-    const linhas = texto.split("\n");
-
-    const janela = window.open("", "_blank", "width=900,height=700");
-
-    if(!janela){
-
-        alert("O navegador bloqueou a janela do PDF. Permita pop-ups para este site e tente novamente.");
-        return;
-
+    if(d.ocorrencias.length){
+        d.ocorrencias.forEach(item => {
+            linhas.push(`${item.ugd || "UGD"}`);
+            if(item.descricao) linhas.push(item.descricao);
+            linhas.push("");
+        });
+    }else{
+        linhas.push("Sem ocorrência.");
+        linhas.push("");
     }
 
-    const html = `<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<title>Relatório Diário - UTE Maués</title>
-<style>
-@page{size:A4;margin:18mm}
-body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:0;font-size:12px;line-height:1.5}
-h1{font-size:20px;margin:0 0 4px;text-align:center}
-.sub{font-size:11px;text-align:center;color:#555;margin-bottom:22px}
-h2{font-size:14px;border-bottom:1px solid #bbb;padding-bottom:5px;margin:18px 0 10px}
-.item{margin:0 0 12px 0;page-break-inside:avoid}
-.ugd{font-weight:bold;font-size:12px;margin-bottom:2px}
-.exec{margin-top:3px;font-weight:bold}
-.sem{color:#555}
-</style>
-</head>
-<body>
-<h1>RELATÓRIO DIÁRIO – UTE MAUÉS</h1>
-<div class="sub">Data: ${escapar(data)}</div>
+    linhas.push("PROGRAMAÇÃO DO DIA");
+    linhas.push("");
 
-<h2>OCORRÊNCIAS</h2>
-${ocorrenciasValidasParaPdf()}
+    if(d.programacao.length){
+        d.programacao.forEach(item => {
+            linhas.push(`${item.ugd || "UGD"}`);
+            if(item.servico) linhas.push(item.servico);
+            if(item.executante) linhas.push(`Executante: ${item.executante}`);
+            linhas.push("");
+        });
+    }else{
+        linhas.push("Sem programação para o dia.");
+    }
 
-<h2>PROGRAMAÇÃO DO DIA</h2>
-${programacaoValidaParaPdf()}
+    const conteudo = linhas.join("\n").trim();
 
-<script>window.onload=function(){setTimeout(function(){window.print()},300)};<\/script>
-</body>
-</html>`;
+    const janela = window.open("", "_blank");
+    if(!janela){
+        alert("Permita pop-ups no navegador para gerar o PDF.");
+        return;
+    }
 
-    janela.document.open();
-    janela.document.write(html);
+    const escapeHtml = texto => String(texto)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/\n/g,"<br>");
+
+    janela.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Relatório Diário - UTE Maués</title><style>
+        @page{size:A4;margin:18mm}
+        body{font-family:Arial,Helvetica,sans-serif;color:#111;font-size:12pt;line-height:1.5}
+        h1{font-size:18pt;margin:0 0 6px}
+        .data{font-size:10pt;color:#555;margin-bottom:22px}
+        h2{font-size:13pt;border-bottom:1px solid #ccc;padding-bottom:5px;margin-top:20px}
+        .conteudo{white-space:normal}
+        .item{margin:0 0 12px 0}
+        .ugd{font-weight:bold;margin-bottom:3px}
+        .executante{margin-top:3px}
+    </style></head><body>
+        <h1>RELATÓRIO DIÁRIO – UTE MAUÉS</h1>
+        <div class="data">Data: ${escapeHtml(dataTexto)}</div>
+        <h2>OCORRÊNCIAS</h2>
+        <div class="conteudo">${escapeHtml(d.ocorrencias.length ? d.ocorrencias.map(x => `${x.ugd || "UGD"}\n${x.descricao || ""}`).join("\n\n") : "Sem ocorrência.")}</div>
+        <h2>PROGRAMAÇÃO DO DIA</h2>
+        <div class="conteudo">${escapeHtml(d.programacao.length ? d.programacao.map(x => `${x.ugd || "UGD"}\n${x.servico || ""}${x.executante ? `\nExecutante: ${x.executante}` : ""}`).join("\n\n") : "Sem programação para o dia.")}</div>
+        <script>window.onload=function(){setTimeout(function(){window.print();},300);};<\/script>
+    </body></html>`);
     janela.document.close();
-
-}
-
-function ocorrenciasValidasParaPdf(){
-
-    const lista = diarioOcorrencias.filter(x =>
-        String(x.ugd || "").trim() || String(x.descricao || "").trim()
-    );
-
-    if(!lista.length)
-        return `<div class="sem">Sem ocorrência registrada.</div>`;
-
-    return lista.map(item => `
-        <div class="item">
-            <div class="ugd">${escapar(normalizarUGDDiario(item.ugd) || "UGD")}</div>
-            <div>${escapar(String(item.descricao || "").trim())}</div>
-        </div>
-    `).join("");
-
-}
-
-function programacaoValidaParaPdf(){
-
-    const lista = diarioProgramacao.filter(x =>
-        String(x.ugd || "").trim() ||
-        String(x.servico || "").trim() ||
-        String(x.executante || "").trim()
-    );
-
-    if(!lista.length)
-        return `<div class="sem">Sem programação para o dia.</div>`;
-
-    return lista.map(item => `
-        <div class="item">
-            <div class="ugd">${escapar(normalizarUGDDiario(item.ugd) || "UGD")}</div>
-            <div>${escapar(String(item.servico || "").trim())}</div>
-            ${String(item.executante || "").trim() ? `<div class="exec">Executante: ${escapar(String(item.executante).trim())}</div>` : ""}
-        </div>
-    `).join("");
-
 }
 
 
@@ -6157,9 +5863,6 @@ function atualizarTudo(){
 
     if(paginaAtual==="programacao")
         renderProgramacao();
-
-    if(paginaAtual==="diario")
-        inicializarRelatorioDiario();
 
     if(paginaAtual==="bloco")
         renderBloco();
