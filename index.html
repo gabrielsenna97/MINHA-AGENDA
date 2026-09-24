@@ -703,6 +703,93 @@ body:before{
     font-size:12px;
 }
 
+
+/* ================= RELATÓRIO DIÁRIO ================= */
+
+.diario-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:18px;
+}
+
+.diario-toolbar{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:18px;
+}
+
+.diario-row{
+    display:grid;
+    grid-template-columns:130px 1fr auto;
+    gap:8px;
+    align-items:start;
+    margin-bottom:9px;
+}
+
+.diario-row-programacao{
+    display:grid;
+    grid-template-columns:120px 1fr 180px auto;
+    gap:8px;
+    align-items:start;
+    margin-bottom:9px;
+}
+
+.diario-lista{
+    margin-top:12px;
+}
+
+.diario-item{
+    background:rgba(255,255,255,.025);
+    border:1px solid var(--border);
+    border-radius:11px;
+    padding:10px;
+    margin-bottom:8px;
+}
+
+.diario-item-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+    margin-bottom:6px;
+}
+
+.diario-item-head strong{
+    font-size:12px;
+}
+
+.diario-preview{
+    min-height:360px;
+    font-family:Arial,Helvetica,sans-serif;
+    line-height:1.55;
+    white-space:pre-wrap;
+}
+
+.diario-section-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+}
+
+.diario-section-title h3{
+    font-size:15px;
+}
+
+.diario-section-title span{
+    color:var(--muted);
+    font-size:10px;
+}
+
+@media(max-width:700px){
+    .diario-row,
+    .diario-row-programacao{
+        grid-template-columns:1fr;
+    }
+}
+
 /* ================= MOBILE ================= */
 
 .mobile-menu{
@@ -805,30 +892,6 @@ body:before{
         flex-wrap:wrap;
     }
 }
-
-/* ============================================================
-   RELATÓRIO DIÁRIO
-============================================================ */
-
-.relatorio-diario-box{
-    width:min(900px,94vw);
-    max-height:92vh;
-    overflow:auto;
-}
-
-.relatorio-diario-textarea{
-    min-height:360px;
-    font-family:Arial,sans-serif;
-    line-height:1.5;
-    white-space:pre-wrap;
-}
-
-@media(max-width:700px){
-    .relatorio-diario-box{
-        width:96vw;
-    }
-}
-
 </style>
 </head>
 
@@ -867,6 +930,10 @@ body:before{
 
         <button onclick="abrirPagina('lembretes')" id="menu-lembretes">
             <span class="menu-icon">🔔</span> Lembretes
+        </button>
+
+        <button onclick="abrirPagina('diario')" id="menu-diario">
+            <span class="menu-icon">📋</span> Relatório Diário
         </button>
 
         <div class="menu-title">REGISTROS</div>
@@ -1160,21 +1227,108 @@ body:before{
                     <p>Organize serviços e atividades por dia.</p>
                 </div>
 
-                <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
-
-                    <button class="btn" onclick="abrirRelatorioDiario()">
-                        📱 Relatório do Dia
-                    </button>
-
-                    <button class="btn btn-primary" onclick="abrirModal('programacao')">
-                        + Programar
-                    </button>
-
-                </div>
+                <button class="btn btn-primary" onclick="abrirModal('programacao')">
+                    + Programar
+                </button>
 
             </div>
 
             <div class="week-grid" id="weekGrid"></div>
+
+        </section>
+
+        <!-- ================= RELATÓRIO DIÁRIO ================= -->
+
+        <section class="page" id="page-diario">
+
+            <div class="page-header">
+
+                <div>
+                    <h2>Relatório Diário</h2>
+                    <p>Preencha diariamente as ocorrências e a programação do dia.</p>
+                </div>
+
+                <button class="btn" onclick="limparRelatorioDiario()">
+                    Limpar
+                </button>
+
+            </div>
+
+            <div class="diario-grid">
+
+                <div class="panel">
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+                            <label>Data</label>
+                            <input class="input" type="date" id="diarioData">
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="panel">
+
+                    <div class="diario-section-title">
+                        <div>
+                            <h3>Ocorrências</h3>
+                            <span>Registre o que aconteceu durante a operação.</span>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="adicionarOcorrenciaDiaria()">
+                            + Ocorrência
+                        </button>
+                    </div>
+
+                    <div id="diarioOcorrencias"></div>
+
+                </div>
+
+                <div class="panel">
+
+                    <div class="diario-section-title">
+                        <div>
+                            <h3>Programação do dia</h3>
+                            <span>Informe manualmente o que será realizado no dia.</span>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="adicionarProgramacaoDiaria()">
+                            + Programação
+                        </button>
+                    </div>
+
+                    <div id="diarioProgramacao"></div>
+
+                </div>
+
+                <div class="panel">
+
+                    <div class="diario-section-title">
+                        <div>
+                            <h3>Relatório para WhatsApp</h3>
+                            <span>Texto pronto para copiar e enviar.</span>
+                        </div>
+                    </div>
+
+                    <textarea class="textarea diario-preview" id="diarioPreview" readonly></textarea>
+
+                    <div class="diario-toolbar">
+                        <button class="btn btn-primary" onclick="gerarRelatorioDiario()">
+                            🔄 Gerar relatório
+                        </button>
+                        <button class="btn" onclick="copiarRelatorioDiario()">
+                            📋 Copiar WhatsApp
+                        </button>
+                        <button class="btn" onclick="gerarPdfDiario()">
+                            📄 Gerar PDF
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
 
         </section>
 
@@ -1345,83 +1499,6 @@ body:before{
 </main>
 
 <!-- ================= MODAL ================= -->
-
-<!-- ================= RELATÓRIO DIÁRIO ================= -->
-
-<div class="modal" id="modalRelatorioDiario">
-
-    <div class="modal-box relatorio-diario-box">
-
-        <div class="modal-head">
-
-            <div>
-                <h3>📱 Relatório Diário</h3>
-                <p style="margin:4px 0 0;color:#64748b;font-size:13px">
-                    Pronto para copiar no WhatsApp ou gerar PDF.
-                </p>
-            </div>
-
-            <button class="close" onclick="fecharRelatorioDiario()">×</button>
-
-        </div>
-
-        <div class="form-grid">
-
-            <div class="form-group">
-                <label>Data</label>
-                <input type="date" class="input" id="relatorioDiarioData">
-            </div>
-
-            <div class="form-group full">
-                <label>Ocorrências</label>
-                <textarea
-                    class="textarea"
-                    id="relatorioDiarioOcorrencias"
-                    rows="7"
-                    placeholder="Ex.:
-* UGD 12
-Durante inspeções foi identificado vazamento de diesel pela mangueira de combustível (será analisado).
-
-* UGD 25
-Grupo gerador apresentou derramamento de aditivo pelo tanque expansor."
-                >Sem ocorrência</textarea>
-            </div>
-
-            <div class="form-group full">
-                <label>Relatório gerado</label>
-                <textarea
-                    class="textarea relatorio-diario-textarea"
-                    id="relatorioDiarioTexto"
-                    rows="18"
-                    readonly
-                ></textarea>
-            </div>
-
-        </div>
-
-        <div class="modal-footer">
-
-            <button class="btn" onclick="fecharRelatorioDiario()">
-                Fechar
-            </button>
-
-            <button class="btn" onclick="gerarRelatorioDiario()">
-                🔄 Atualizar
-            </button>
-
-            <button class="btn" onclick="gerarPDFRelatorioDiario()">
-                📄 Gerar PDF
-            </button>
-
-            <button class="btn btn-primary" onclick="copiarRelatorioDiario()">
-                📋 Copiar WhatsApp
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
 
 <div class="modal" id="modal">
 
@@ -2509,6 +2586,7 @@ const titulos = {
     agenda:"Agenda",
     tarefas:"Tarefas",
     programacao:"Programação Semanal",
+    diario:"Relatório Diário",
     lembretes:"Lembretes",
     servicos:"Serviços Realizados",
     movimentacoes:"Movimentações",
@@ -3413,11 +3491,6 @@ function salvarServico(){
         ugd:ugd,
 
         servico:servico,
-
-        executante:
-            document.getElementById(
-                "progExecutante"
-            ).value.trim(),
 
         os:
             document.getElementById(
@@ -4371,14 +4444,6 @@ function renderProgramacao(){
                             )}
 
                             ${
-                                x.executante
-                                ? `<br>Executante: ${
-                                    escapar(x.executante)
-                                  }`
-                                : ""
-                            }
-
-                            ${
                                 x.os
                                 ? `<br>OS ${
                                     escapar(
@@ -4554,263 +4619,6 @@ function excluirProgramacao(registroId){
         "PROGRAMACAO",
         registroId
     );
-
-}
-
-
-/* ============================================================
-   RELATÓRIO DIÁRIO - WHATSAPP + PDF
-============================================================ */
-
-function dataHojeInput(){
-
-    const d = new Date();
-
-    const ano = d.getFullYear();
-    const mes = String(d.getMonth()+1).padStart(2,"0");
-    const dia = String(d.getDate()).padStart(2,"0");
-
-    return `${ano}-${mes}-${dia}`;
-
-}
-
-
-function diaDaSemanaPorData(data){
-
-    if(!data)
-        return "";
-
-    const d = new Date(data + "T12:00:00");
-
-    const mapa = [
-        "DOM",
-        "SEG",
-        "TER",
-        "QUA",
-        "QUI",
-        "SEX",
-        "SÁB"
-    ];
-
-    return mapa[d.getDay()] || "";
-
-}
-
-
-function formatarUgdRelatorio(valor){
-
-    const texto = String(valor || "").trim();
-
-    if(!texto)
-        return "UGD";
-
-    const numero = texto.match(/(?:UGD\s*[- ]*)?(\d{1,2})$/i);
-
-    if(numero){
-        return `UGD ${String(numero[1]).padStart(2,"0")}`;
-    }
-
-    return texto;
-
-}
-
-
-function abrirRelatorioDiario(){
-
-    const modal =
-        document.getElementById(
-            "modalRelatorioDiario"
-        );
-
-    document.getElementById(
-        "relatorioDiarioData"
-    ).value = dataHojeInput();
-
-    document.getElementById(
-        "relatorioDiarioOcorrencias"
-    ).value = "Sem ocorrência";
-
-    modal.classList.add("show");
-
-    gerarRelatorioDiario();
-
-}
-
-
-function fecharRelatorioDiario(){
-
-    document.getElementById(
-        "modalRelatorioDiario"
-    ).classList.remove("show");
-
-}
-
-
-function gerarRelatorioDiario(){
-
-    const data =
-        document.getElementById(
-            "relatorioDiarioData"
-        ).value;
-
-    const ocorrencias =
-        document.getElementById(
-            "relatorioDiarioOcorrencias"
-        ).value.trim() || "Sem ocorrência";
-
-    if(!data){
-        alert("Informe a data do relatório.");
-        return;
-    }
-
-    const dia = diaDaSemanaPorData(data);
-
-    const itens =
-        dados.programacao.filter(
-            x =>
-                String(x.dia || "")
-                    .toUpperCase()
-                    .replace("Á","A") === dia.replace("Á","A")
-        );
-
-    let texto =
-        "Bom dia, Sra.,\n\n" +
-        "*_Ocorrências_*\n\n" +
-        ocorrencias +
-        "\n\n" +
-        "*_Programação do dia_*\n\n";
-
-    if(!itens.length){
-
-        texto +=
-            "Nenhuma programação registrada para o dia.";
-
-    }else{
-
-        itens.forEach((x,index) => {
-
-            texto +=
-                `* ${formatarUgdRelatorio(x.ugd)}\n`;
-
-            texto +=
-                `${String(x.servico || "").trim()}\n`;
-
-            if(x.executante){
-
-                texto +=
-                    `Executante: ${String(x.executante).trim()}\n`;
-
-            }
-
-            if(index < itens.length-1){
-                texto += "\n";
-            }
-
-        });
-
-    }
-
-    document.getElementById(
-        "relatorioDiarioTexto"
-    ).value = texto.trim();
-
-}
-
-
-async function copiarRelatorioDiario(){
-
-    gerarRelatorioDiario();
-
-    const texto =
-        document.getElementById(
-            "relatorioDiarioTexto"
-        ).value;
-
-    try{
-
-        await navigator.clipboard.writeText(texto);
-
-        alert("Relatório copiado. Agora é só colar no WhatsApp.");
-
-    }catch(e){
-
-        const campo =
-            document.getElementById(
-                "relatorioDiarioTexto"
-            );
-
-        campo.removeAttribute("readonly");
-        campo.select();
-        document.execCommand("copy");
-        campo.setAttribute("readonly", "readonly");
-
-        alert("Relatório copiado. Agora é só colar no WhatsApp.");
-
-    }
-
-}
-
-
-function gerarPDFRelatorioDiario(){
-
-    gerarRelatorioDiario();
-
-    const texto =
-        document.getElementById(
-            "relatorioDiarioTexto"
-        ).value;
-
-    const data =
-        document.getElementById(
-            "relatorioDiarioData"
-        ).value;
-
-    const dataFormatada =
-        data
-        ? new Date(data + "T12:00:00").toLocaleDateString("pt-BR")
-        : "";
-
-    const linhas = texto
-        .replace(/\r/g, "")
-        .split("\n")
-        .map(x => escapar(x))
-        .join("<br>");
-
-    const janela = window.open("", "_blank");
-
-    if(!janela){
-        alert("O navegador bloqueou a janela do PDF. Permita pop-ups para este site.");
-        return;
-    }
-
-    janela.document.write(`
-        <!DOCTYPE html>
-        <html lang="pt-BR">
-        <head>
-            <meta charset="UTF-8">
-            <title>Relatório Diário - UTE Maués</title>
-            <style>
-                @page{size:A4;margin:18mm;}
-                body{font-family:Arial,sans-serif;color:#111;line-height:1.55;font-size:12pt;}
-                h1{font-size:18pt;margin:0 0 4px;}
-                h2{font-size:12pt;font-weight:normal;margin:0 0 22px;color:#555;}
-                .cabecalho{border-bottom:2px solid #222;padding-bottom:10px;margin-bottom:20px;}
-                .relatorio{white-space:normal;word-break:break-word;}
-                .instrucao{margin-top:30px;color:#666;font-size:9pt;}
-            </style>
-        </head>
-        <body onload="window.print()">
-            <div class="cabecalho">
-                <h1>UTE MAUÉS</h1>
-                <h2>RELATÓRIO DIÁRIO — ${dataFormatada}</h2>
-            </div>
-            <div class="relatorio">${linhas}</div>
-            <div class="instrucao">Documento gerado pelo sistema de controle pessoal da UTE Maués.</div>
-        </body>
-        </html>
-    `);
-
-    janela.document.close();
 
 }
 
@@ -5812,21 +5620,6 @@ function abrirModal(
 
             </div>
 
-            <div class="form-group full">
-
-                <label>Executante</label>
-
-                <input
-                    class="input"
-                    id="progExecutante"
-                    value="${escapar(
-                        registro?.executante || ""
-                    )}"
-                    placeholder="Ex.: Mateus Pereira"
-                >
-
-            </div>
-
             <div class="form-group">
 
                 <label>OS</label>
@@ -5905,6 +5698,440 @@ function fecharModal(){
 }
 
 
+
+/* ============================================================
+   RELATÓRIO DIÁRIO
+   INDEPENDENTE DA PROGRAMAÇÃO SEMANAL
+============================================================ */
+
+let diarioOcorrencias = [];
+let diarioProgramacao = [];
+let diarioInicializado = false;
+
+function normalizarUGDDiario(valor){
+
+    let v = String(valor || "").trim().toUpperCase();
+
+    v = v.replace(/UGD/g, "").replace(/[^0-9]/g, "");
+
+    if(!v)
+        return "";
+
+    return "UGD " + v.padStart(2,"0");
+
+}
+
+function inicializarRelatorioDiario(){
+
+    if(!diarioInicializado){
+
+        const campoData = document.getElementById("diarioData");
+
+        if(campoData)
+            campoData.value = hoje();
+
+        diarioOcorrencias = [];
+        diarioProgramacao = [];
+
+        adicionarOcorrenciaDiaria();
+        adicionarProgramacaoDiaria();
+
+        diarioInicializado = true;
+
+        gerarRelatorioDiario();
+
+    }
+
+}
+
+function adicionarOcorrenciaDiaria(){
+
+    diarioOcorrencias.push({
+        id:id(),
+        ugd:"",
+        descricao:""
+    });
+
+    renderOcorrenciasDiarias();
+
+}
+
+function removerOcorrenciaDiaria(registroId){
+
+    diarioOcorrencias = diarioOcorrencias.filter(x => x.id !== registroId);
+
+    renderOcorrenciasDiarias();
+    gerarRelatorioDiario();
+
+}
+
+function atualizarOcorrenciaDiaria(registroId,campo,valor){
+
+    const item = diarioOcorrencias.find(x => x.id === registroId);
+
+    if(!item)
+        return;
+
+    item[campo] = valor;
+
+    gerarRelatorioDiario();
+
+}
+
+function renderOcorrenciasDiarias(){
+
+    const el = document.getElementById("diarioOcorrencias");
+
+    if(!el)
+        return;
+
+    if(!diarioOcorrencias.length){
+
+        el.innerHTML = `<div class="empty">Nenhuma ocorrência adicionada.</div>`;
+        return;
+
+    }
+
+    el.innerHTML = diarioOcorrencias.map(item => `
+        <div class="diario-row">
+            <input
+                class="input"
+                placeholder="UGD 12"
+                value="${escapar(item.ugd)}"
+                oninput="atualizarOcorrenciaDiaria(${item.id},'ugd',this.value)"
+            >
+            <textarea
+                class="textarea"
+                style="min-height:70px"
+                placeholder="Descreva a ocorrência..."
+                oninput="atualizarOcorrenciaDiaria(${item.id},'descricao',this.value)"
+            >${escapar(item.descricao)}</textarea>
+            <button
+                class="small-btn"
+                title="Excluir"
+                onclick="removerOcorrenciaDiaria(${item.id})">
+                ×
+            </button>
+        </div>
+    `).join("");
+
+}
+
+function adicionarProgramacaoDiaria(){
+
+    diarioProgramacao.push({
+        id:id(),
+        ugd:"",
+        servico:"",
+        executante:""
+    });
+
+    renderProgramacaoDiaria();
+
+}
+
+function removerProgramacaoDiaria(registroId){
+
+    diarioProgramacao = diarioProgramacao.filter(x => x.id !== registroId);
+
+    renderProgramacaoDiaria();
+    gerarRelatorioDiario();
+
+}
+
+function atualizarProgramacaoDiaria(registroId,campo,valor){
+
+    const item = diarioProgramacao.find(x => x.id === registroId);
+
+    if(!item)
+        return;
+
+    item[campo] = valor;
+
+    gerarRelatorioDiario();
+
+}
+
+function renderProgramacaoDiaria(){
+
+    const el = document.getElementById("diarioProgramacao");
+
+    if(!el)
+        return;
+
+    if(!diarioProgramacao.length){
+
+        el.innerHTML = `<div class="empty">Nenhuma programação adicionada.</div>`;
+        return;
+
+    }
+
+    el.innerHTML = diarioProgramacao.map(item => `
+        <div class="diario-row-programacao">
+
+            <input
+                class="input"
+                placeholder="UGD 46"
+                value="${escapar(item.ugd)}"
+                oninput="atualizarProgramacaoDiaria(${item.id},'ugd',this.value)"
+            >
+
+            <textarea
+                class="textarea"
+                style="min-height:70px"
+                placeholder="Serviço / atividade..."
+                oninput="atualizarProgramacaoDiaria(${item.id},'servico',this.value)"
+            >${escapar(item.servico)}</textarea>
+
+            <input
+                class="input"
+                placeholder="Executante (opcional)"
+                value="${escapar(item.executante)}"
+                oninput="atualizarProgramacaoDiaria(${item.id},'executante',this.value)"
+            >
+
+            <button
+                class="small-btn"
+                title="Excluir"
+                onclick="removerProgramacaoDiaria(${item.id})">
+                ×
+            </button>
+
+        </div>
+    `).join("");
+
+}
+
+function formatarDataDiario(){
+
+    const campo = document.getElementById("diarioData");
+
+    return campo ? formatarData(campo.value) : formatarData(hoje());
+
+}
+
+function gerarRelatorioDiario(){
+
+    const linhas = [];
+
+    linhas.push("Bom dia, Sra.,");
+    linhas.push("");
+    linhas.push("*_Ocorrências_*");
+    linhas.push("");
+
+    const ocorrenciasValidas = diarioOcorrencias.filter(x =>
+        String(x.ugd || "").trim() || String(x.descricao || "").trim()
+    );
+
+    if(!ocorrenciasValidas.length){
+
+        linhas.push("Sem ocorrência registrada.");
+
+    }else{
+
+        ocorrenciasValidas.forEach((item,index) => {
+
+            const ugd = normalizarUGDDiario(item.ugd) || "UGD";
+            const descricao = String(item.descricao || "").trim();
+
+            linhas.push(`* ${ugd}`);
+            if(descricao)
+                linhas.push(descricao);
+
+            if(index < ocorrenciasValidas.length - 1)
+                linhas.push("");
+
+        });
+
+    }
+
+    linhas.push("");
+    linhas.push("*_Programação do dia_*");
+    linhas.push("");
+
+    const programacoesValidas = diarioProgramacao.filter(x =>
+        String(x.ugd || "").trim() ||
+        String(x.servico || "").trim() ||
+        String(x.executante || "").trim()
+    );
+
+    if(!programacoesValidas.length){
+
+        linhas.push("Sem programação para o dia.");
+
+    }else{
+
+        programacoesValidas.forEach((item,index) => {
+
+            const ugd = normalizarUGDDiario(item.ugd) || "UGD";
+            const servico = String(item.servico || "").trim();
+            const executante = String(item.executante || "").trim();
+
+            linhas.push(`* ${ugd}`);
+
+            if(servico)
+                linhas.push(servico);
+
+            if(executante)
+                linhas.push(`Executante: ${executante}`);
+
+            if(index < programacoesValidas.length - 1)
+                linhas.push("");
+
+        });
+
+    }
+
+    const texto = linhas.join("\n");
+
+    const preview = document.getElementById("diarioPreview");
+
+    if(preview)
+        preview.value = texto;
+
+    return texto;
+
+}
+
+async function copiarRelatorioDiario(){
+
+    const texto = gerarRelatorioDiario();
+
+    try{
+
+        await navigator.clipboard.writeText(texto);
+        alert("Relatório copiado. Agora é só colar no WhatsApp.");
+
+    }catch(e){
+
+        const area = document.getElementById("diarioPreview");
+
+        if(area){
+            area.removeAttribute("readonly");
+            area.select();
+            document.execCommand("copy");
+            area.setAttribute("readonly",true);
+        }
+
+        alert("Relatório copiado. Agora é só colar no WhatsApp.");
+
+    }
+
+}
+
+function limparRelatorioDiario(){
+
+    if(!confirm("Limpar o relatório diário atual?"))
+        return;
+
+    diarioOcorrencias = [];
+    diarioProgramacao = [];
+
+    const campoData = document.getElementById("diarioData");
+
+    if(campoData)
+        campoData.value = hoje();
+
+    adicionarOcorrenciaDiaria();
+    adicionarProgramacaoDiaria();
+
+    gerarRelatorioDiario();
+
+}
+
+function gerarPdfDiario(){
+
+    const texto = gerarRelatorioDiario();
+    const data = formatarDataDiario();
+
+    const linhas = texto.split("\n");
+
+    const janela = window.open("", "_blank", "width=900,height=700");
+
+    if(!janela){
+
+        alert("O navegador bloqueou a janela do PDF. Permita pop-ups para este site e tente novamente.");
+        return;
+
+    }
+
+    const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Relatório Diário - UTE Maués</title>
+<style>
+@page{size:A4;margin:18mm}
+body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:0;font-size:12px;line-height:1.5}
+h1{font-size:20px;margin:0 0 4px;text-align:center}
+.sub{font-size:11px;text-align:center;color:#555;margin-bottom:22px}
+h2{font-size:14px;border-bottom:1px solid #bbb;padding-bottom:5px;margin:18px 0 10px}
+.item{margin:0 0 12px 0;page-break-inside:avoid}
+.ugd{font-weight:bold;font-size:12px;margin-bottom:2px}
+.exec{margin-top:3px;font-weight:bold}
+.sem{color:#555}
+</style>
+</head>
+<body>
+<h1>RELATÓRIO DIÁRIO – UTE MAUÉS</h1>
+<div class="sub">Data: ${escapar(data)}</div>
+
+<h2>OCORRÊNCIAS</h2>
+${ocorrenciasValidasParaPdf()}
+
+<h2>PROGRAMAÇÃO DO DIA</h2>
+${programacaoValidaParaPdf()}
+
+<script>window.onload=function(){setTimeout(function(){window.print()},300)};<\/script>
+</body>
+</html>`;
+
+    janela.document.open();
+    janela.document.write(html);
+    janela.document.close();
+
+}
+
+function ocorrenciasValidasParaPdf(){
+
+    const lista = diarioOcorrencias.filter(x =>
+        String(x.ugd || "").trim() || String(x.descricao || "").trim()
+    );
+
+    if(!lista.length)
+        return `<div class="sem">Sem ocorrência registrada.</div>`;
+
+    return lista.map(item => `
+        <div class="item">
+            <div class="ugd">${escapar(normalizarUGDDiario(item.ugd) || "UGD")}</div>
+            <div>${escapar(String(item.descricao || "").trim())}</div>
+        </div>
+    `).join("");
+
+}
+
+function programacaoValidaParaPdf(){
+
+    const lista = diarioProgramacao.filter(x =>
+        String(x.ugd || "").trim() ||
+        String(x.servico || "").trim() ||
+        String(x.executante || "").trim()
+    );
+
+    if(!lista.length)
+        return `<div class="sem">Sem programação para o dia.</div>`;
+
+    return lista.map(item => `
+        <div class="item">
+            <div class="ugd">${escapar(normalizarUGDDiario(item.ugd) || "UGD")}</div>
+            <div>${escapar(String(item.servico || "").trim())}</div>
+            ${String(item.executante || "").trim() ? `<div class="exec">Executante: ${escapar(String(item.executante).trim())}</div>` : ""}
+        </div>
+    `).join("");
+
+}
+
+
 /* ============================================================
    ATUALIZAÇÃO GERAL
 ============================================================ */
@@ -5931,6 +6158,9 @@ function atualizarTudo(){
     if(paginaAtual==="programacao")
         renderProgramacao();
 
+    if(paginaAtual==="diario")
+        inicializarRelatorioDiario();
+
     if(paginaAtual==="bloco")
         renderBloco();
 
@@ -5940,21 +6170,6 @@ function atualizarTudo(){
 /* ============================================================
    FECHAR MODAL CLICANDO FORA
 ============================================================ */
-
-document.getElementById(
-    "modalRelatorioDiario"
-)
-.addEventListener(
-    "click",
-    function(e){
-
-        if(e.target === this){
-            fecharRelatorioDiario();
-        }
-
-    }
-);
-
 
 document.getElementById(
     "modal"
