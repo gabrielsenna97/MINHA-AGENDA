@@ -1248,7 +1248,7 @@ body:before{
                             📋 Copiar para WhatsApp
                         </button>
                         <button class="btn" onclick="gerarPDFSemanal()">
-                            📄 Gerar PDF
+                            📄 Baixar PDF
                         </button>
                     </div>
                 </div>
@@ -1342,7 +1342,7 @@ body:before{
                             📋 Copiar WhatsApp
                         </button>
                         <button class="btn" onclick="gerarPdfDiario()">
-                            📄 Gerar PDF
+                            📄 Baixar PDF
                         </button>
                     </div>
 
@@ -4601,47 +4601,263 @@ async function copiarRelatorioSemanal(){
 
 function gerarPDFSemanal(){
 
-    const texto = formatarRelatorioSemanal();
-    const janela = window.open("", "_blank", "width=900,height=700");
+    /* ==========================================================
+       PDF DA PROGRAMAÇÃO SEMANAL
+       - Layout próprio para apresentação à diretoria
+       - A4 organizado por dia
+       - Download automático do arquivo PDF
+       ========================================================== */
 
-    if(!janela){
-        alert("O navegador bloqueou a janela do PDF. Permita pop-ups para este site e tente novamente.");
+    const dias = [
+        ["SEG","Segunda-feira"],
+        ["TER","Terça-feira"],
+        ["QUA","Quarta-feira"],
+        ["QUI","Quinta-feira"],
+        ["SEX","Sexta-feira"],
+        ["SÁB","Sábado"]
+    ];
+
+    const itensPorDia = dias.map(([sigla,nome]) => ({
+        sigla,
+        nome,
+        itens: dados.programacao.filter(x =>
+            String(x.dia || "").toUpperCase() === sigla
+        )
+    })).filter(d => d.itens.length);
+
+    if(!itensPorDia.length){
+        alert("Não há atividades cadastradas na Programação Semanal para gerar o PDF.");
         return;
     }
 
-    const linhas = texto.split("\n").map(linha =>
-        escapar(linha)
-            .replace(/\*_(.*?)_\*/g, "<strong>$1</strong>")
-            .replace(/\*(.*?)\*/g, "<strong>$1</strong>")
-    );
+    const total = dados.programacao.length;
+    const dataGeracao = new Date();
+    const dataTexto = dataGeracao.toLocaleDateString("pt-BR");
 
-    janela.document.write(`
-        <!DOCTYPE html>
-        <html lang="pt-BR">
-        <head>
-            <meta charset="UTF-8">
-            <title>Programação Semanal - UTE Maués</title>
-            <style>
-                @page{size:A4;margin:18mm;}
-                body{font-family:Arial,sans-serif;color:#111;line-height:1.5;font-size:13px;}
-                h1{font-size:20px;margin:0 0 18px;}
-                .linha{white-space:pre-wrap;min-height:19px;}
-                .cab{font-size:18px;font-weight:700;margin-bottom:10px;}
-                .rodape{margin-top:25px;font-size:11px;color:#555;}
-            </style>
-        </head>
-        <body>
-            <div class="cab">PROGRAMAÇÃO SEMANAL – UTE MAUÉS</div>
-            ${linhas.map(l => `<div class="linha">${l || "&nbsp;"}</div>`).join("")}
-            <div class="rodape">Relatório gerado pelo sistema de gestão da UTE Maués.</div>
-        </body>
-        </html>
-    `);
+    // Remove caracteres que não são seguros para a fonte Helvetica padrão do PDF.
+    function pdfTexto(valor){
+        return String(valor || "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/–/g,"-")
+            .replace(/—/g,"-")
+            .replace(/•/g,"-")
+            .replace(/[“”]/g,'"')
+            .replace(/[‘’]/g,"'")
+            .replace(/\u00a0/g," ");
+    }
 
-    janela.document.close();
-    janela.focus();
-    setTimeout(() => janela.print(), 300);
+    function pdfEscape(valor){
+        return pdfTexto(valor)
+            .replace(/\\/g,"\\\\")
+            .replace(/\(/g,"\\(")
+            .replace(/\)/g,"\\)");
+    }
+
+    // Quebra de texto para caber no A4.
+    function quebrarTexto(texto, tamanho, larguraMax){
+        const palavras = pdfTexto(texto).split(/\s+/).filter(Boolean);
+        const linhas = [];
+        let atual = "";
+
+        palavras.forEach(palavra => {
+            const tentativa = atual ? atual + " " + palavra : palavra;
+            const largura = tentativa.length * tamanho * 0.50;
+
+            if(largura > larguraMax && atual){
+                linhas.push(atual);
+                atual = palavra;
+            }else{
+                atual = tentativa;
+            }
+        });
+
+        if(atual) linhas.push(atual);
+        return linhas.length ? linhas : [""];
+    }
+
+    const PAGE_W = 595;
+    const PAGE_H = 842;
+    const M = 42;
+    const CONTENT_W = PAGE_W - (M * 2);
+    const comandosPorPagina = [];
+    let comandos = [];
+    let y = PAGE_H - 48;
+    let numeroPagina = 1;
+
+    function novaPagina(){
+        comandosPorPagina.push(comandos.join("\n"));
+        comandos = [];
+        y = PAGE_H - 48;
+        numeroPagina++;
+    }
+
+    function garantirEspaco(altura){
+        if(y - altura < 55){
+            novaPagina();
+        }
+    }
+
+    function textoPDF(texto,x,yPos,tamanho=10,negrito=false){
+        const fonte = negrito ? "/F2" : "/F1";
+        comandos.push(`BT ${fonte} ${tamanho} Tf ${x.toFixed(1)} ${yPos.toFixed(1)} Td (${pdfEscape(texto)}) Tj ET`);
+    }
+
+    function linhaPDF(x1,y1,x2,y2,espessura=1){
+        comandos.push(`${espessura} w ${x1.toFixed(1)} ${y1.toFixed(1)} m ${x2.toFixed(1)} ${y2.toFixed(1)} l S`);
+    }
+
+    function retanguloPDF(x,yPos,w,h){
+        comandos.push(`${x.toFixed(1)} ${yPos.toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)} re S`);
+    }
+
+    function cabecalhoPagina(){
+        textoPDF("UTE MAUES",M,PAGE_H-35,9,true);
+        textoPDF("PROGRAMACAO SEMANAL",PAGE_W-M-125,PAGE_H-35,8,true);
+        linhaPDF(M,PAGE_H-42,PAGE_W-M,PAGE_H-42,.7);
+    }
+
+    cabecalhoPagina();
+
+    // Título principal
+    textoPDF("PROGRAMACAO SEMANAL - UTE MAUES",M,y,18,true);
+    y -= 22;
+    textoPDF("Planejamento das atividades de manutencao",M,y,10,false);
+    y -= 18;
+
+    // Resumo executivo
+    garantirEspaco(64);
+    retanguloPDF(M,y-48,CONTENT_W,55);
+    textoPDF("RESUMO DA PROGRAMACAO",M+12,y-14,10,true);
+    textoPDF(`Total de atividades programadas: ${total}`,M+12,y-31,10,false);
+    textoPDF(`Relatorio gerado em: ${dataTexto}`,M+12,y-45,8,false);
+    y -= 72;
+
+    itensPorDia.forEach(dia => {
+        garantirEspaco(45);
+
+        // Cabeçalho do dia
+        textoPDF(dia.nome.toUpperCase(),M,y,13,true);
+        y -= 7;
+        linhaPDF(M,y,PAGE_W-M,y,.8);
+        y -= 17;
+
+        dia.itens.forEach((item,indice) => {
+            const ugd = String(item.ugd || "").trim();
+            const servico = String(item.servico || "").trim();
+            const os = String(item.os || "").trim();
+            const obs = String(item.observacao || "").trim();
+
+            const blocos = [];
+            if(ugd) blocos.push({t:`${ugd}`,s:11,b:true});
+            if(servico) blocos.push({t:servico,s:9,b:false});
+            if(os) blocos.push({t:`OS: ${os}`,s:8,b:false});
+            if(obs) blocos.push({t:`Observacao: ${obs}`,s:8,b:false});
+
+            let altura = 16;
+            blocos.forEach((b,idx) => {
+                const linhas = quebrarTexto(b.t,b.s,CONTENT_W-34);
+                altura += linhas.length * (b.s + 3);
+                if(idx < blocos.length-1) altura += 2;
+            });
+            altura += 9;
+
+            garantirEspaco(altura);
+
+            // Caixa da atividade
+            const topo = y + 4;
+            retanguloPDF(M,y-altura+8,CONTENT_W,altura);
+
+            let yy = topo - 14;
+            blocos.forEach((b,idx) => {
+                const linhas = quebrarTexto(b.t,b.s,CONTENT_W-34);
+                linhas.forEach(linha => {
+                    textoPDF(linha,M+12,yy,b.s,b.b);
+                    yy -= b.s + 3;
+                });
+                if(idx < blocos.length-1) yy -= 2;
+            });
+
+            y -= altura + 9;
+        });
+
+        y -= 4;
+    });
+
+    garantirEspaco(62);
+    linhaPDF(M,y,PAGE_W-M,y,.7);
+    y -= 17;
+    textoPDF("OBSERVACAO",M,y,9,true);
+    y -= 14;
+
+    const observacao = "A programacao podera ser ajustada conforme as condicoes operacionais da UTE, disponibilidade das equipes, prioridades de manutencao e necessidades identificadas durante a execucao.";
+    const linhasObs = quebrarTexto(observacao,8,CONTENT_W);
+    linhasObs.forEach(linha => {
+        garantirEspaco(13);
+        textoPDF(linha,M,y,8,false);
+        y -= 11;
+    });
+
+    // Rodapé em todas as páginas
+    comandosPorPagina.push(comandos.join("\n"));
+
+    // Objetos PDF
+    const objetos = [];
+    const adicionar = conteudo => {
+        objetos.push(conteudo);
+        return objetos.length;
+    };
+
+    const catalogo = adicionar("<< /Type /Catalog /Pages 2 0 R >>");
+    const paginas = adicionar("");
+    const fonteNormal = adicionar("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>");
+    const fonteNegrito = adicionar("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>");
+
+    const pageRefs = [];
+    const contentRefs = [];
+
+    comandosPorPagina.forEach((conteudo,idx) => {
+        const rodape = `BT /F1 7 Tf ${M} 28 Td (UTE Maues - Programacao Semanal) Tj ET\nBT /F1 7 Tf ${PAGE_W-M-48} 28 Td (${idx+1} / ${comandosPorPagina.length}) Tj ET`;
+        const stream = conteudo + "\n" + rodape;
+        const streamRef = adicionar(`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`);
+        contentRefs.push(streamRef);
+        const pageRef = adicionar(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PAGE_W} ${PAGE_H}] /Resources << /Font << /F1 ${fonteNormal} 0 R /F2 ${fonteNegrito} 0 R >> >> /Contents ${streamRef} 0 R >>`);
+        pageRefs.push(pageRef);
+    });
+
+    objetos[1] = `<< /Type /Pages /Count ${pageRefs.length} /Kids [${pageRefs.map(r => `${r} 0 R`).join(" ")}] >>`;
+
+    let pdf = "%PDF-1.4\n%\xE2\xE3\xCF\xD3\n";
+    const offsets = [0];
+
+    objetos.forEach((obj,i) => {
+        offsets[i+1] = pdf.length;
+        pdf += `${i+1} 0 obj\n${obj}\nendobj\n`;
+    });
+
+    const xref = pdf.length;
+    pdf += `xref\n0 ${objetos.length+1}\n`;
+    pdf += "0000000000 65535 f \n";
+    for(let i=1;i<=objetos.length;i++){
+        pdf += `${String(offsets[i]).padStart(10,"0")} 00000 n \n`;
+    }
+    pdf += `trailer\n<< /Size ${objetos.length+1} /Root ${catalogo} 0 R >>\nstartxref\n${xref}\n%%EOF`;
+
+    const bytes = new Uint8Array(pdf.length);
+    for(let i=0;i<pdf.length;i++) bytes[i] = pdf.charCodeAt(i) & 0xFF;
+
+    const blob = new Blob([bytes],{type:"application/pdf"});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const dataNome = dataGeracao.toISOString().slice(0,10);
+    link.href = url;
+    link.download = `Programacao_Semanal_UTE_Maues_${dataNome}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url),1500);
 }
+
 
 
 function salvarProgramacao(){
